@@ -1,0 +1,105 @@
+/* OnboardingCard styles ici */ 
+.onboarding-card {
+  width: 100%;
+  max-width: 1000px;
+  background: #ffffffa6;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #eeeef2;
+}
+.onboarding-main-row {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+}
+.page-toolbar .title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #0d1728;
+}
+.div {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.step-title {
+  color: var(--text-primary, #0D1728);
+
+/* Subtitles/Subtitle 1 */
+font-family: "DM Sans";
+font-size: 22px;
+font-style: normal;
+font-weight: 600;
+line-height: 30px; /* 136.364% */
+}
+.step-desc {
+  color: var(--text-secondary, #595959);
+
+/* Body Text/Body 2 Regular */
+font-family: "DM Sans";
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: 20px; /* 142.857% */
+padding-top: 36px;
+padding-bottom: 28px;
+}
+.step-input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  max-width: 200px;
+}
+.step-btn {
+  background: #00b5ae;
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 24px;
+  margin-right: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.onboarding-frame-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+.onboarding-progress-col {
+  flex: 0 0 200px;
+  max-width: 240px;
+  background: #fff;
+  border-radius: 8px 0 0 8px;
+  padding: 32px 16px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: 1px 0 0 #eeeef2;
+}
+.onboarding-step-content {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 32px 32px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.fit-content-btn {
+  width: fit-content;
+  min-width: 0;
+  max-width: 100%;
+} 
+.step-input-container {
+  display: flex;
+  flex-direction: row;
+  gap: 28px;
+}
+.onboarding-progress-title{
+  color: var(--text-text, #000);
+
+/* Subtitles/Subtitle 2 */
+font-family: "DM Sans";
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: 21px; /* 131.25% */
+}

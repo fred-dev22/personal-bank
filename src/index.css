@@ -1,0 +1,624 @@
+/* This snippet is injected by Anima. Feel free to delete this comment. */
+
+:root {
+  --24dp:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+  --4dp: 0px 16px 20px 8px rgba(0, 0, 0, 0.1);
+  --8dp: 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  --body-bold-font-family: "DM Sans", Helvetica;
+  --body-bold-font-size: 16px;
+  --body-bold-font-style: normal;
+  --body-bold-font-weight: 700;
+  --body-bold-letter-spacing: 0px;
+  --body-bold-line-height: 22px;
+  --body-text-body-2-bold-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-bold-font-size: 14px;
+  --body-text-body-2-bold-font-style: normal;
+  --body-text-body-2-bold-font-weight: 700;
+  --body-text-body-2-bold-letter-spacing: 0px;
+  --body-text-body-2-bold-line-height: 20px;
+  --body-text-body-2-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-regular-font-size: 14px;
+  --body-text-body-2-regular-font-style: normal;
+  --body-text-body-2-regular-font-weight: 400;
+  --body-text-body-2-regular-letter-spacing: 0px;
+  --body-text-body-2-regular-line-height: 20px;
+  --body-text-body-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-regular-font-size: 16px;
+  --body-text-body-regular-font-style: normal;
+  --body-text-body-regular-font-weight: 400;
+  --body-text-body-regular-letter-spacing: 0px;
+  --body-text-body-regular-line-height: 22px;
+  --buttons-nav-button-primary-font-family: "DM Sans", Helvetica;
+  --buttons-nav-button-primary-font-size: 16px;
+  --buttons-nav-button-primary-font-style: normal;
+  --buttons-nav-button-primary-font-weight: 700;
+  --buttons-nav-button-primary-letter-spacing: 0px;
+  --buttons-nav-button-primary-line-height: 24px;
+  --buttons-nav-button-secondary-font-family: "Poppins", Helvetica;
+  --buttons-nav-button-secondary-font-size: 16px;
+  --buttons-nav-button-secondary-font-style: normal;
+  --buttons-nav-button-secondary-font-weight: 500;
+  --buttons-nav-button-secondary-letter-spacing: 0px;
+  --buttons-nav-button-secondary-line-height: 24px;
+  --captions-caption-emphasized-font-family: "DM Sans", Helvetica;
+  --captions-caption-emphasized-font-size: 11px;
+  --captions-caption-emphasized-font-style: normal;
+  --captions-caption-emphasized-font-weight: 500;
+  --captions-caption-emphasized-letter-spacing: 0.22px;
+  --captions-caption-emphasized-line-height: 14px;
+  --captions-caption-regular-font-family: "DM Sans", Helvetica;
+  --captions-caption-regular-font-size: 11px;
+  --captions-caption-regular-font-style: normal;
+  --captions-caption-regular-font-weight: 400;
+  --captions-caption-regular-letter-spacing: 0.22px;
+  --captions-caption-regular-line-height: 14px;
+  --dark-greendark-green: rgba(32, 72, 71, 1);
+  --gold-100: rgba(233, 192, 74, 1);
+  --green-shadows-primary-green-shadow:
+    0px -0.5px 0px 0px rgba(0, 181, 174, 1), 0px -0.5px 0px 0px rgba(
+      255,
+      255,
+      255,
+      0.6
+    ), 0px 0.5px 2.5px 0px rgba(0, 181, 174, 0.5);
+  --green-shadows-secondary-green-shadow: 0px 1px 2.5px 0px
+    rgba(0, 181, 174, 0.25);
+  --grey-00: rgba(246, 245, 245, 1);
+  --grey-10: rgba(239, 238, 238, 1);
+  --grey-100: rgba(97, 103, 102, 1);
+  --grey-30: rgba(218, 217, 217, 1);
+  --grey-shadows-disabled-shadow: 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.15);
+  --grey-shadows-footer: 0px -2px 3px 0px rgba(0, 0, 0, 0.1), 0px -0.5px 0px
+    0.5px rgba(0, 0, 0, 0.05);
+  --grey-shadows-popover-shadow:
+    0px 7px 22px 0px rgba(0, 0, 0, 0.25), 0px 0px 1.5px 0px rgba(0, 0, 0, 0.3), 0px 0px 1px 0px rgba(
+      0,
+      0,
+      0,
+      0.4
+    );
+  --grey-shadows-primary-grey-shadow: 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.2);
+  --grey-shadows-secondary-inner-grey-shadow: ;
+  --grey-shadows-tertiary-grey-shadow:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.1);
+  --grey-shadows-tertiary-grey-with-blur:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+  --headings-h1-font-family: "Poppins", Helvetica;
+  --headings-h1-font-size: 34px;
+  --headings-h1-font-style: normal;
+  --headings-h1-font-weight: 600;
+  --headings-h1-letter-spacing: 0px;
+  --headings-h1-line-height: 46px;
+  --headings-h2-font-family: "Poppins", Helvetica;
+  --headings-h2-font-size: 28px;
+  --headings-h2-font-style: normal;
+  --headings-h2-font-weight: 600;
+  --headings-h2-letter-spacing: 0px;
+  --headings-h2-line-height: 38px;
+  --headings-h3-font-family: "Poppins", Helvetica;
+  --headings-h3-font-size: 22px;
+  --headings-h3-font-style: normal;
+  --headings-h3-font-weight: 600;
+  --headings-h3-letter-spacing: 0px;
+  --headings-h3-line-height: 28px;
+  --lavender-100: rgba(59, 60, 84, 1);
+  --modal: 4px 4px 15px 0px rgba(230, 230, 231, 0.5);
+  --neutral-00: rgba(255, 255, 255, 1);
+  --redred: rgba(195, 0, 0, 1);
+  --small-bold-regular-text-font-family: "Poppins", Helvetica;
+  --small-bold-regular-text-font-size: 12px;
+  --small-bold-regular-text-font-style: normal;
+  --small-bold-regular-text-font-weight: 600;
+  --small-bold-regular-text-letter-spacing: 0px;
+  --small-bold-regular-text-line-height: normal;
+  --subtitles-subtitle-1-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-1-font-size: 22px;
+  --subtitles-subtitle-1-font-style: normal;
+  --subtitles-subtitle-1-font-weight: 600;
+  --subtitles-subtitle-1-letter-spacing: 0px;
+  --subtitles-subtitle-1-line-height: 30px;
+  --subtitles-subtitle-2-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-2-font-size: 16px;
+  --subtitles-subtitle-2-font-style: normal;
+  --subtitles-subtitle-2-font-weight: 600;
+  --subtitles-subtitle-2-letter-spacing: 0px;
+  --subtitles-subtitle-2-line-height: 21px;
+  --table-header-font-family: "DM Sans", Helvetica;
+  --table-header-font-size: 12px;
+  --table-header-font-style: normal;
+  --table-header-font-weight: 700;
+  --table-header-letter-spacing: 0px;
+  --table-header-line-height: 16px;
+  --white: rgba(255, 255, 255, 1);
+}
+
+/* The end of the injected content. */
+
+/* This snippet is injected by Anima. Feel free to delete this comment. */
+
+:root {
+  --24dp:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+  --4dp: 0px 16px 20px 8px rgba(0, 0, 0, 0.1);
+  --8dp: 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  --body-bold-font-family: "DM Sans", Helvetica;
+  --body-bold-font-size: 16px;
+  --body-bold-font-style: normal;
+  --body-bold-font-weight: 700;
+  --body-bold-letter-spacing: 0px;
+  --body-bold-line-height: 22px;
+  --body-text-body-2-bold-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-bold-font-size: 14px;
+  --body-text-body-2-bold-font-style: normal;
+  --body-text-body-2-bold-font-weight: 700;
+  --body-text-body-2-bold-letter-spacing: 0px;
+  --body-text-body-2-bold-line-height: 20px;
+  --body-text-body-2-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-regular-font-size: 14px;
+  --body-text-body-2-regular-font-style: normal;
+  --body-text-body-2-regular-font-weight: 400;
+  --body-text-body-2-regular-letter-spacing: 0px;
+  --body-text-body-2-regular-line-height: 20px;
+  --body-text-body-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-regular-font-size: 16px;
+  --body-text-body-regular-font-style: normal;
+  --body-text-body-regular-font-weight: 400;
+  --body-text-body-regular-letter-spacing: 0px;
+  --body-text-body-regular-line-height: 22px;
+  --buttons-nav-button-primary-font-family: "DM Sans", Helvetica;
+  --buttons-nav-button-primary-font-size: 16px;
+  --buttons-nav-button-primary-font-style: normal;
+  --buttons-nav-button-primary-font-weight: 700;
+  --buttons-nav-button-primary-letter-spacing: 0px;
+  --buttons-nav-button-primary-line-height: 24px;
+  --buttons-nav-button-secondary-font-family: "Poppins", Helvetica;
+  --buttons-nav-button-secondary-font-size: 16px;
+  --buttons-nav-button-secondary-font-style: normal;
+  --buttons-nav-button-secondary-font-weight: 500;
+  --buttons-nav-button-secondary-letter-spacing: 0px;
+  --buttons-nav-button-secondary-line-height: 24px;
+  --captions-caption-emphasized-font-family: "DM Sans", Helvetica;
+  --captions-caption-emphasized-font-size: 11px;
+  --captions-caption-emphasized-font-style: normal;
+  --captions-caption-emphasized-font-weight: 500;
+  --captions-caption-emphasized-letter-spacing: 0.22px;
+  --captions-caption-emphasized-line-height: 14px;
+  --captions-caption-regular-font-family: "DM Sans", Helvetica;
+  --captions-caption-regular-font-size: 11px;
+  --captions-caption-regular-font-style: normal;
+  --captions-caption-regular-font-weight: 400;
+  --captions-caption-regular-letter-spacing: 0.22px;
+  --captions-caption-regular-line-height: 14px;
+  --dark-greendark-green: rgba(32, 72, 71, 1);
+  --gold-100: rgba(233, 192, 74, 1);
+  --green-shadows-primary-green-shadow:
+    0px -0.5px 0px 0px rgba(0, 181, 174, 1), 0px -0.5px 0px 0px rgba(
+      255,
+      255,
+      255,
+      0.6
+    ), 0px 0.5px 2.5px 0px rgba(0, 181, 174, 0.5);
+  --green-shadows-secondary-green-shadow: 0px 1px 2.5px 0px
+    rgba(0, 181, 174, 0.25);
+  --grey-00: rgba(246, 245, 245, 1);
+  --grey-10: rgba(239, 238, 238, 1);
+  --grey-100: rgba(97, 103, 102, 1);
+  --grey-30: rgba(218, 217, 217, 1);
+  --grey-shadows-disabled-shadow: 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.15);
+  --grey-shadows-footer: 0px -2px 3px 0px rgba(0, 0, 0, 0.1), 0px -0.5px 0px
+    0.5px rgba(0, 0, 0, 0.05);
+  --grey-shadows-popover-shadow:
+    0px 7px 22px 0px rgba(0, 0, 0, 0.25), 0px 0px 1.5px 0px rgba(0, 0, 0, 0.3), 0px 0px 1px 0px rgba(
+      0,
+      0,
+      0,
+      0.4
+    );
+  --grey-shadows-primary-grey-shadow: 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.2);
+  --grey-shadows-secondary-inner-grey-shadow: ;
+  --grey-shadows-tertiary-grey-shadow:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.1);
+  --grey-shadows-tertiary-grey-with-blur:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+  --headings-h1-font-family: "Poppins", Helvetica;
+  --headings-h1-font-size: 34px;
+  --headings-h1-font-style: normal;
+  --headings-h1-font-weight: 600;
+  --headings-h1-letter-spacing: 0px;
+  --headings-h1-line-height: 46px;
+  --headings-h2-font-family: "Poppins", Helvetica;
+  --headings-h2-font-size: 28px;
+  --headings-h2-font-style: normal;
+  --headings-h2-font-weight: 600;
+  --headings-h2-letter-spacing: 0px;
+  --headings-h2-line-height: 38px;
+  --headings-h3-font-family: "Poppins", Helvetica;
+  --headings-h3-font-size: 22px;
+  --headings-h3-font-style: normal;
+  --headings-h3-font-weight: 600;
+  --headings-h3-letter-spacing: 0px;
+  --headings-h3-line-height: 28px;
+  --lavender-100: rgba(59, 60, 84, 1);
+  --modal: 4px 4px 15px 0px rgba(230, 230, 231, 0.5);
+  --neutral-00: rgba(255, 255, 255, 1);
+  --redred: rgba(195, 0, 0, 1);
+  --small-bold-regular-text-font-family: "Poppins", Helvetica;
+  --small-bold-regular-text-font-size: 12px;
+  --small-bold-regular-text-font-style: normal;
+  --small-bold-regular-text-font-weight: 600;
+  --small-bold-regular-text-letter-spacing: 0px;
+  --small-bold-regular-text-line-height: normal;
+  --subtitles-subtitle-1-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-1-font-size: 22px;
+  --subtitles-subtitle-1-font-style: normal;
+  --subtitles-subtitle-1-font-weight: 600;
+  --subtitles-subtitle-1-letter-spacing: 0px;
+  --subtitles-subtitle-1-line-height: 30px;
+  --subtitles-subtitle-2-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-2-font-size: 16px;
+  --subtitles-subtitle-2-font-style: normal;
+  --subtitles-subtitle-2-font-weight: 600;
+  --subtitles-subtitle-2-letter-spacing: 0px;
+  --subtitles-subtitle-2-line-height: 21px;
+  --table-header-font-family: "DM Sans", Helvetica;
+  --table-header-font-size: 12px;
+  --table-header-font-style: normal;
+  --table-header-font-weight: 700;
+  --table-header-letter-spacing: 0px;
+  --table-header-line-height: 16px;
+  --white: rgba(255, 255, 255, 1);
+}
+
+/* The end of the injected content. */
+
+/* This snippet is injected by Anima. Feel free to delete this comment. */
+
+:root {
+  --24dp:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+  --4dp: 0px 16px 20px 8px rgba(0, 0, 0, 0.1);
+  --8dp: 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  --body-bold-font-family: "DM Sans", Helvetica;
+  --body-bold-font-size: 16px;
+  --body-bold-font-style: normal;
+  --body-bold-font-weight: 700;
+  --body-bold-letter-spacing: 0px;
+  --body-bold-line-height: 22px;
+  --body-text-body-2-bold-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-bold-font-size: 14px;
+  --body-text-body-2-bold-font-style: normal;
+  --body-text-body-2-bold-font-weight: 700;
+  --body-text-body-2-bold-letter-spacing: 0px;
+  --body-text-body-2-bold-line-height: 20px;
+  --body-text-body-2-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-regular-font-size: 14px;
+  --body-text-body-2-regular-font-style: normal;
+  --body-text-body-2-regular-font-weight: 400;
+  --body-text-body-2-regular-letter-spacing: 0px;
+  --body-text-body-2-regular-line-height: 20px;
+  --body-text-body-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-regular-font-size: 16px;
+  --body-text-body-regular-font-style: normal;
+  --body-text-body-regular-font-weight: 400;
+  --body-text-body-regular-letter-spacing: 0px;
+  --body-text-body-regular-line-height: 22px;
+  --buttons-nav-button-primary-font-family: "DM Sans", Helvetica;
+  --buttons-nav-button-primary-font-size: 16px;
+  --buttons-nav-button-primary-font-style: normal;
+  --buttons-nav-button-primary-font-weight: 700;
+  --buttons-nav-button-primary-letter-spacing: 0px;
+  --buttons-nav-button-primary-line-height: 24px;
+  --buttons-nav-button-secondary-font-family: "Poppins", Helvetica;
+  --buttons-nav-button-secondary-font-size: 16px;
+  --buttons-nav-button-secondary-font-style: normal;
+  --buttons-nav-button-secondary-font-weight: 500;
+  --buttons-nav-button-secondary-letter-spacing: 0px;
+  --buttons-nav-button-secondary-line-height: 24px;
+  --captions-caption-emphasized-font-family: "DM Sans", Helvetica;
+  --captions-caption-emphasized-font-size: 11px;
+  --captions-caption-emphasized-font-style: normal;
+  --captions-caption-emphasized-font-weight: 500;
+  --captions-caption-emphasized-letter-spacing: 0.22px;
+  --captions-caption-emphasized-line-height: 14px;
+  --captions-caption-regular-font-family: "DM Sans", Helvetica;
+  --captions-caption-regular-font-size: 11px;
+  --captions-caption-regular-font-style: normal;
+  --captions-caption-regular-font-weight: 400;
+  --captions-caption-regular-letter-spacing: 0.22px;
+  --captions-caption-regular-line-height: 14px;
+  --dark-greendark-green: rgba(32, 72, 71, 1);
+  --gold-100: rgba(233, 192, 74, 1);
+  --green-shadows-primary-green-shadow:
+    0px -0.5px 0px 0px rgba(0, 181, 174, 1), 0px -0.5px 0px 0px rgba(
+      255,
+      255,
+      255,
+      0.6
+    ), 0px 0.5px 2.5px 0px rgba(0, 181, 174, 0.5);
+  --green-shadows-secondary-green-shadow: 0px 1px 2.5px 0px
+    rgba(0, 181, 174, 0.25);
+  --grey-00: rgba(246, 245, 245, 1);
+  --grey-10: rgba(239, 238, 238, 1);
+  --grey-100: rgba(97, 103, 102, 1);
+  --grey-30: rgba(218, 217, 217, 1);
+  --grey-shadows-disabled-shadow: 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.15);
+  --grey-shadows-footer: 0px -2px 3px 0px rgba(0, 0, 0, 0.1), 0px -0.5px 0px
+    0.5px rgba(0, 0, 0, 0.05);
+  --grey-shadows-popover-shadow:
+    0px 7px 22px 0px rgba(0, 0, 0, 0.25), 0px 0px 1.5px 0px rgba(0, 0, 0, 0.3), 0px 0px 1px 0px rgba(
+      0,
+      0,
+      0,
+      0.4
+    );
+  --grey-shadows-primary-grey-shadow: 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.2);
+  --grey-shadows-secondary-inner-grey-shadow: ;
+  --grey-shadows-tertiary-grey-shadow:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.1);
+  --grey-shadows-tertiary-grey-with-blur:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+  --headings-h1-font-family: "Poppins", Helvetica;
+  --headings-h1-font-size: 34px;
+  --headings-h1-font-style: normal;
+  --headings-h1-font-weight: 600;
+  --headings-h1-letter-spacing: 0px;
+  --headings-h1-line-height: 46px;
+  --headings-h2-font-family: "Poppins", Helvetica;
+  --headings-h2-font-size: 28px;
+  --headings-h2-font-style: normal;
+  --headings-h2-font-weight: 600;
+  --headings-h2-letter-spacing: 0px;
+  --headings-h2-line-height: 38px;
+  --headings-h3-font-family: "Poppins", Helvetica;
+  --headings-h3-font-size: 22px;
+  --headings-h3-font-style: normal;
+  --headings-h3-font-weight: 600;
+  --headings-h3-letter-spacing: 0px;
+  --headings-h3-line-height: 28px;
+  --lavender-100: rgba(59, 60, 84, 1);
+  --modal: 4px 4px 15px 0px rgba(230, 230, 231, 0.5);
+  --neutral-00: rgba(255, 255, 255, 1);
+  --redred: rgba(195, 0, 0, 1);
+  --small-bold-regular-text-font-family: "Poppins", Helvetica;
+  --small-bold-regular-text-font-size: 12px;
+  --small-bold-regular-text-font-style: normal;
+  --small-bold-regular-text-font-weight: 600;
+  --small-bold-regular-text-letter-spacing: 0px;
+  --small-bold-regular-text-line-height: normal;
+  --subtitles-subtitle-1-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-1-font-size: 22px;
+  --subtitles-subtitle-1-font-style: normal;
+  --subtitles-subtitle-1-font-weight: 600;
+  --subtitles-subtitle-1-letter-spacing: 0px;
+  --subtitles-subtitle-1-line-height: 30px;
+  --subtitles-subtitle-2-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-2-font-size: 16px;
+  --subtitles-subtitle-2-font-style: normal;
+  --subtitles-subtitle-2-font-weight: 600;
+  --subtitles-subtitle-2-letter-spacing: 0px;
+  --subtitles-subtitle-2-line-height: 21px;
+  --table-header-font-family: "DM Sans", Helvetica;
+  --table-header-font-size: 12px;
+  --table-header-font-style: normal;
+  --table-header-font-weight: 700;
+  --table-header-letter-spacing: 0px;
+  --table-header-line-height: 16px;
+  --white: rgba(255, 255, 255, 1);
+}
+
+/* The end of the injected content. */
+
+:root {
+  --24dp:
+    0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+  --4dp: 0px 16px 20px 8px rgba(0, 0, 0, 0.1);
+  --8dp: 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  --background: rgba(243, 247, 255, 1);
+  --body-text-body-2-bold-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-bold-font-size: 14px;
+  --body-text-body-2-bold-font-style: normal;
+  --body-text-body-2-bold-font-weight: 700;
+  --body-text-body-2-bold-letter-spacing: 0px;
+  --body-text-body-2-bold-line-height: 20px;
+  --body-text-body-2-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-2-regular-font-size: 14px;
+  --body-text-body-2-regular-font-style: normal;
+  --body-text-body-2-regular-font-weight: 400;
+  --body-text-body-2-regular-letter-spacing: 0px;
+  --body-text-body-2-regular-line-height: 20px;
+  --body-text-body-bold-font-family: "DM Sans", Helvetica;
+  --body-text-body-bold-font-size: 16px;
+  --body-text-body-bold-font-style: normal;
+  --body-text-body-bold-font-weight: 700;
+  --body-text-body-bold-letter-spacing: 0px;
+  --body-text-body-bold-line-height: 22px;
+  --body-text-body-regular-font-family: "DM Sans", Helvetica;
+  --body-text-body-regular-font-size: 16px;
+  --body-text-body-regular-font-style: normal;
+  --body-text-body-regular-font-weight: 400;
+  --body-text-body-regular-letter-spacing: 0px;
+  --body-text-body-regular-line-height: 22px;
+  --button-nav-unselected-font-family: "DM Sans", Helvetica;
+  --button-nav-unselected-font-size: 16px;
+  --button-nav-unselected-font-style: normal;
+  --button-nav-unselected-font-weight: 500;
+  --button-nav-unselected-letter-spacing: 0px;
+  --button-nav-unselected-line-height: 24px;
+  --buttons-nav-button-primary-font-family: "DM Sans", Helvetica;
+  --buttons-nav-button-primary-font-size: 16px;
+  --buttons-nav-button-primary-font-style: normal;
+  --buttons-nav-button-primary-font-weight: 700;
+  --buttons-nav-button-primary-letter-spacing: 0px;
+  --buttons-nav-button-primary-line-height: 24px;
+  --buttons-nav-button-secondary-font-family: "Poppins", Helvetica;
+  --buttons-nav-button-secondary-font-size: 16px;
+  --buttons-nav-button-secondary-font-style: normal;
+  --buttons-nav-button-secondary-font-weight: 500;
+  --buttons-nav-button-secondary-letter-spacing: 0px;
+  --buttons-nav-button-secondary-line-height: 24px;
+  --captions-caption-emphasized-font-family: "DM Sans", Helvetica;
+  --captions-caption-emphasized-font-size: 12px;
+  --captions-caption-emphasized-font-style: normal;
+  --captions-caption-emphasized-font-weight: 500;
+  --captions-caption-emphasized-letter-spacing: 0.24px;
+  --captions-caption-emphasized-line-height: 14px;
+  --captions-caption-regular-font-family: "DM Sans", Helvetica;
+  --captions-caption-regular-font-size: 12px;
+  --captions-caption-regular-font-style: normal;
+  --captions-caption-regular-font-weight: 400;
+  --captions-caption-regular-letter-spacing: 0.24px;
+  --captions-caption-regular-line-height: 12px;
+  --dark-greendark-green: rgba(32, 72, 71, 1);
+  --gold-100: rgba(233, 192, 74, 1);
+  --green-shadows-primary-green-shadow:
+    0px -0.5px 0px 0px rgba(0, 181, 174, 1), 0px -0.5px 0px 0px rgba(
+      255,
+      255,
+      255,
+      0.6
+    ), 0px 0.5px 2.5px 0px rgba(0, 181, 174, 0.5);
+  --grey-00: rgba(246, 245, 245, 1);
+  --grey-10: rgba(239, 238, 238, 1);
+  --grey-100: rgba(97, 103, 102, 1);
+  --grey-30: rgba(218, 217, 217, 1);
+  --grey-shadows-footer: 0px -2px 3px 0px rgba(0, 0, 0, 0.1), 0px -0.5px 0px
+    0.5px rgba(0, 0, 0, 0.05);
+  --grey-shadows-popover-shadow:
+    0px 7px 22px 0px rgba(0, 0, 0, 0.25), 0px 0px 1.5px 0px rgba(0, 0, 0, 0.3), 0px 0px 1px 0px rgba(
+      0,
+      0,
+      0,
+      0.4
+    );
+  --grey-shadows-primary-grey-shadow: 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.3);
+  --grey-shadows-secondary-inner-grey-shadow: ;
+  --grey-shadows-tertiary-grey-shadow:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 0.5px 2.5px 0px rgba(0, 0, 0, 0.1);
+  --grey-shadows-tertiary-grey-with-blur:
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5), 0px 0px 0px 0.5px rgba(
+      0,
+      0,
+      0,
+      0.05
+    ), 0px 1px 4px 0px rgba(0, 0, 0, 0.25);
+  --headings-h1-font-family: "Poppins", Helvetica;
+  --headings-h1-font-size: 34px;
+  --headings-h1-font-style: normal;
+  --headings-h1-font-weight: 600;
+  --headings-h1-letter-spacing: 0px;
+  --headings-h1-line-height: 46px;
+  --headings-h2-font-family: "Poppins", Helvetica;
+  --headings-h2-font-size: 28px;
+  --headings-h2-font-style: normal;
+  --headings-h2-font-weight: 600;
+  --headings-h2-letter-spacing: 0px;
+  --headings-h2-line-height: 38px;
+  --headings-h3-font-family: "Poppins", Helvetica;
+  --headings-h3-font-size: 22px;
+  --headings-h3-font-style: normal;
+  --headings-h3-font-weight: 600;
+  --headings-h3-letter-spacing: 0px;
+  --headings-h3-line-height: 28px;
+  --lavender-100: rgba(59, 60, 84, 1);
+  --modal: 4px 4px 15px 0px rgba(230, 230, 231, 0.5);
+  --neutral-00: rgba(255, 255, 255, 1);
+  --redred: rgba(195, 0, 0, 1);
+  --s2-old-regular-font-family: "DM Sans", Helvetica;
+  --s2-old-regular-font-size: 20px;
+  --s2-old-regular-font-style: normal;
+  --s2-old-regular-font-weight: 400;
+  --s2-old-regular-letter-spacing: 0px;
+  --s2-old-regular-line-height: 24px;
+  --small-bold-regular-text-font-family: "Poppins", Helvetica;
+  --small-bold-regular-text-font-size: 12px;
+  --small-bold-regular-text-font-style: normal;
+  --small-bold-regular-text-font-weight: 600;
+  --small-bold-regular-text-letter-spacing: 0px;
+  --small-bold-regular-text-line-height: normal;
+  --subtitle-1-medium-font-family: "DM Sans", Helvetica;
+  --subtitle-1-medium-font-size: 22px;
+  --subtitle-1-medium-font-style: normal;
+  --subtitle-1-medium-font-weight: 500;
+  --subtitle-1-medium-letter-spacing: 0px;
+  --subtitle-1-medium-line-height: 30px;
+  --subtitles-subtitle-1-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-1-font-size: 22px;
+  --subtitles-subtitle-1-font-style: normal;
+  --subtitles-subtitle-1-font-weight: 600;
+  --subtitles-subtitle-1-letter-spacing: 0px;
+  --subtitles-subtitle-1-line-height: 30px;
+  --subtitles-subtitle-2-font-family: "DM Sans", Helvetica;
+  --subtitles-subtitle-2-font-size: 16px;
+  --subtitles-subtitle-2-font-style: normal;
+  --subtitles-subtitle-2-font-weight: 600;
+  --subtitles-subtitle-2-letter-spacing: 0px;
+  --subtitles-subtitle-2-line-height: 21px;
+  --table-header-font-family: "DM Sans", Helvetica;
+  --table-header-font-size: 12px;
+  --table-header-font-style: normal;
+  --table-header-font-weight: 700;
+  --table-header-letter-spacing: 0px;
+  --table-header-line-height: 16px;
+  --white: rgba(255, 255, 255, 1);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+} 
