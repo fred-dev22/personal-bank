@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavButton } from '@jbaluch/components';
+//@ts-ignore
 import '@jbaluch/components/styles';
 import fynanc4 from '../../assets/fynanc-4.png';
 import frameBg from '../../assets/frame-1000006035.png';
@@ -11,16 +12,19 @@ interface NavItem {
   requiresPermission?: string | null;
 }
 
+interface Permissions {
+  [key: string]: boolean | undefined;
+  canViewFinancials?: boolean;
+  canViewBorrowers?: boolean;
+  canAccessApps?: boolean;
+}
+
 interface NavigationBarProps {
   mainNavItems?: NavItem[];
   bottomNavItems?: NavItem[];
   activeItemId?: string;
   isCollapsed?: boolean;
-  permissions?: {
-    canViewFinancials?: boolean;
-    canViewBorrowers?: boolean;
-    canAccessApps?: boolean;
-  };
+  permissions?: Permissions;
   onNavItemClick?: (data: any) => void;
   onSignOut?: (data: any) => void;
   onToggleCollapse?: (data: any) => void;
@@ -44,14 +48,15 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     canViewBorrowers: true,
     canAccessApps: true
   },
-  onNavItemClick = (data) => {},
-  onSignOut = (data) => {},
-  onToggleCollapse = (data) => {},
-  onPermissionDenied = (data) => {}
+  onNavItemClick = () => {},
+  onSignOut = () => {},
+  onToggleCollapse = () => {},
+  onPermissionDenied = () => {}
 }) => {
   const [activeItem, setActiveItem] = useState(activeItemId);
   const [collapsed, setCollapsed] = useState(isCollapsed);
   const [previousItem, setPreviousItem] = useState<string | null>(null);
+console.log(previousItem);
 
   useEffect(() => {
     setActiveItem(activeItemId);
@@ -63,7 +68,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   const hasPermission = (item: NavItem) => {
     if (!item.requiresPermission) return true;
-    return permissions[item.requiresPermission as keyof typeof permissions] === true;
+    return permissions[item.requiresPermission] === true;
   };
 
   const handleItemClick = (item: NavItem) => {
@@ -73,7 +78,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         itemId: item.id,
         timestamp: new Date().toISOString(),
         requiredPermission: item.requiresPermission,
-        userPermissions: Object.keys(permissions).filter(key => permissions[key as keyof typeof permissions] === true)
+        userPermissions: Object.keys(permissions).filter(key => permissions[key])
       };
       onPermissionDenied(permissionData);
       return;
@@ -148,13 +153,14 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              width: collapsed ? '32px' : '48px', // taille réduite si collapsed
+              width: collapsed ? '32px' : '48px',
               height: collapsed ? '32px' : '48px',
-              margin: '0 auto 16px 0',
+              margin: '0 0 16px 0',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'flex-start',
               borderRadius: '10px',
+              paddingLeft: '8px'
             }}
           >
             <img

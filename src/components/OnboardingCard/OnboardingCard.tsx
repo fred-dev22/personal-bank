@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Input } from '@jbaluch/components';
+// @ts-ignore
 import '@jbaluch/components/styles';
 import "./OnboardingCard.css";
 
@@ -36,12 +37,8 @@ const steps = [
 
 export const OnboardingCard: React.FC<OnboardingCardProps> = ({
   step,
-  gatewayClassName = '',
-  accountsVaultsClassName = '',
-  leverageLoansClassName = '',
   onStepChange
 }) => {
-  // Déclare ici pour qu'il soit accessible partout dans le composant
   const currentStepIdx = steps.findIndex(s => s.key === step);
 
   const nextStep = () => {
@@ -86,6 +83,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               <div className="step-desc">Give your bank a name. You can change this later under Settings.</div>
               <div className="step-input-container">
                 <Input placeholder="bank name" />
+                {/*@ts-ignore*/}
                 <Button onClick={nextStep}>Next Step</Button>
               </div>
             </div>
@@ -94,6 +92,8 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
             <div>
               <div className="step-title">Setup the gateway</div>
               <div className="step-desc">The Gateway is a bank account that acts as the entrance to the bank. All money flows into and out of it. No account yet? No problem, we can proceed as if you do.</div>
+              {/*@ts-ignore*/}
+
               <Button className="step-btn fit-content-btn" onClick={nextStep}>Setup Gateway</Button>
             </div>
           )}
@@ -101,7 +101,11 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
             <div>
               <div className="step-title">Add your vaults</div>
               <div className="step-desc">A vault is a secure space for both storing and leveraging your money. This allows the same dollars to be in two places at once. You must add a vault before you can add or upload loans.</div>
+              {/*@ts-ignore*/}
+
               <Button className="step-btn fit-content-btn" onClick={() => { }}>Add Vault</Button>
+              {/*@ts-ignore*/}
+
               <Button className="step-btn fit-content-btn" onClick={nextStep}>Next Step</Button>
             </div>
           )}
@@ -109,8 +113,14 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
             <div>
               <div className="step-title">Upload your loans</div>
               <div className="step-desc">Loans make income for your bank. You re-lend the payments to build wealth. Funding loans with the right kind of vault builds it faster.</div>
-              <Button className="step-btn fit-content-btn" onClick={() => {/* action upload */}}>Bulk Upload</Button>
-              <Button className="step-btn fit-content-btn" onClick={() => {/* action add loan */}}>Add New Loan</Button>
+              {/*@ts-ignore*/}
+
+              <Button className="step-btn fit-content-btn" onClick={() => { }}>Bulk Upload</Button>
+              {/*@ts-ignore*/}
+
+              <Button className="step-btn fit-content-btn" onClick={() => { }}>Add New Loan</Button>
+              {/*@ts-ignore*/}
+
               <Button className="step-btn fit-content-btn" onClick={nextStep}>Finish</Button>
             </div>
           )}

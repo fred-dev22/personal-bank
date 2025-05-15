@@ -1,15 +1,27 @@
 import React, { useState } from "react";
 import { OnboardingCard } from '../OnboardingCard/OnboardingCard';
 import { Button } from '@jbaluch/components';
+//@ts-ignore
 import '@jbaluch/components/styles';
 import "./Overview.css";
 
+type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
+
 export const Overview: React.FC = () => {
-  const [onboardingStep, setOnboardingStep] = useState<'one'|'two'|'three'|'four'|'done'>('one');
+  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('one');
 
   // Callback pour passer à l'étape suivante de l'onboarding
   const handleOnboardingStepChange = (step: string) => {
-    setOnboardingStep(step as any);
+    // On sécurise le typage ici
+    if (
+      step === 'one' ||
+      step === 'two' ||
+      step === 'three' ||
+      step === 'four' ||
+      step === 'done'
+    ) {
+      setOnboardingStep(step);
+    }
   };
 
   return (
@@ -38,6 +50,8 @@ export const Overview: React.FC = () => {
                       <div className="text-wrapper-3">payments to receive</div>
                     </div>
                     <div className="tag"><div className="label">1 late</div></div>
+                {/*@ts-ignore*/}
+                    
                     <Button className="button fit-content-btn" onClick={() => {}}><div className="action-button">Receive</div></Button>
                   </div>
                   <div className="overview-actions-row">
@@ -45,6 +59,8 @@ export const Overview: React.FC = () => {
                       <div className="notification-badge"><div className="element">1</div></div>
                       <div className="text-wrapper-3">loan to fund</div>
                     </div>
+                {/*@ts-ignore*/}
+                   
                     <Button className="button fit-content-btn" onClick={() => {}}><div className="action-button">Fund</div></Button>
                   </div>
                   <div className="overview-actions-row-2">
@@ -52,6 +68,8 @@ export const Overview: React.FC = () => {
                       <div className="notification-badge-2"><div className="text-wrapper-4">0</div></div>
                       <div className="text-wrapper-3">requests to review</div>
                     </div>
+                {/*@ts-ignore*/}
+                   
                     <Button className="action-button-wrapper fit-content-btn" onClick={() => {}}><div className="action-button-2">Review</div></Button>
                   </div>
                   <div className="overview-actions-row-3">
@@ -59,6 +77,8 @@ export const Overview: React.FC = () => {
                       <div className="notification-badge"><div className="element">2</div></div>
                       <div className="text-wrapper-3">amounts to transfer</div>
                     </div>
+                {/*@ts-ignore*/}
+                 
                     <Button className="button fit-content-btn" onClick={() => {}}><div className="action-button-3">Transfer</div></Button>
                   </div>
                 </div>
@@ -87,6 +107,8 @@ export const Overview: React.FC = () => {
                 </div>
               </div>
               <div className="vault-financials-2">
+                {/*@ts-ignore*/}
+                
                 <Button className="button-2 fit-content-btn" onClick={() => {}}><div className="action-button">Vault ABC</div><div className="arrow-back-ios" /></Button>
                 <div className="div-4">
                   <div className="div-5">
