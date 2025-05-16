@@ -1,23 +1,23 @@
-import PropTypes from "prop-types";
 import React from "react";
 import "./style.css";
 
 interface Props {
   state: "default";
   status: "bad" | "good";
-  className: any;
+  className?: string;
 }
 
-export const VaultRow = ({ state, status, className }: Props): JSX.Element => {
+export const VaultRow: React.FC<Props> = ({
+  status,
+  className = "",
+}) => {
   return (
     <div className={`vault-row ${className}`}>
       <div className="table-cell">
         <div className="label">
           {status === "bad" && <>Vault ABC</>}
-
           {status === "good" && <>Gateway 1</>}
         </div>
-
         {status === "bad" && <div className="text-wrapper">Super vault</div>}
       </div>
 
@@ -54,9 +54,4 @@ export const VaultRow = ({ state, status, className }: Props): JSX.Element => {
       </div>
     </div>
   );
-};
-
-VaultRow.propTypes = {
-  state: PropTypes.oneOf(["default"]),
-  status: PropTypes.oneOf(["bad", "good"]),
 };
