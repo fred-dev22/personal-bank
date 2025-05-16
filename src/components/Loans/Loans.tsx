@@ -1,25 +1,22 @@
-import { Button } from "@jbaluch/components";
-import PropTypes from "prop-types";
 import React from "react";
+import { Button } from "@jbaluch/components";
 import "./style.css";
+// @ts-ignore
 import '@jbaluch/components/styles';
 
-
-interface Props {
-  page: "all-loans";
+interface LoansProps {
   className?: string;
   imagesClassName?: string;
   imagesClassNameOverride?: string;
   divClassName?: string;
 }
 
-export const Loans = ({
-  page,
+export const Loans: React.FC<LoansProps> = ({
   className = "",
   imagesClassName = "",
   imagesClassNameOverride = "",
   divClassName = "",
-}: Props): JSX.Element => {
+}) => {
   return (
     <section className={`loans ${className}`}>
       <header className="page-toolbar">
@@ -56,6 +53,7 @@ export const Loans = ({
           </div>
 
           <div className="div-2">
+            {/* @ts-ignore*/}
             <Button type="primary">
               Add
               <img
@@ -298,12 +296,4 @@ export const Loans = ({
       </section>
     </section>
   );
-};
-
-Loans.propTypes = {
-  page: PropTypes.oneOf(["all-loans"]).isRequired,
-  className: PropTypes.string,
-  imagesClassName: PropTypes.string,
-  imagesClassNameOverride: PropTypes.string,
-  divClassName: PropTypes.string,
 };
