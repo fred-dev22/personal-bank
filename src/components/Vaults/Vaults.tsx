@@ -2,7 +2,7 @@ import React from "react";
 import { VaultRow } from "./VaultRow";
 import "./style.css";
 
-export const Vaults = (): JSX.Element => {
+export const Vaults: React.FC = () => {
   return (
     <div className="center-stage">
       <div className="header">
