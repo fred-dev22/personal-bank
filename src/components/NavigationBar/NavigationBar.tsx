@@ -158,9 +158,8 @@ console.log(previousItem);
               margin: '0 0 16px 0',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               borderRadius: '10px',
-              paddingLeft: '8px'
             }}
           >
             <img
