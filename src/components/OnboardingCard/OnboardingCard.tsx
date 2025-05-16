@@ -106,7 +106,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               <Button className="step-btn fit-content-btn" onClick={() => { }}>Add Vault</Button>
               {/*@ts-ignore*/}
 
-              <Button className="step-btn fit-content-btn" onClick={nextStep}>Next Step</Button>
+              <Button className="step-btn fit-content-btn" type={"secondary"} onClick={nextStep}>Next Step</Button>
             </div>
           )}
           {step === "four" && (
@@ -118,10 +118,10 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               <Button className="step-btn fit-content-btn" onClick={() => { }}>Bulk Upload</Button>
               {/*@ts-ignore*/}
 
-              <Button className="step-btn fit-content-btn" onClick={() => { }}>Add New Loan</Button>
+              <Button className="step-btn fit-content-btn" type={"secondary"} onClick={() => { }}>Add New Loan</Button>
               {/*@ts-ignore*/}
 
-              <Button className="step-btn fit-content-btn" onClick={nextStep}>Finish</Button>
+              <Button className="step-btn fit-content-btn" type={"secondary"} onClick={nextStep}>Finish</Button>
             </div>
           )}
         </div>
