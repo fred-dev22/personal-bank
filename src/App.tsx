@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { NavigationBar } from './components/NavigationBar/NavigationBar'
 import { Overview } from './components/Overview/Overview'
+import { Loans } from './components/Loans/Loans'
+import { Vaults } from './components/Vaults/Vaults'
 import './index.css'
 
 function App() {
@@ -76,6 +78,8 @@ function App() {
       />
       <div style={{ flex: 1, background: '#f7f8fa', minHeight: '100vh', padding: '56px 0 0 56px' }}>
         {currentPage === 'overview' && <Overview />}
+        {currentPage === 'loans' && <Loans />}
+        {currentPage === 'vaults' && <Vaults />}
       </div>
       </div>
   );
