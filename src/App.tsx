@@ -76,7 +76,7 @@ function App() {
         onToggleCollapse={handleToggleCollapse}
         onPermissionDenied={handlePermissionDenied}
       />
-      <div style={{ flex: 1, background: '#f7f8fa', minHeight: '100vh', padding: '56px 0 0 56px' }}>
+      <div className={sidebarCollapsed?"mainContainerCollapsed":"mainContainer"}>
         {currentPage === 'overview' && <Overview />}
         {currentPage === 'loans' && <Loans />}
         {currentPage === 'vaults' && <Vaults />}
