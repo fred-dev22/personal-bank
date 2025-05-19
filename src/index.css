@@ -622,3 +622,17 @@ body {
   margin: 0;
   padding: 0;
 } 
+.mainContainer{
+  flex: 1; 
+  background: #f7f8fa; 
+  min-height: 100vh; 
+  padding: 56px 0 0 56px;
+  margin-left: 198px;
+}
+.mainContainerCollapsed{
+  flex: 1; 
+  background: #f7f8fa; 
+  min-height: 100vh; 
+  padding: 56px 0 0 56px;
+  margin-left: 50px;
+}
