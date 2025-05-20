@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { OnboardingCard } from '../OnboardingCard/OnboardingCard';
 import { Button } from '@jbaluch/components';
+// @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import "./Overview.css";
 import type { Vault } from '../../types/types';
 
 type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
 
-const vaults = [
+const vaults: Vault[] = [
   { id: 'vault-abc', name: 'Vault ABC', issues: 2, balance: 15000, financials: { paidIn: 600, paidOut: 10000 }, health: { reserves: 10000, loanToValue: 56, incomeDSCR: 1.4, growthDSCR: 1.43 } },
   { id: 'vault-123', name: 'Vault 123', issues: 1, balance: 12000, financials: { paidIn: 400, paidOut: 8000 }, health: { reserves: 8000, loanToValue: 48, incomeDSCR: 1.2, growthDSCR: 1.3 } },
   { id: 'vault-xyz', name: 'Vault XYZ', issues: 0, balance: 18000, financials: { paidIn: 800, paidOut: 12000 }, health: { reserves: 12000, loanToValue: 64, incomeDSCR: 1.6, growthDSCR: 1.5 } },
@@ -61,6 +62,7 @@ export const Overview: React.FC = () => {
                       <div className="text-wrapper-3">payments to receive</div>
                       <div className="tag"><div className="label">1 late</div></div>
                     </div>
+                    {/* @ts-expect-error: Button type from external library may not match expected props */}
                     <Button className="button fit-content-btn action-btn" type="secondary" onClick={() => {}}><div className="action-button">Receive</div></Button>
                   </div>
                   <div className="overview-actions-row">
@@ -68,6 +70,7 @@ export const Overview: React.FC = () => {
                       <div className="notification-badge"><div className="element">1</div></div>
                       <div className="text-wrapper-3">loan to fund</div>
                     </div>
+                    {/* @ts-expect-error: Button type from external library may not match expected props */}
                     <Button className="button fit-content-btn action-btn" type="secondary" onClick={() => {}}><div className="action-button">Fund</div></Button>
                   </div>
                   <div className="overview-actions-row">
@@ -75,6 +78,7 @@ export const Overview: React.FC = () => {
                       <div className="notification-badge review"><div className="text-wrapper-4">0</div></div>
                       <div className="text-wrapper-3">requests to review</div>
                     </div>
+                    {/* @ts-expect-error: Button type from external library may not match expected props */}
                     <Button className="button fit-content-btn action-btn" type="secondary" disabled onClick={() => {}}><div className="action-button-2">Review</div></Button>
                   </div>
                   <div className="overview-actions-row">
@@ -82,6 +86,7 @@ export const Overview: React.FC = () => {
                       <div className="notification-badge"><div className="element">2</div></div>
                       <div className="text-wrapper-3">amounts to transfer</div>
                     </div>
+                    {/* @ts-expect-error: Button type from external library may not match expected props */}
                     <Button className="button fit-content-btn action-btn" type="secondary" onClick={() => {}}><div className="action-button-3">Transfer</div></Button>
                   </div>
                 </div>
