@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@jbaluch/components";
 import "./style.css";
-// @ts-ignore
+// @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
+import type { Loan } from '../../types/types';
 
 interface LoansProps {
   className?: string;
@@ -11,28 +12,89 @@ interface LoansProps {
   divClassName?: string;
 }
 
+const loansData: Loan[] = [
+  {
+    id: '1010',
+    name: "Marcela's Tuition",
+    tag: '1',
+    dscr: 1.43,
+    paymentDue: 300,
+    unpaidBalance: 6016.17,
+    status: 'on_track',
+    borrowerId: 'b1',
+  },
+  {
+    id: '1011',
+    name: "New Phone",
+    tag: undefined,
+    dscr: 1.43,
+    paymentDue: 300,
+    unpaidBalance: 6016.17,
+    status: 'to_fund',
+    borrowerId: 'b2',
+  },
+  {
+    id: '1012',
+    name: "Vacation",
+    tag: undefined,
+    dscr: 1.43,
+    paymentDue: 300,
+    unpaidBalance: 6016.17,
+    status: 'late',
+    borrowerId: 'b3',
+  },
+  {
+    id: '1013',
+    name: "Car Repair",
+    tag: '2',
+    dscr: 1.25,
+    paymentDue: 450,
+    unpaidBalance: 2000.00,
+    status: 'on_track',
+    borrowerId: 'b4',
+  },
+  {
+    id: '1014',
+    name: "Home Renovation",
+    tag: undefined,
+    dscr: 1.10,
+    paymentDue: 700,
+    unpaidBalance: 15000.00,
+    status: 'complete',
+    borrowerId: 'b5',
+  },
+];
+
+const statusTabs = [
+  { key: 'on_track', label: 'On Track' },
+  { key: 'to_fund', label: 'To Fund' },
+  { key: 'late', label: 'Late' },
+  { key: 'complete', label: 'Complete' },
+];
+
 export const Loans: React.FC<LoansProps> = ({
   className = "",
   imagesClassName = "",
   imagesClassNameOverride = "",
   divClassName = "",
 }) => {
+  const [selectedStatus, setSelectedStatus] = useState<'on_track' | 'to_fund' | 'late' | 'complete'>('on_track');
+
+  const filteredLoans = loansData.filter(loan => loan.status === selectedStatus);
+
+  const getStatusCount = (status: string) => loansData.filter(loan => loan.status === status).length;
+
   return (
     <section className={`loans ${className}`}>
       <header className="page-toolbar">
-        <div className="title-parent">
+        <div className="title-parent" style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
           <h1 className="title">Loans</h1>
           <p className="subtitle">Thursday, June 13</p>
         </div>
-
         <div className="search-filter-action">
-          <button
-            className="reset-button-filter"
-            aria-label="Clear all filters"
-          >
+          <button className="reset-button-filter" aria-label="Clear all filters">
             <span className="label">Clear All</span>
           </button>
-
           <div className="div-wrapper">
             <button className="icon-button" aria-label="Search">
               <div className="button">
@@ -40,7 +102,6 @@ export const Loans: React.FC<LoansProps> = ({
               </div>
             </button>
           </div>
-
           <div className="div">
             <button className="icon-button" aria-label="Filter">
               <div className="button">
@@ -51,58 +112,45 @@ export const Loans: React.FC<LoansProps> = ({
               <span className="element">4</span>
             </span>
           </div>
-
           <div className="div-2">
-            {/* @ts-ignore*/}
+            {/* @ts-expect-error: Button type from external library may not match expected props */}
             <Button type="primary">
               Add
-              <img
-                className="arrow-drop-down"
-                src="/icons/arrow-down.svg"
-                alt="Dropdown"
-              />
+              <img className="arrow-drop-down" src="/icons/arrow-down.svg" alt="Dropdown" />
             </Button>
           </div>
         </div>
       </header>
-
       <section className="all-loans-table">
         <nav className="segmented-control" aria-label="Loan status filter">
-          <button className="segmented-control-2" aria-pressed="true">
-            <span className="text-wrapper">On Track</span>
-            <span className="notification-badge-2">
-              <span className="text-wrapper-2">2</span>
-            </span>
-          </button>
-
-          <div className="rectangle" />
-
-          <button className="segmented-control-3" aria-pressed="false">
-            <span className="label-2">To Fund</span>
-            <span className="notification-badge-3">
-              <span className="text-wrapper-3">2</span>
-            </span>
-          </button>
-
-          <div className="rectangle" />
-
-          <button className="segmented-control-3" aria-pressed="false">
-            <span className="label-3">Late</span>
-            <span className="notification-badge-3">
-              <span className="element-2">-</span>
-            </span>
-          </button>
-
-          <div className="rectangle" />
-
-          <button className="segmented-control-3" aria-pressed="false">
-            <span className="label-2">Complete</span>
-            <span className="notification-badge-3">
-              <span className="text-wrapper-3">-</span>
-            </span>
-          </button>
+          {statusTabs.map(tab => (
+            <React.Fragment key={tab.key}>
+              <button
+                className={
+                  tab.key === selectedStatus
+                    ? "segmented-control-2"
+                    : "segmented-control-3"
+                }
+                aria-pressed={tab.key === selectedStatus}
+                onClick={() => setSelectedStatus(tab.key as 'on_track' | 'to_fund' | 'late' | 'complete')}
+              >
+                <span className={
+                  tab.key === 'on_track' ? 'text-wrapper' : tab.key === 'to_fund' ? 'label-2' : tab.key === 'late' ? 'label-3' : 'label-2'
+                }>{tab.label}</span>
+                <span className={
+                  tab.key === 'on_track' ? 'notification-badge-2' : 'notification-badge-3'
+                }>
+                  <span className={
+                    tab.key === 'on_track' ? 'text-wrapper-2' : tab.key === 'to_fund' ? 'text-wrapper-3' : tab.key === 'late' ? 'element-2' : 'text-wrapper-3'
+                  }>
+                    {getStatusCount(tab.key) > 0 ? getStatusCount(tab.key) : '-'}
+                  </span>
+                </span>
+              </button>
+              {tab.key !== 'complete' && <div className="rectangle" />}
+            </React.Fragment>
+          ))}
         </nav>
-
         <div className="on-track-loans">
           <div className="label-4">
             <div className="frame" />
@@ -126,172 +174,77 @@ export const Loans: React.FC<LoansProps> = ({
             </div>
             <div className="frame-4" />
           </div>
-
-          {/* Loan Row 1 */}
-          <article className="loan-row">
-            <div className="table-cell">
-              <div className={`images ${imagesClassName}`} />
-            </div>
-            <div className="table-cell-2">
-              <span className="label-5">Marcela&apos;s Tuition</span>
-            </div>
-            <div className="table-cell-2">
-              <span className="label-5">Loan 1010</span>
-            </div>
-            <div className="tag-button-with-wrapper">
-              <div className="div-3">
-                <div className="tag-button-wrapper">
-                  <div className="tag-button">
-                    <div className="frame-5">
-                      <div className="tag-color">
-                        <div className="color" />
+          {filteredLoans.map((loan, idx) => (
+            <article
+              key={loan.id}
+              className={`loan-row${idx === 1 ? '-2' : idx === 2 ? '-3' : ''}`}
+            >
+              <div className="table-cell">
+                <div className={`images ${idx === 0 ? imagesClassName : idx === 1 ? imagesClassNameOverride : divClassName}`} />
+              </div>
+              <div className={`table-cell${idx === 2 ? '-4' : idx === 1 ? '-2' : ''}`}>
+                <span className="label-5">{loan.name}</span>
+              </div>
+              <div className={`table-cell${idx === 2 ? '-4' : idx === 1 ? '-2' : ''}`}>
+                <span className="label-5">Loan {loan.id}</span>
+              </div>
+              <div className={loan.tag ? 'tag-button-with-wrapper' : idx === 1 ? 'table-cell-3' : idx === 2 ? 'table-cell-5' : 'tag-button-with-wrapper'}>
+                {loan.tag ? (
+                  <div className="div-3">
+                    <div className="tag-button-wrapper">
+                      <div className="tag-button">
+                        <div className="frame-5">
+                          <div className="tag-color">
+                            <div className="color" />
+                          </div>
+                        </div>
+                        <span className="text-wrapper-4">{loan.tag}</span>
                       </div>
                     </div>
-                    <span className="text-wrapper-4">1</span>
+                  </div>
+                ) : (
+                  <div className="tag-button-with">
+                    <div className="no-tag-button">
+                      <img className={idx === 1 ? 'tag-2' : idx === 2 ? 'tag-4' : 'tag-2'} src="/icons/tag.svg" alt="No tag" />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className={loan.tag ? 'metric-tag-wrapper' : idx === 2 ? 'table-cell-6' : 'metric-tag-wrapper'}>
+                <div className="div-wrapper">
+                  <div className={loan.tag ? 'tag' : idx === 2 ? 'tag-3' : 'tag-3'}>
+                    <span className={loan.tag ? 'label-6' : 'label-8'}>{loan.dscr.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="metric-tag-wrapper">
-              <div className="div-wrapper">
-                <div className="tag">
-                  <span className="label-6">1.43</span>
+              <div className={`table-cell${idx === 2 ? '-4' : idx === 1 ? '-2' : ''}`}>
+                <span className="label-7">${loan.paymentDue.toFixed(2)}</span>
+              </div>
+              <div className={idx === 2 ? 'table-cell-7' : 'frame-wrapper'}>
+                <div className="frame-6">
+                  <span className="element-3">${loan.unpaidBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <div className="progress-bar">
+                    <div className={idx === 0 ? 'bar' : 'bar-2'} />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="table-cell-2">
-              <span className="label-7">$300.00</span>
-            </div>
-            <div className="frame-wrapper">
-              <div className="frame-6">
-                <span className="element-3">$6,016.17</span>
-                <div className="progress-bar">
-                  <div className="bar" />
-                </div>
-              </div>
-            </div>
-            <div className="loan-row-dropdown-wrapper">
-              <div className="loan-row-dropdown">
-                <div className="loan-row-dropdown-2">
-                  <div className="div-3">
-                    <div className="more-wrapper">
-                      <img
-                        className="more"
-                        src="/icons/more.svg"
-                        alt="More options"
-                      />
+              <div className="loan-row-dropdown-wrapper">
+                <div className="loan-row-dropdown">
+                  <div className="loan-row-dropdown-2">
+                    <div className="div-3">
+                      <div className="more-wrapper">
+                        <img
+                          className={`more${idx === 1 ? '-2' : idx === 2 ? '-3' : ''}`}
+                          src="/icons/more.svg"
+                          alt="More options"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </article>
-
-          {/* Loan Row 2 */}
-          <article className="loan-row-2">
-            <div className="table-cell">
-              <div className={`images ${imagesClassNameOverride}`} />
-            </div>
-            <div className="table-cell-2">
-              <span className="label-5">New Phone</span>
-            </div>
-            <div className="table-cell-2">
-              <span className="label-5">Loan 1011</span>
-            </div>
-            <div className="table-cell-3">
-              <div className="tag-button-with">
-                <div className="no-tag-button">
-                  <img className="tag-2" src="/icons/tag.svg" alt="No tag" />
-                </div>
-              </div>
-            </div>
-            <div className="metric-tag-wrapper">
-              <div className="div-wrapper">
-                <div className="tag-3">
-                  <span className="label-8">1.43</span>
-                </div>
-              </div>
-            </div>
-            <div className="table-cell-2">
-              <span className="label-7">$300.00</span>
-            </div>
-            <div className="frame-wrapper">
-              <div className="frame-6">
-                <span className="element-3">$6,016.17</span>
-                <div className="progress-bar">
-                  <div className="bar-2" />
-                </div>
-              </div>
-            </div>
-            <div className="loan-row-dropdown-wrapper">
-              <div className="loan-row-dropdown">
-                <div className="loan-row-dropdown-2">
-                  <div className="div-3">
-                    <div className="more-wrapper">
-                      <img
-                        className="more-2"
-                        src="/icons/more.svg"
-                        alt="More options"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          {/* Loan Row 3 */}
-          <article className="loan-row-3">
-            <div className="images-wrapper">
-              <div className={`images ${divClassName}`} />
-            </div>
-            <div className="table-cell-4">
-              <span className="label-5">Vacation</span>
-            </div>
-            <div className="table-cell-4">
-              <span className="label-5">Loan 1012</span>
-            </div>
-            <div className="table-cell-5">
-              <div className="tag-button-with">
-                <div className="no-tag-button">
-                  <img className="tag-4" src="/icons/tag.svg" alt="No tag" />
-                </div>
-              </div>
-            </div>
-            <div className="table-cell-6">
-              <div className="div-wrapper">
-                <div className="tag-3">
-                  <span className="label-8">1.43</span>
-                </div>
-              </div>
-            </div>
-            <div className="table-cell-4">
-              <span className="label-7">$300.00</span>
-            </div>
-            <div className="table-cell-7">
-              <div className="frame-6">
-                <span className="element-3">$6,016.17</span>
-                <div className="progress-bar">
-                  <div className="bar-2" />
-                </div>
-              </div>
-            </div>
-            <div className="loan-row-dropdown-wrapper">
-              <div className="loan-row-dropdown">
-                <div className="loan-row-dropdown-2">
-                  <div className="div-3">
-                    <div className="more-wrapper">
-                      <img
-                        className="more-3"
-                        src="/icons/more.svg"
-                        alt="More options"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
+            </article>
+          ))}
         </div>
       </section>
     </section>
