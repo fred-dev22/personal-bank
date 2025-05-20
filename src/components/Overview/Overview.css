@@ -78,12 +78,12 @@
   flex-direction: column;
   gap: 12px;
 }
-.overview-actions-row {
+.overview-actions-row,
+.overview-actions-row-2,
+.overview-actions-row-3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #e0e0e0;
 }
 .div-3 {
   display: flex;
@@ -91,7 +91,7 @@
   gap: 8px;
 }
 .notification-badge {
-  background-color: #ff4d4f;
+  background-color: #00b894;
   color: white;
   border-radius: 50%;
   width: 24px;
@@ -100,7 +100,14 @@
   align-items: center;
   justify-content: center;
   font-size: 0.875rem;
+  font-weight: 700;
 }
+
+.notification-badge.review {
+  background-color: #b5b5b5;
+  color: white;
+}
+
 .text-wrapper-3 {
   color: #595959;
 }
@@ -225,11 +232,10 @@
   color: #0d1728;
 }
 .vault-financials-2 {
-  flex: 1;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 16px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 .button-2 {
   display: flex;
@@ -242,6 +248,15 @@
   cursor: pointer;
   padding: 0;
   margin-bottom: 16px;
+}
+.button-2.tab-selected {
+  border: 2px solid #fff;
+  border-radius: 20px;
+  background: transparent;
+  color: #23305e;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 6px 24px;
 }
 .arrow-back-ios {
   width: 16px;
@@ -283,4 +298,130 @@
 .text-wrapper-8 {
   font-weight: 500;
   color: #52c41a;
+}
+.action-btn {
+  min-width: 120px;
+  max-width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+.vault-financials-amount {
+  color: #23305e;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+.vault-financials-label {
+  color: #b5b5b5;
+  font-size: 0.95rem;
+}
+.vault-health-reserves {
+  color: #00b894;
+  font-weight: 700;
+}
+.vault-health-loan {
+  color: #00baff;
+  font-weight: 700;
+}
+.vault-health-dscr {
+  color: #b50007;
+  font-weight: 700;
+}
+.vault-health-label {
+  color: #b5b5b5;
+  font-size: 0.95rem;
+}
+.vault-summary-block {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 260px;
+  margin-top: 16px;
+}
+
+.vault-summary-list {
+  min-width: 180px;
+  border-right: 1px solid #ececec;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 0 24px 24px;
+}
+
+.vault-summary-details {
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.vault-tab {
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 20px;
+  color: #23305e;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 8px 24px;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+  text-align: left;
+}
+
+.vault-tab.tab-selected {
+  border: 1.5px solid #b5b5b5;
+  background: #f7f8fa;
+  color: #23305e;
+}
+
+.vault-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 10px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #23305e;
+  margin-right: 8px;
+}
+.vault-list-row.selected {
+  background: #f7f8fa;
+  color: #23305e;
+  box-shadow: 0 0 0 2px #b5b5b5;
+}
+.vault-list-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vault-list-name {
+  font-weight: 600;
+  color: #23305e;
+}
+.vault-list-row.selected .vault-list-name {
+  font-weight: 700;
+}
+.vault-list-issues {
+  color: #b50007;
+  font-weight: 700;
+  margin-left: 8px;
+}
+.vault-list-balance {
+  color: #23305e;
+  font-weight: 500;
+  margin-left: 24px;
+  min-width: 110px;
+  text-align: right;
+}
+.vault-arrow {
+  font-size: 1.2rem;
+  color: #b5b5b5;
+  margin-left: 8px;
 } 
