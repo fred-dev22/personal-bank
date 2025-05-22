@@ -6,64 +6,12 @@ import '@jbaluch/components/styles';
 import type { Loan } from '../../types/types';
 
 interface LoansProps {
+  loans: Loan[];
   className?: string;
   imagesClassName?: string;
   imagesClassNameOverride?: string;
   divClassName?: string;
 }
-
-const loansData: Loan[] = [
-  {
-    id: '1010',
-    name: "Marcela's Tuition",
-    tag: '1',
-    dscr: 1.43,
-    paymentDue: 300,
-    unpaidBalance: 6016.17,
-    status: 'on_track',
-    borrowerId: 'b1',
-  },
-  {
-    id: '1011',
-    name: "New Phone",
-    tag: undefined,
-    dscr: 1.43,
-    paymentDue: 300,
-    unpaidBalance: 6016.17,
-    status: 'to_fund',
-    borrowerId: 'b2',
-  },
-  {
-    id: '1012',
-    name: "Vacation",
-    tag: undefined,
-    dscr: 1.43,
-    paymentDue: 300,
-    unpaidBalance: 6016.17,
-    status: 'late',
-    borrowerId: 'b3',
-  },
-  {
-    id: '1013',
-    name: "Car Repair",
-    tag: '2',
-    dscr: 1.25,
-    paymentDue: 450,
-    unpaidBalance: 2000.00,
-    status: 'on_track',
-    borrowerId: 'b4',
-  },
-  {
-    id: '1014',
-    name: "Home Renovation",
-    tag: undefined,
-    dscr: 1.10,
-    paymentDue: 700,
-    unpaidBalance: 15000.00,
-    status: 'complete',
-    borrowerId: 'b5',
-  },
-];
 
 const statusTabs = [
   { key: 'on_track', label: 'On Track' },
@@ -73,6 +21,7 @@ const statusTabs = [
 ];
 
 export const Loans: React.FC<LoansProps> = ({
+  loans,
   className = "",
   imagesClassName = "",
   imagesClassNameOverride = "",
@@ -80,9 +29,9 @@ export const Loans: React.FC<LoansProps> = ({
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<'on_track' | 'to_fund' | 'late' | 'complete'>('on_track');
 
-  const filteredLoans = loansData.filter(loan => loan.status === selectedStatus);
+  const filteredLoans = loans.filter(loan => loan.status === selectedStatus);
 
-  const getStatusCount = (status: string) => loansData.filter(loan => loan.status === status).length;
+  const getStatusCount = (status: string) => loans.filter(loan => loan.status === status).length;
 
   return (
     <section className={`loans ${className}`}>
