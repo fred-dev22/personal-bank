@@ -22,7 +22,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  setError("test");
 
   useEffect(() => {
     // Check if user is already logged in
@@ -44,9 +43,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
         body: '{}'
       });
+      if (!response.ok) {
+        throw new Error('Failed to fetch user');
+      }
       const result = await response.json();
       setUser(result);
+      setError(null); // Clear error if successful
     } catch (error) {
+      setError('Failed to fetch user');
       console.error('Error fetching user:', error);
       localStorage.removeItem('authToken');
     } finally {
