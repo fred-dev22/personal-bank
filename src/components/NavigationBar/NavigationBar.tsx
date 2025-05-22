@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { NavButton } from '@jbaluch/components';
-//@ts-ignore
+//@ts-expect-error - External CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
-import fynanc4 from '../../assets/fynanc-4.png';
-import frameBg from '../../assets/frame-1000006035.png';
 import "./NavigationBar.css";
 
 interface NavItem {
   id: string;
   label: string;
-  requiresPermission?: string | null;
-}
-
-interface Permissions {
-  [key: string]: boolean | undefined;
-  canViewFinancials?: boolean;
-  canViewBorrowers?: boolean;
-  canAccessApps?: boolean;
 }
 
 interface NavigationBarProps {
@@ -24,11 +14,9 @@ interface NavigationBarProps {
   bottomNavItems?: NavItem[];
   activeItemId?: string;
   isCollapsed?: boolean;
-  permissions?: Permissions;
-  onNavItemClick?: (data: any) => void;
-  onSignOut?: (data: any) => void;
-  onToggleCollapse?: (data: any) => void;
-  onPermissionDenied?: (data: any) => void;
+  onNavItemClick?: (data: { itemId: string }) => void;
+  onSignOut?: () => void;
+  onToggleCollapse?: (data: { isCollapsed: boolean }) => void;
 }
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({
@@ -43,20 +31,12 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   ],
   activeItemId = 'overview',
   isCollapsed = false,
-  permissions = {
-    canViewFinancials: true,
-    canViewBorrowers: true,
-    canAccessApps: true
-  },
   onNavItemClick = () => {},
   onSignOut = () => {},
-  onToggleCollapse = () => {},
-  onPermissionDenied = () => {}
+  onToggleCollapse = () => {}
 }) => {
   const [activeItem, setActiveItem] = useState(activeItemId);
   const [collapsed, setCollapsed] = useState(isCollapsed);
-  const [previousItem, setPreviousItem] = useState<string | null>(null);
-console.log(previousItem);
 
   useEffect(() => {
     setActiveItem(activeItemId);
@@ -66,77 +46,25 @@ console.log(previousItem);
     setCollapsed(isCollapsed);
   }, [isCollapsed]);
 
-  const hasPermission = (item: NavItem) => {
-    if (!item.requiresPermission) return true;
-    return permissions[item.requiresPermission] === true;
-  };
-
   const handleItemClick = (item: NavItem) => {
-    if (!hasPermission(item)) {
-      const permissionData = {
-        eventType: 'permissionDenied',
-        itemId: item.id,
-        timestamp: new Date().toISOString(),
-        requiredPermission: item.requiresPermission,
-        userPermissions: Object.keys(permissions).filter(key => permissions[key])
-      };
-      onPermissionDenied(permissionData);
-      return;
-    }
-    setPreviousItem(activeItem);
     setActiveItem(item.id);
-    const navData = {
-      eventType: 'navigationChange',
-      itemId: item.id,
-      timestamp: new Date().toISOString(),
-      previousItemId: activeItem,
-      metadata: {
-        itemLabel: item.label,
-        requiresPermission: !!item.requiresPermission
-      }
-    };
-    onNavItemClick(navData);
+    onNavItemClick({ itemId: item.id });
   };
 
   const handleToggleCollapse = () => {
     const newState = !collapsed;
     setCollapsed(newState);
-    const toggleData = {
-      eventType: 'sidebarCollapse',
-      isCollapsed: newState,
-      timestamp: new Date().toISOString(),
-      previousState: collapsed,
-      viewport: {
-        width: window.innerWidth,
-        isMobile: window.innerWidth < 768
-      }
-    };
-    onToggleCollapse(toggleData);
-  };
-
-  const handleSignOut = () => {
-    const signOutData = {
-      eventType: 'userSignOut',
-      timestamp: new Date().toISOString(),
-      sessionDuration: '1h 24m',
-      userStatus: {
-        pendingChanges: false,
-        activeSessions: 1
-      }
-    };
-    onSignOut(signOutData);
+    onToggleCollapse({ isCollapsed: newState });
   };
 
   const renderNavItem = (item: NavItem) => {
     const isActive = item.id === activeItem;
-    const hasAuth = hasPermission(item);
     return (
       <NavButton
         key={item.id}
         label={item.label}
         selected={isActive}
         onClick={() => handleItemClick(item)}
-        disabled={!hasAuth}
         className="navbutton-left"
       />
     );
@@ -146,34 +74,12 @@ console.log(previousItem);
     <nav className={`navigation-bar${collapsed ? ' collapsed' : ''}`} aria-label="Main navigation">
       <aside className="desktop-nav">
         <header className="desktop-tabs">
-          <div
-            className={`logo-frame-container${collapsed ? ' collapsed' : ''}`}
-            style={{
-              backgroundImage: `url(${frameBg})`,
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              width: collapsed ? '32px' : '48px',
-              height: collapsed ? '32px' : '48px',
-              margin: '0 0 16px 0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '10px',
-            }}
-          >
-            <img
-              className="fynanc"
-              alt="Fynanc"
-              src={fynanc4}
-              loading="lazy"
-              style={{
-                width: collapsed ? '20px' : '32px',
-                height: collapsed ? '20px' : '32px',
-                objectFit: 'contain'
-              }}
-            />
-          </div>
+          <img
+            className="logo"
+            alt="Logo"
+            src="/favicon-32x32.png"
+            loading="lazy"
+          />
           {mainNavItems.map(renderNavItem)}
         </header>
         <footer className="desktop-bottom-tabs">
@@ -181,7 +87,7 @@ console.log(previousItem);
           <NavButton
             label="Sign Out"
             selected={false}
-            onClick={handleSignOut}
+            onClick={onSignOut}
             className="navbutton-left"
           />
         </footer>
