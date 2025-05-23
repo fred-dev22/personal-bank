@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import { Button } from "@jbaluch/components";
+import { Button, IconButton, Input, MenuButton, Tabs, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import type { Loan } from '../../types/types';
+import searchIcon from '/search.svg';
+import filterIcon from '/filter_alt.svg';
+
+const SearchIcon = () => <img src={searchIcon} alt="search" />;
+const FilterIcon = () => <img src={filterIcon} alt="filter" />;
 
 interface LoansProps {
   loans: Loan[];
@@ -13,187 +18,236 @@ interface LoansProps {
   divClassName?: string;
 }
 
-const statusTabs = [
-  { key: 'on_track', label: 'On Track' },
-  { key: 'to_fund', label: 'To Fund' },
-  { key: 'late', label: 'Late' },
-  { key: 'complete', label: 'Complete' },
-];
-
 export const Loans: React.FC<LoansProps> = ({
   loans,
-  className = "",
-  imagesClassName = "",
-  imagesClassNameOverride = "",
-  divClassName = "",
+  className = ""
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState<'on_track' | 'to_fund' | 'late' | 'complete'>('on_track');
+  const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
+  const [searching, setSearching] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const filterCount = 4; // à remplacer par la vraie logique de filtre
 
-  const filteredLoans = loans.filter(loan => loan.status === selectedStatus);
+  const filteredLoans = loans.filter(loan => {
+    const search = searchValue.toLowerCase();
+    const statusMatch = loan.status === selectedStatus;
+    const fields = [
+      loan.nickname,
+      loan.loan_number?.toString(),
+      loan.loan_type,
+      loan.dscr_limit?.toString(),
+      loan.initial_payment_amount?.toString(),
+      loan.current_balance?.toString()
+    ];
+    const searchMatch = search === '' || fields.some(field => field && field.toLowerCase().includes(search));
+    return statusMatch && searchMatch;
+  });
 
-  const getStatusCount = (status: string) => loans.filter(loan => loan.status === status).length;
+  const handleClearAll = () => {
+    setSearchValue("");
+    setSearching(false);
+    // reset filters ici si besoin
+  };
+
+  const handleSearchIconClick = () => setSearching(true);
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value);
+  const handleSearchInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setSearching(false);
+    }
+  };
+
+  const handleFilterClick = () => {
+    // ouvrir la fenêtre de filtre ici
+    // setFilterCount(nouveauNombre) après application d'un filtre
+  };
+
+  const handleMenuAction = (item: { id: string; label: string }) => {
+    if (item.id === 'add-loan') {
+      // logique pour ajouter un prêt
+    } else if (item.id === 'upload-loans') {
+      // logique pour uploader des prêts
+    } else if (item.id === 'add-request') {
+      // logique pour ajouter une demande
+    }
+  };
+
+  // Date du jour au format Thursday, June 13
+  const today = new Date();
+  const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+  const formattedDate = today.toLocaleDateString('en-US', dateOptions);
 
   return (
     <section className={`loans ${className}`}>
       <header className="page-toolbar">
-        <div className="title-parent" style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
-          <h1 className="title">Loans</h1>
-          <p className="subtitle">Thursday, June 13</p>
+        <div className="title-parent">
+          <div className="title">Loans</div>
+          <div className="subtitle">{formattedDate}</div>
         </div>
         <div className="search-filter-action">
-          <button className="reset-button-filter" aria-label="Clear all filters">
-            <span className="label">Clear All</span>
-          </button>
-          <div className="div-wrapper">
-            <button className="icon-button" aria-label="Search">
-              <div className="button">
-                <img className="img" src="/icons/search.svg" alt="Search" />
-              </div>
-            </button>
-          </div>
-          <div className="div">
-            <button className="icon-button" aria-label="Filter">
-              <div className="button">
-                <img className="img" src="/icons/filter.svg" alt="Filter" />
-              </div>
-            </button>
-            <span className="notification-badge" aria-label="4 new filters">
-              <span className="element">4</span>
-            </span>
-          </div>
-          <div className="div-2">
-            {/* @ts-expect-error: Button type from external library may not match expected props */}
-            <Button type="primary">
-              Add
-              <img className="arrow-drop-down" src="/icons/arrow-down.svg" alt="Dropdown" />
+          {(searchValue !== "" || filterCount > 0) && (
+            <Button
+              icon="iconless"
+              iconComponent={undefined}
+              interaction="default"
+              justified="right"
+              onClick={handleClearAll}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}
+              type="secondary"
+              ariaLabel={undefined}
+              aria-label="Clear All"
+              name="clear-all"
+              form=""
+              className="clear-all-btn"
+            >
+              Clear All
             </Button>
-          </div>
+          )}
+          {searching ? (
+            <Input
+              onChange={handleSearchInputChange}
+              placeholder="Search loans"
+              value={searchValue}
+              onKeyDown={handleSearchInputKeyDown}
+              style={{ width: 150 }}
+              onBlur={() => setTimeout(() => setSearching(false), 100)}
+            />
+          ) : (
+            <IconButton
+              aria-label="Search"
+              icon={SearchIcon}
+              onClick={handleSearchIconClick}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}
+              type="secondary"
+              interaction="secondary"
+              notificationCount={0}
+            />
+          )}
+          <IconButton
+            aria-label={`Filter - ${filterCount} filters applied`}
+            icon={FilterIcon}
+            notificationCount={filterCount}
+            onClick={handleFilterClick}
+            onMouseEnter={() => {}}
+            onMouseLeave={() => {}}
+            showNotification
+            type="secondary"
+            interaction="secondary"
+          />
+          <MenuButton
+            items={[
+              { id: 'add-loan', label: 'Add loan' },
+              { id: 'upload-loans', label: 'Upload loans' },
+              { id: 'add-request', label: 'Add request' }
+            ]}
+            label="Add"
+            menuStyle="text"
+            onItemClick={handleMenuAction}
+            type="primary"
+            ariaLabel={undefined}
+            aria-label="Add Loan"
+            className="add-loan-btn"
+          />
         </div>
       </header>
       <section className="all-loans-table">
-        <nav className="segmented-control" aria-label="Loan status filter">
-          {statusTabs.map(tab => (
-            <React.Fragment key={tab.key}>
-              <button
-                className={
-                  tab.key === selectedStatus
-                    ? "segmented-control-2"
-                    : "segmented-control-3"
-                }
-                aria-pressed={tab.key === selectedStatus}
-                onClick={() => setSelectedStatus(tab.key as 'on_track' | 'to_fund' | 'late' | 'complete')}
-              >
-                <span className={
-                  tab.key === 'on_track' ? 'text-wrapper' : tab.key === 'to_fund' ? 'label-2' : tab.key === 'late' ? 'label-3' : 'label-2'
-                }>{tab.label}</span>
-                <span className={
-                  tab.key === 'on_track' ? 'notification-badge-2' : 'notification-badge-3'
-                }>
-                  <span className={
-                    tab.key === 'on_track' ? 'text-wrapper-2' : tab.key === 'to_fund' ? 'text-wrapper-3' : tab.key === 'late' ? 'element-2' : 'text-wrapper-3'
-                  }>
-                    {getStatusCount(tab.key) > 0 ? getStatusCount(tab.key) : '-'}
-                  </span>
-                </span>
-              </button>
-              {tab.key !== 'complete' && <div className="rectangle" />}
-            </React.Fragment>
-          ))}
-        </nav>
-        <div className="on-track-loans">
-          <div className="label-4">
-            <div className="frame" />
-            <div className="date-wrapper">
-              <span className="date">Name</span>
-            </div>
-            <div className="date-wrapper">
-              <span className="date">ID</span>
-            </div>
-            <div className="frame-2">
-              <span className="date">Tag</span>
-            </div>
-            <div className="frame-2">
-              <span className="date">DSCR</span>
-            </div>
-            <div className="frame-2">
-              <span className="date">Payment due</span>
-            </div>
-            <div className="frame-3">
-              <span className="date-2">Unpaid balance</span>
-            </div>
-            <div className="frame-4" />
-          </div>
-          {filteredLoans.map((loan, idx) => (
-            <article
-              key={loan.id}
-              className={`loan-row${idx === 1 ? '-2' : idx === 2 ? '-3' : ''}`}
-            >
-              <div className="table-cell">
-                <div className={`images ${idx === 0 ? imagesClassName : idx === 1 ? imagesClassNameOverride : divClassName}`} />
-              </div>
-              <div className={`table-cell${idx === 2 ? '-4' : idx === 1 ? '-2' : ''}`}>
-                <span className="label-5">{loan.name}</span>
-              </div>
-              <div className={`table-cell${idx === 2 ? '-4' : idx === 1 ? '-2' : ''}`}>
-                <span className="label-5">Loan {loan.id}</span>
-              </div>
-              <div className={loan.tag ? 'tag-button-with-wrapper' : idx === 1 ? 'table-cell-3' : idx === 2 ? 'table-cell-5' : 'tag-button-with-wrapper'}>
-                {loan.tag ? (
-                  <div className="div-3">
-                    <div className="tag-button-wrapper">
-                      <div className="tag-button">
-                        <div className="frame-5">
-                          <div className="tag-color">
-                            <div className="color" />
-                          </div>
-                        </div>
-                        <span className="text-wrapper-4">{loan.tag}</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="tag-button-with">
-                    <div className="no-tag-button">
-                      <img className={idx === 1 ? 'tag-2' : idx === 2 ? 'tag-4' : 'tag-2'} src="/icons/tag.svg" alt="No tag" />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className={loan.tag ? 'metric-tag-wrapper' : idx === 2 ? 'table-cell-6' : 'metric-tag-wrapper'}>
-                <div className="div-wrapper">
-                  <div className={loan.tag ? 'tag' : idx === 2 ? 'tag-3' : 'tag-3'}>
-                    <span className={loan.tag ? 'label-6' : 'label-8'}>{loan.dscr.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-              <div className={`table-cell${idx === 2 ? '-4' : idx === 1 ? '-2' : ''}`}>
-                <span className="label-7">${loan.paymentDue.toFixed(2)}</span>
-              </div>
-              <div className={idx === 2 ? 'table-cell-7' : 'frame-wrapper'}>
-                <div className="frame-6">
-                  <span className="element-3">${loan.unpaidBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                  <div className="progress-bar">
-                    <div className={idx === 0 ? 'bar' : 'bar-2'} />
-                  </div>
-                </div>
-              </div>
-              <div className="loan-row-dropdown-wrapper">
-                <div className="loan-row-dropdown">
-                  <div className="loan-row-dropdown-2">
-                    <div className="div-3">
-                      <div className="more-wrapper">
-                        <img
-                          className={`more${idx === 1 ? '-2' : idx === 2 ? '-3' : ''}`}
-                          src="/icons/more.svg"
-                          alt="More options"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
+          <Tabs
+            className="loans-tabs-no-margin"
+            activeTabId={selectedStatus}
+            onTabChange={setSelectedStatus}
+            tabs={[
+              { id: 'Funded', label: 'On Track' },
+              { id: 'To Fund', label: 'To Fund' },
+              { id: 'Late', label: 'Late' },
+              { id: 'Complete', label: 'Complete' }
+            ]}
+          />
+        <div >
+          <Table
+            className="loans-table-fullwidth"
+            columns={[
+              {
+                key: 'nickname',
+                label: 'Name',
+                cellComponent: TextCell,
+                width: '100%',
+                alignment: 'left',
+                getCellProps: (row: Loan) => ({
+                  text: row.nickname,
+                  alignment: 'left',
+                }),
+              },
+              {
+                key: 'loan_number',
+                label: 'ID',
+                cellComponent: TextCell,
+                width: '100%',
+                alignment: 'left',
+                getCellProps: (row: Loan) => ({
+                  text: `Loan ${row.loan_number}`,
+                  alignment: 'left',
+                }),
+              },
+              {
+                key: 'loan_type',
+                label: 'Tag',
+                cellComponent: TagCell,
+                width: '100%',
+                alignment: 'left',
+                getCellProps: (row: Loan) => ({
+                  label: row.loan_type,
+                  emoji: '🏷️',
+                  alignment: 'left',
+                  size: 'small',
+                }),
+              },
+              {
+                key: 'dscr_limit',
+                label: 'DSCR',
+                cellComponent: MetricCell,
+                width: '100%',
+                alignment: 'left',
+                getCellProps: (row: Loan) => ({
+                  value: row.dscr_limit ? `${row.dscr_limit.toFixed(2)}` : '',
+                  status: row.dscr_limit < 1 ? 'bad' : 'good',
+                  alignment: 'left',
+                }),
+              },
+              {
+                key: 'initial_payment_amount',
+                label: 'Payment Due',
+                cellComponent: TextCell,
+                width: '100%',
+                alignment: 'left',
+                getCellProps: (row: Loan) => ({
+                  text: row.initial_payment_amount !== undefined
+                    ? `$${row.initial_payment_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    : '',
+                  alignment: 'left',
+                }),
+              },
+              {
+                key: 'current_balance',
+                label: 'Balance',
+                cellComponent: TextCell,
+                width: '100%',
+                alignment: 'left',
+                getCellProps: (row: Loan) => ({
+                  text: row.current_balance !== undefined
+                    ? `$${row.current_balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    : '',
+                  alignment: 'left',
+                }),
+              }
+            ]}
+            data={filteredLoans}
+            defaultSortColumn="nickname"
+            defaultSortDirection="asc"
+            onRowClick={() => {}}
+            onSelectionChange={() => {}}
+            onSortChange={() => {}}
+          />
         </div>
       </section>
     </section>

@@ -13,15 +13,17 @@ export const PersonalBank: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('overview');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [loans, setLoans] = useState<Loan[]>([]);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const getLoans = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        if (!token) return;
-        const data = await fetchLoans(token);
+        if (!token || !user?.banks?.[0]) return;
+        
+        const bankId = user.banks[0];
+        const data = await fetchLoans(token, bankId);
         setLoans(data);
         console.log('Loans récupérés via API:', data);
       } catch (error) {
@@ -29,7 +31,7 @@ export const PersonalBank: React.FC = () => {
       }
     };
     getLoans();
-  }, []);
+  }, [user?.banks]); // Only re-run if the user's banks array changes
 
   // Navigation items
   const mainNavItems = [

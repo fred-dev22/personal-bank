@@ -1,12 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-const API_BASE_URL = 'https://iris-db-dev.azurewebsites.net/api';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
+import type { User } from '../types/types';
+import { API_BASE_URL } from '../config/api';
 
 interface AuthContextType {
   user: User | null;
