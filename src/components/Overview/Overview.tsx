@@ -5,6 +5,7 @@ import { Button } from '@jbaluch/components';
 import '@jbaluch/components/styles';
 import "./Overview.css";
 import type { Vault } from '../../types/types';
+import { useAuth } from '../../contexts/AuthContext';
 
 type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
 
@@ -19,12 +20,20 @@ const vaults: Vault[] = [
 export const Overview: React.FC = () => {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('one');
   const [selectedVaultId, setSelectedVaultId] = useState<string>(vaults[0].id);
+  const { user } = useAuth();
 
   const selectedVault = vaults.find(v => v.id === selectedVaultId) ?? vaults[0];
 
+  // Format current date
+  const currentDate = new Date();
+  const formattedDate = currentDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
+
   // Callback pour passer à l'étape suivante de l'onboarding
   const handleOnboardingStepChange = (step: string) => {
-    // On sécurise le typage ici
     if (
       step === 'one' ||
       step === 'two' ||
@@ -40,8 +49,8 @@ export const Overview: React.FC = () => {
     <div className="frame-overview">
       <div className="page-toolbar">
         <div className="title-parent">
-          <div className="title">Hello, John</div>
-          <div className="subtitle">Thursday, July 30</div>
+          <div className="title">Hello, {user?.firstName || 'User'}</div>
+          <div className="subtitle">{formattedDate}</div>
         </div>
       </div>
       {onboardingStep !== 'done' ? (

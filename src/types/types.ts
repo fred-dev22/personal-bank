@@ -30,10 +30,18 @@ export interface Category {
 
 export interface User {
     id: string;
-    name: string;
     email: string;
-    avatar?: string;
-    score?: number;
+    nopassword: boolean;
+    fullName: string;
+    firstName: string;
+    lastName: string;
+    level: number;
+    status: string;
+    roles: string[];
+    apps: string[];
+    accounts: string[];
+    banks: string[];
+    holdings: string[];
 }
 
 export interface Budget {
@@ -90,14 +98,33 @@ export interface Borrower {
 }
 
 export interface Loan {
-    id: string;
-    name: string;
-    tag?: string;
-    dscr: number;
-    paymentDue: number;
-    unpaidBalance: number;
-    status: 'on_track' | 'to_fund' | 'late' | 'complete';
+    note_id: string;
+    vault_id: string;
+    account_azure_id: string;
+    nickname: string;
+    borrower_id: string;
+    start_date: string;
+    status: string;
+    loan_type: string;
+    initial_balance: number;
+    initial_number_of_payments: number;
+    initial_frequency: string;
+    initial_annual_rate: number;
+    initial_payment_amount: number;
+    comments: string;
+    dscr_limit: number;
+    userId: string;
+    bankId: string;
+    current_balance: number;
+    loan_number: number;
+    accountId: string;
+    vaultId: string;
     borrowerId: string;
+    funded_date: string;
+    transactionId: string;
+    payments: string[];
+    activities: string[];
+    id: string;
 }
 
 export interface Activity {

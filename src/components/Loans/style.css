@@ -7,30 +7,26 @@
   height: 832px;
   overflow-y: scroll;
   position: relative;
-  width: 1063px;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .loans .page-toolbar {
   align-items: center;
-  align-self: stretch;
   display: flex;
-  flex: 0 0 auto;
   justify-content: space-between;
   position: relative;
-  width: 100%;
 }
 
 .loans .title-parent {
   align-items: flex-start;
   display: inline-flex;
-  flex: 0 0 auto;
   flex-direction: column;
-  gap: 4px;
-  padding: 4px 0px 0px;
   position: relative;
 }
 
-.loans .title {
+.loans .title-parent .title {
   color: #0d1728;
   font-family: var(--headings-h1-font-family);
   font-size: var(--headings-h1-font-size);
@@ -44,7 +40,7 @@
   width: fit-content;
 }
 
-.loans .subtitle {
+.loans .title-parent .subtitle {
   color: #595959;
   font-family: var(--subtitles-subtitle-2-font-family);
   font-size: var(--subtitles-subtitle-2-font-size);
@@ -177,14 +173,14 @@
 }
 
 .loans .all-loans-table {
-  align-items: flex-start;
-  align-self: stretch;
   display: flex;
-  flex: 0 0 auto;
   flex-direction: column;
   gap: 32px;
-  position: relative;
-  width: 100%;
+  width:100%;
+  
+  
+  
+  
 }
 
 .loans .segmented-control {
@@ -343,6 +339,9 @@
   flex-direction: column;
   position: relative;
   width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .loans .label-4 {
@@ -906,4 +905,51 @@
 .loans::-webkit-scrollbar {
   display: none;
   width: 0;
+}
+
+/* Ajustement pour le bouton Clear All */
+.search-filter-action .clear-all-btn {
+  background: transparent !important;
+  color: #00b5ae !important;
+  font-weight: bold;
+  border: none;
+  min-width: unset;
+  width: auto;
+  padding: 4px 12px;
+  box-shadow: none;
+  height: 36px;
+  line-height: 1;
+}
+
+/* Ajustement pour le bouton Add */
+.search-filter-action .add-loan-btn,
+.search-filter-action .add-loan-btn button,
+.search-filter-action .add-loan-btn .jbaluch-button {
+  min-width: 104px !important;
+  box-sizing: border-box;
+}
+
+/* Ajustement pour l'input de recherche */
+.search-filter-action .jbaluch-input {
+  min-width: 150px !important;
+  max-width: 150px !important;
+  width: 150px !important;
+  padding: 6px 12px;
+}
+
+/* Supprimer l'ancien style qui forçait la largeur du bouton Add */
+.search-filter-action .jbaluch-button[type="primary"] {
+  min-width: unset;
+  padding-left: unset;
+  padding-right: unset;
+}
+
+.loans-table-fullwidth {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+
+.loans-tabs-no-margin {
+  margin-left: 0px !important;
 }
