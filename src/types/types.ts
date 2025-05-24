@@ -87,14 +87,13 @@ export interface Report {
 
 export interface Borrower {
     id: string;
-    name: string;
-    avatar?: string;
-    score: number;
-    loans: number;
-    payment: number;
-    targetUPB: number;
-    actualUPB: number;
-    difference: number;
+    fullName: string;
+    pb: string;
+    userId: string;
+    bankId: string;
+    notes?: string[];
+    totalPayment?: number;
+    unpaidBalance?: number;
 }
 
 export interface Loan {
@@ -139,8 +138,8 @@ export interface Activity {
 export interface Vault {
     id: string;
     name: string;
+    issues: number;
     balance: number;
-    issues?: number;
     financials: {
         paidIn: number;
         paidOut: number;
@@ -150,5 +149,38 @@ export interface Vault {
         loanToValue: number;
         incomeDSCR: number;
         growthDSCR: number;
+    };
+    nickname?: string;
+    hold?: number;
+    hold_type?: 'amount' | 'percentage';
+    reserve?: number;
+    reserve_type?: 'amount' | 'percentage';
+    comments?: string;
+    liquidity_source_id?: string;
+    is_gateway?: boolean;
+    userId?: string;
+    bankId?: string;
+    accountId?: string;
+    initial_balance?: number;
+    notes?: string[];
+    activities?: string[];
+    holding_id?: string;
+    holdingId?: string;
+    asset_account_id?: string;
+    debt_account_id?: string;
+    growth_issue_count?: number;
+    income_issue_count?: number;
+    is_ltv_issue_count?: 'yes' | 'no';
+    arbitrary_text?: string;
+    type?: string;
+    payment_projection?: {
+        summary?: {
+            equityIncreasing?: 'yes' | 'no';
+        }
+    };
+    available_for_lending_amount?: number | string;
+    spread?: number | string;
+    liquidity_source?: {
+        appreciation?: number;
     };
 } 
