@@ -1,0 +1,29 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+.personal-bank-container {
+  display: flex;
+  min-height: 100vh;
+  gap: 64px;
+}
+
+.personal-bank-container.with-margin {
+  margin-left: 196px;
+}
+
+.personal-bank-container.collapsed-margin {
+  margin-left: 80px;
+}
+
+.content-container {
+  flex: 1;
+  width: 100%;
+  transition: all 0.3s ease;
+  padding: 56px 64px 56px 64px;
+  background: #f7f8fa;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+/* Les styles pour mainContainer et mainContainerCollapsed sont maintenant dans App.css */ 

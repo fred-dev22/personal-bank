@@ -1,176 +1,200 @@
 import React from "react";
-import { VaultRow } from "./VaultRow";
+import { Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
 import "./style.css";
+import type { Vault } from '../../types/types';
 
-export const Vaults: React.FC = () => {
+interface VaultsProps {
+  vaults: Vault[];
+}
+
+function getIssues(vault: Vault) {
+  const growth = Number(vault.growth_issue_count || 0);
+  const income = Number(vault.income_issue_count || 0);
+  const ltv = vault.is_ltv_issue_count === 'yes' ? 1 : 0;
+  const arbitrary = vault.arbitrary_text ? Number(vault.arbitrary_text) : 0;
+  return growth + income + ltv + arbitrary;
+}
+
+function getEquityTrend(vault: Vault) {
+  if (vault.type === 'Super Vault') {
+    if (vault.payment_projection?.summary?.equityIncreasing === 'yes') return 'Increasing';
+    return 'Decreasing';
+  }
+  if (vault.type === 'Cash Vault') return 'n/a';
+  return 'n/a';
+}
+
+function getAvailable(vault: Vault) {
+  if (typeof vault.available_for_lending_amount === 'number') {
+    return `$${vault.available_for_lending_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  return vault.available_for_lending_amount || '';
+}
+
+function getTotalSpread(vault: Vault) {
+  if (vault.type === 'Super Vault') {
+    if (vault.spread !== undefined && vault.spread !== null && vault.spread !== '') {
+      return `${Number(vault.spread).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+    }
+    return 'TBD';
+  }
+  if (vault.liquidity_source && typeof vault.liquidity_source.appreciation === 'number') {
+    return `${vault.liquidity_source.appreciation.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+  }
+  return 'n/a';
+}
+
+export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
+  // Date du jour au format Thursday, June 13
+  const today = new Date();
+  const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+  const formattedDate = today.toLocaleDateString('en-US', dateOptions);
+
+  // Séparation des vaults par type (mock pour l'instant)
+  const gateways = vaults.filter(v => v.is_gateway);
+  const otherVaults = vaults.filter(v => !v.is_gateway);
+
   return (
-    <div className="center-stage">
-      <div className="header">
-        <div className="top">
-          <div className="frame">
-            <div className="text-wrapper-2">Vaults</div>
-          </div>
-
-          <div className="text-wrapper-3">Thursday, June 13</div>
+    <section className="loans">
+      <header className="page-toolbar">
+        <div className="title-parent">
+          <div className="title">Vaults</div>
+          <div className="subtitle">{formattedDate}</div>
         </div>
-
-        <div className="edit-loan-wrapper">
-          <div className="edit-loan">
-            <div className="action-button">Add Vault</div>
-          </div>
+        <div className="search-filter-action">
+          <Button
+            icon="iconless"
+            iconComponent={undefined}
+            interaction="default"
+            justified="right"
+            onClick={() => {}}
+            onMouseEnter={() => {}}
+            onMouseLeave={() => {}}
+            type="primary"
+            ariaLabel={undefined}
+            aria-label="Add Vault"
+            name="add-vault"
+            form=""
+            className="add-loan-btn"
+          >
+            Add Vault
+          </Button>
         </div>
-      </div>
-
-      <div className="gateways">
-        <div className="text-wrapper-4">Gateways</div>
-
-        <div className="vault-table">
-          <div className="div-2">
-            <div className="table-header-row">
-              <div className="label-4">Name</div>
-            </div>
-
-            <div className="table-header-row">
-              <div className="label-4">Issues</div>
-            </div>
-
-            <div className="table-header-row-2">
-              <div className="label-5">Total Spread</div>
-            </div>
-
-            <div className="table-header-row">
-              <div className="label-4">Equity Trend</div>
-            </div>
-
-            <div className="table-header-row">
-              <div className="label-4">Available</div>
-            </div>
-
-            <div className="table-header-row-3" />
-          </div>
-
-          <VaultRow
-            className="vault-row-instance"
-            state="default"
-            status="good"
-          />
-        </div>
-      </div>
-
-      <div className="vaults">
-        <div className="text-wrapper-4">Vaults</div>
-
-        <div className="vault-table">
-          <div className="div-2">
-            <div className="table-header-row">
-              <div className="label-4">Name</div>
-            </div>
-
-            <div className="table-header-row">
-              <div className="label-4">Issues</div>
-            </div>
-
-            <div className="table-header-row">
-              <div className="label-4">Total Spread</div>
-            </div>
-
-            <div className="table-header-row">
-              <div className="label-4">Equity Trend</div>
-            </div>
-
-            <div className="table-header-row">
-              <div className="label-4">Available</div>
-            </div>
-
-            <div className="table-header-row-3" />
-          </div>
-
-          <VaultRow
-            className="vault-row-instance"
-            state="default"
-            status="bad"
-          />
-          <div className="div-2">
-            <div className="table-cell-3">
-              <div className="label-6">Vault 123</div>
-
-              <div className="label-7">Cash vault</div>
-            </div>
-
-            <div className="table-cell-4">
-              <div className="metric-tag-2">
-                <div className="tag-3">
-                  <div className="label-8">1.43</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="table-cell-5">
-              <div className="label-9">5.04%</div>
-            </div>
-
-            <div className="table-cell-6">
-              <div className="metric-tag-3">
-                <div className="tag-4">
-                  <div className="label-10">1.43</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="table-cell-7">
-              <div className="label-7">$29,000.00</div>
-            </div>
-
-            <div className="table-cell-8">
-              <div className="icon-button-2">
-                <div className="information-circle-wrapper">
-                  <img className="img" alt="Information circle" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="div-2">
-            <div className="table-cell-3">
-              <div className="label-6">Vault XYZ</div>
-
-              <div className="label-7">Super vault</div>
-            </div>
-
-            <div className="table-cell-6">
-              <div className="metric-tag-4">
-                <div className="tag-4">
-                  <div className="label-10">1.43</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="table-cell-5">
-              <div className="label-9">5.04%</div>
-            </div>
-
-            <div className="table-cell-6">
-              <div className="metric-tag-4">
-                <div className="tag-4">
-                  <div className="label-10">1.43</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="table-cell-7">
-              <div className="label-7">$29,000.00</div>
-            </div>
-
-            <div className="table-cell-8">
-              <div className="icon-button-2">
-                <div className="information-circle-wrapper">
-                  <img className="img" alt="Information circle" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </header>
+      {/* Gateways Block */}
+      <section className="vaults-block">
+        <div className="table-title">Gateways</div>
+        <Table
+          columns={[
+            {
+              key: 'nickname',
+              label: 'Name',
+              cellComponent: TextCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname, alignment: 'left' }),
+            },
+            {
+              key: 'issues',
+              label: 'Issues',
+              cellComponent: MetricCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => {
+                const issues = getIssues(row);
+                return {
+                  value: issues,
+                  status: issues > 0 ? 'bad' : 'good',
+                  alignment: 'left',
+                  style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
+                };
+              },
+            },
+            {
+              key: 'total_spread',
+              label: 'Total Spread',
+              cellComponent: TextCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ text: getTotalSpread(row), alignment: 'left' }),
+            },
+            {
+              key: 'equity_trend',
+              label: 'Equity Trend',
+              cellComponent: TagCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), alignment: 'left', size: 'small' }),
+            },
+            {
+              key: 'available',
+              label: 'Available',
+              cellComponent: TextCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ text: getAvailable(row), alignment: 'left' }),
+            },
+          ]}
+          data={gateways}
+        />
+      </section>
+      {/* Vaults Block */}
+      <section className="vaults-block">
+        <div className="table-title">Vaults</div>
+        <Table
+          columns={[
+            {
+              key: 'nickname',
+              label: 'Name',
+              cellComponent: TextCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname, alignment: 'left' }),
+            },
+            {
+              key: 'issues',
+              label: 'Issues',
+              cellComponent: MetricCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => {
+                const issues = getIssues(row);
+                return {
+                  value: issues,
+                  status: issues > 0 ? 'bad' : 'good',
+                  alignment: 'left',
+                  style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
+                };
+              },
+            },
+            {
+              key: 'total_spread',
+              label: 'Total Spread',
+              cellComponent: TextCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ text: getTotalSpread(row), alignment: 'left' }),
+            },
+            {
+              key: 'equity_trend',
+              label: 'Equity Trend',
+              cellComponent: TagCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), alignment: 'left', size: 'small' }),
+            },
+            {
+              key: 'available',
+              label: 'Available',
+              cellComponent: TextCell,
+              width: '100%',
+              alignment: 'left',
+              getCellProps: (row: Vault) => ({ text: getAvailable(row), alignment: 'left' }),
+            },
+          ]}
+          data={otherVaults}
+        />
+      </section>
+    </section>
   );
 };
