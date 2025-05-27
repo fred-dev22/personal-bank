@@ -4,6 +4,7 @@ import { Overview } from '../components/Overview/Overview';
 import { Loans } from '../components/Loans/Loans';
 import { Vaults } from '../components/Vaults/Vaults';
 import { Borrower } from '../components/Borrower/Borrower';
+import { Activities } from '../components/Activities/Activities';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import type { Loan, Vault, Borrower as BorrowerType, User } from '../types/types';
@@ -72,7 +73,6 @@ export const PersonalBank: React.FC = () => {
     { id: 'loans', label: 'Loans' },
     { id: 'vaults', label: 'Vaults' },
     { id: 'activity', label: 'Activity' },
-    { id: 'financials', label: 'Financials' },
     { id: 'borrowers', label: 'Borrowers' },
   ];
 
@@ -111,6 +111,7 @@ export const PersonalBank: React.FC = () => {
         {currentPage === 'overview' && <Overview />}
         {currentPage === 'loans' && <Loans loans={loans} />}
         {currentPage === 'vaults' && <Vaults vaults={vaults} />}
+        {currentPage === 'activity' && <Activities />}
         {currentPage === 'borrowers' && <Borrower borrowers={borrowers} />}
       </div>
     </div>

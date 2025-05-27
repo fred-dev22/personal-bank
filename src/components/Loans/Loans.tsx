@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, IconButton, Input, MenuButton, Tabs, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
+import { Button, IconButton, Input, MenuButton, Tabs, Table, TextCell, MetricCell, TagCell, EmptyState } from "@jbaluch/components";
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
@@ -27,19 +27,31 @@ export const Loans: React.FC<LoansProps> = ({
   const [searchValue, setSearchValue] = useState("");
   const filterCount = 4; // à remplacer par la vraie logique de filtre
 
+  // Fonction utilitaire pour normaliser la casse et les espaces
+  const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, ' ').trim();
   const filteredLoans = loans.filter(loan => {
-    const search = searchValue.toLowerCase();
-    const statusMatch = loan.status === selectedStatus;
-    const fields = [
-      loan.nickname,
-      loan.loan_number?.toString(),
-      loan.loan_type,
-      loan.dscr_limit?.toString(),
-      loan.initial_payment_amount?.toString(),
-      loan.current_balance?.toString()
-    ];
-    const searchMatch = search === '' || fields.some(field => field && field.toLowerCase().includes(search));
-    return statusMatch && searchMatch;
+    const search = normalize(searchValue);
+    const searchMatch = search === '' || (loan.nickname && normalize(loan.nickname).includes(search));
+
+    // Filtrage selon le tab sélectionné (status + sub_state)
+    let tabMatch = false;
+    switch (selectedStatus) {
+      case 'Funded':
+        tabMatch = loan.status === 'Funded';
+        break;
+      case 'To Fund':
+        tabMatch = loan.status === 'Funding';
+        break;
+      case 'behind':
+        tabMatch = loan.status !== 'Funding' && (loan.sub_state === 'Late' || loan.sub_state === 'Behind');
+        break;
+      case 'Complete':
+        tabMatch = loan.status !== 'Funding' && loan.sub_state === 'Paid Off';
+        break;
+      default:
+        tabMatch = true;
+    }
+    return tabMatch && searchMatch;
   });
 
   const handleClearAll = () => {
@@ -48,13 +60,7 @@ export const Loans: React.FC<LoansProps> = ({
     // reset filters ici si besoin
   };
 
-  const handleSearchIconClick = () => setSearching(true);
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value);
-  const handleSearchInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      setSearching(false);
-    }
-  };
 
   const handleFilterClick = () => {
     // ouvrir la fenêtre de filtre ici
@@ -103,20 +109,23 @@ export const Loans: React.FC<LoansProps> = ({
               Clear All
             </Button>
           )}
-          {searching ? (
+          {searching || searchValue !== "" ? (
             <Input
               onChange={handleSearchInputChange}
               placeholder="Search loans"
               value={searchValue}
-              onKeyDown={handleSearchInputKeyDown}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === "Enter") setSearching(false);
+              }}
               style={{ width: 150 }}
-              onBlur={() => setTimeout(() => setSearching(false), 100)}
+              onBlur={() => setSearching(false)}
+              autoFocus
             />
           ) : (
             <IconButton
               aria-label="Search"
               icon={SearchIcon}
-              onClick={handleSearchIconClick}
+              onClick={() => setSearching(true)}
               onMouseEnter={() => {}}
               onMouseLeave={() => {}}
               type="secondary"
@@ -152,19 +161,35 @@ export const Loans: React.FC<LoansProps> = ({
         </div>
       </header>
       <section className="all-loans-table">
-          <Tabs
-            className="loans-tabs-no-margin"
-            activeTabId={selectedStatus}
-            onTabChange={setSelectedStatus}
-            tabs={[
-              { id: 'Funded', label: 'On Track' },
-              { id: 'To Fund', label: 'To Fund' },
-              { id: 'Late', label: 'Late' },
-              { id: 'Complete', label: 'Complete' }
-            ]}
-          />
-        <div >
+        <Tabs
+          className="loans-tabs-no-margin"
+          activeTabId={selectedStatus}
+          onTabChange={setSelectedStatus}
+          tabs={[
+            { id: 'Funded', label: 'On Track' },
+            { id: 'To Fund', label: 'To Fund' },
+            { id: 'behind', label: 'Behind' },
+            { id: 'Complete', label: 'Complete' }
+          ]}
+        />
+        {filteredLoans.length === 0 ? (
+          <div className="empty-state-center">
+            <EmptyState
+              imageName="NoLoans"
+              title="No loans"
+              description={
+                selectedStatus === 'Funded' ? 'Nothing is on track.' :
+                selectedStatus === 'To Fund' ? 'Nothing needs funded.' :
+                selectedStatus === 'behind' ? 'Nothing is late.' :
+                selectedStatus === 'Complete' ? 'Nothing has completed yet.' :
+                'There are no loans.'
+              }
+              customImage={undefined}
+            />
+          </div>
+        ) : (
           <Table
+            key={searchValue + selectedStatus + filteredLoans.length}
             className="loans-table-fullwidth"
             columns={[
               {
@@ -241,14 +266,14 @@ export const Loans: React.FC<LoansProps> = ({
                 }),
               }
             ]}
-            data={filteredLoans}
+            data={[...filteredLoans]}
             defaultSortColumn="nickname"
             defaultSortDirection="asc"
             onRowClick={() => {}}
             onSelectionChange={() => {}}
             onSortChange={() => {}}
           />
-        </div>
+        )}
       </section>
     </section>
   );
