@@ -124,6 +124,7 @@ export interface Loan {
     payments: string[];
     activities: string[];
     id: string;
+    sub_state?: string;
 }
 
 export interface Activity {
