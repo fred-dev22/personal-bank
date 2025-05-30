@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationBar } from '../components/NavigationBar/NavigationBar';
-import { Overview } from '../components/Overview/Overview';
+import { Overview } from '../components/Overview/Overview'; 
 import { Loans } from '../components/Loans/Loans';
 import { Vaults } from '../components/Vaults/Vaults';
 import { Borrower } from '../components/Borrower/Borrower';
@@ -11,6 +11,7 @@ import type { Loan, Vault, Borrower as BorrowerType, User } from '../types/types
 import { fetchLoans } from '../controllers/loanController';
 import { fetchVaults } from '../controllers/vaultController';
 import { fetchBorrowers } from '../controllers/borrowerController';
+import { Settings } from '../components/Settings/Settings';
 import './PersonalBank.css';
 
 export const PersonalBank: React.FC = () => {
@@ -113,6 +114,7 @@ export const PersonalBank: React.FC = () => {
         {currentPage === 'vaults' && <Vaults vaults={vaults} />}
         {currentPage === 'activity' && <Activities />}
         {currentPage === 'borrowers' && <Borrower borrowers={borrowers} />}
+        {currentPage === 'settings' && <Settings />}
       </div>
     </div>
   );

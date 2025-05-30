@@ -6,6 +6,8 @@ import '@jbaluch/components/styles';
 import type { Borrower as BorrowerType } from '../../types/types';
 import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
+import { Modal } from '../Modal/Modal';
+import { AddBorrower } from './AddBorrower';
 
 const SearchIcon = () => <img src={searchIcon} alt="search" />;
 const FilterIcon = () => <img src={filterIcon} alt="filter" />;
@@ -18,6 +20,7 @@ interface BorrowerProps {
 export const Borrower: React.FC<BorrowerProps> = ({ borrowers, className = "" }) => {
   const [searching, setSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const filterCount = 4; // à remplacer par la vraie logique de filtre
 
   const filteredBorrowers = borrowers.filter(borrower => {
@@ -52,13 +55,21 @@ export const Borrower: React.FC<BorrowerProps> = ({ borrowers, className = "" })
   };
 
   const handleAddBorrower = () => {
-    // logique pour ajouter un emprunteur
+    console.log('Opening modal, isModalOpen:', true);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', dateOptions);
+
+  // Just before rendering the Modal
+  console.log('Rendering Modal, isModalOpen:', isModalOpen);
 
   return (
     <section className={`borrower ${className}`}>
@@ -207,6 +218,9 @@ export const Borrower: React.FC<BorrowerProps> = ({ borrowers, className = "" })
           onSortChange={() => {}}
         />
       </section>
+      <Modal open={isModalOpen} onClose={handleCloseModal}>
+        <AddBorrower />
+      </Modal>
     </section>
   );
 }; 
