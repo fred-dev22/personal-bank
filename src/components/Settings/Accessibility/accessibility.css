@@ -1,0 +1,118 @@
+.accessibility-root {
+  align-items: flex-start;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: var(--grey-shadows-tertiary-grey-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 16px;
+  position: relative;
+  width: 424px;
+}
+
+.accessibility-title {
+  color: #0d1728;
+  font-family: var(--subtitles-subtitle-2-font-family);
+  font-size: var(--subtitles-subtitle-2-font-size);
+  font-style: var(--subtitles-subtitle-2-font-style);
+  font-weight: var(--subtitles-subtitle-2-font-weight);
+  letter-spacing: var(--subtitles-subtitle-2-letter-spacing);
+  line-height: var(--subtitles-subtitle-2-line-height);
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+  margin-bottom: 8px;
+}
+
+.accessibility-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.accessibility-label {
+  color: #0d1728;
+  font-family: var(--body-text-body-2-regular-font-family);
+  font-size: var(--body-text-body-2-regular-font-size);
+  font-style: var(--body-text-body-2-regular-font-style);
+  font-weight: var(--body-text-body-2-regular-font-weight);
+  letter-spacing: var(--body-text-body-2-regular-letter-spacing);
+  line-height: var(--body-text-body-2-regular-line-height);
+}
+
+/* Switch custom */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e5e6eb;
+  transition: .4s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+input:checked + .slider {
+  background-color: #bfc4ce;
+}
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+/* Bouton arrondi avec chevron */
+.accessibility-btn {
+  display: flex;
+  align-items: center;
+  background: #f4f5f7;
+  border: none;
+  border-radius: 999px;
+  padding: 2px 18px 2px 16px;
+  font-family: var(--body-text-body-2-regular-font-family);
+  font-size: var(--body-text-body-2-regular-font-size);
+  font-weight: var(--body-text-body-2-regular-font-weight);
+  color: #0d1728;
+  cursor: pointer;
+  transition: background 0.2s;
+  outline: none;
+  min-height: 28px;
+  width: auto;
+}
+.accessibility-btn:active,
+.accessibility-btn:focus {
+  background: #e5e6eb;
+}
+.chevron {
+  font-size: 18px;
+  margin-left: 8px;
+  color: #bfc4ce;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+} 
