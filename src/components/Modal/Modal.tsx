@@ -5,10 +5,9 @@ interface ModalProps {
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  width?: number | string;
 }
 
-export const Modal = ({ open, onClose, children, width = 500 }: ModalProps) => {
+export const Modal = ({ open, onClose, children }: ModalProps) => {
   return (
     <div className={`modal-backdrop${open ? " open" : ""}`}> 
       <div

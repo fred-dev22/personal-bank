@@ -12,8 +12,6 @@ interface AddBorrowerProps {
   initialData?: Partial<Borrower>;
 }
 
-type InputChangeEvent = React.ChangeEvent<HTMLInputElement> | { value: string };
-
 export const AddBorrower: React.FC<AddBorrowerProps> = ({ 
   onClose,
   onCancel,

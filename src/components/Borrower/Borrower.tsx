@@ -17,22 +17,17 @@ const FilterIcon = () => <img src={filterIcon} alt="filter" />;
 interface BorrowerProps {
   borrowers: BorrowerType[];
   className?: string;
-  onCancel?: () => void;
-  onAdd?: (data: BorrowerType) => void;
 }
 
 export const Borrower: React.FC<BorrowerProps> = ({ 
   borrowers: initialBorrowers, 
-  className = "",
-  onCancel,
-  onAdd
+  className = ""
 }) => {
   const { user } = useAuth();
   const [borrowers, setBorrowers] = useState<BorrowerType[]>(initialBorrowers);
   const [searching, setSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const filterCount = 4; // à remplacer par la vraie logique de filtre
 
   const filteredBorrowers = borrowers.filter(borrower => {
@@ -75,23 +70,15 @@ export const Borrower: React.FC<BorrowerProps> = ({
     setIsModalOpen(false);
   };
 
-  const handleSubmit = () => {
-    // TODO: Implement form submission
-    handleCloseModal();
-  };
-
   const refreshBorrowers = async () => {
     const token = localStorage.getItem('authToken');
     const bankId = user?.banks?.[0];
     if (!token || !bankId) return;
-    setIsLoading(true);
     try {
       const data = await fetchBorrowers(token, bankId);
       setBorrowers(data);
     } catch (e) {
       // Optionally handle error
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -99,15 +86,12 @@ export const Borrower: React.FC<BorrowerProps> = ({
     const token = localStorage.getItem('authToken');
     const bankId = user?.banks?.[0];
     if (!token || !bankId) return;
-    setIsLoading(true);
     try {
       await addBorrower(token, bankId, data);
       await refreshBorrowers();
       setIsModalOpen(false);
     } catch (e) {
       // Optionally handle error
-    } finally {
-      setIsLoading(false);
     }
   };
 
