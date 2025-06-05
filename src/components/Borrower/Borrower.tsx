@@ -8,6 +8,8 @@ import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
 import { Modal } from '../Modal/Modal';
 import { AddBorrower } from './AddBorrower';
+import { fetchBorrowers, addBorrower } from '../../controllers/borrowerController';
+import { useAuth } from '../../contexts/AuthContext';
 
 const SearchIcon = () => <img src={searchIcon} alt="search" />;
 const FilterIcon = () => <img src={filterIcon} alt="filter" />;
@@ -15,12 +17,22 @@ const FilterIcon = () => <img src={filterIcon} alt="filter" />;
 interface BorrowerProps {
   borrowers: BorrowerType[];
   className?: string;
+  onCancel?: () => void;
+  onAdd?: (data: BorrowerType) => void;
 }
 
-export const Borrower: React.FC<BorrowerProps> = ({ borrowers, className = "" }) => {
+export const Borrower: React.FC<BorrowerProps> = ({ 
+  borrowers: initialBorrowers, 
+  className = "",
+  onCancel,
+  onAdd
+}) => {
+  const { user } = useAuth();
+  const [borrowers, setBorrowers] = useState<BorrowerType[]>(initialBorrowers);
   const [searching, setSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const filterCount = 4; // à remplacer par la vraie logique de filtre
 
   const filteredBorrowers = borrowers.filter(borrower => {
@@ -61,6 +73,42 @@ export const Borrower: React.FC<BorrowerProps> = ({ borrowers, className = "" })
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleSubmit = () => {
+    // TODO: Implement form submission
+    handleCloseModal();
+  };
+
+  const refreshBorrowers = async () => {
+    const token = localStorage.getItem('authToken');
+    const bankId = user?.banks?.[0];
+    if (!token || !bankId) return;
+    setIsLoading(true);
+    try {
+      const data = await fetchBorrowers(token, bankId);
+      setBorrowers(data);
+    } catch (e) {
+      // Optionally handle error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddBorrowerApi = async (data: Partial<BorrowerType>) => {
+    const token = localStorage.getItem('authToken');
+    const bankId = user?.banks?.[0];
+    if (!token || !bankId) return;
+    setIsLoading(true);
+    try {
+      await addBorrower(token, bankId, data);
+      await refreshBorrowers();
+      setIsModalOpen(false);
+    } catch (e) {
+      // Optionally handle error
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Date du jour au format Thursday, June 13
@@ -219,7 +267,7 @@ export const Borrower: React.FC<BorrowerProps> = ({ borrowers, className = "" })
         />
       </section>
       <Modal open={isModalOpen} onClose={handleCloseModal}>
-        <AddBorrower />
+        <AddBorrower onClose={handleCloseModal} onAdd={handleAddBorrowerApi} />
       </Modal>
     </section>
   );

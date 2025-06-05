@@ -94,6 +94,13 @@ export interface Borrower {
     notes?: string[];
     totalPayment?: number;
     unpaidBalance?: number;
+    firstName?: string;
+    lastName?: string;
+    grossIncome?: string;
+    netIncome?: string;
+    email?: string;
+    phone?: string;
+    type?: 'person' | 'institution';
 }
 
 export interface Loan {
