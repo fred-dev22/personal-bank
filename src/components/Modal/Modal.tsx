@@ -13,10 +13,8 @@ export const Modal = ({ open, onClose, children, width = 500 }: ModalProps) => {
     <div className={`modal-backdrop${open ? " open" : ""}`}> 
       <div
         className={`modal-panel${open ? " open" : ""}`}
-        style={{ width }}
         tabIndex={-1}
       >
-        <button className="modal-close" onClick={onClose} aria-label="Close">&times;</button>
         {children}
       </div>
       {open && <div className="modal-overlay" onClick={onClose} />}

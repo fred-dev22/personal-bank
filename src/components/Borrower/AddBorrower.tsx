@@ -1,110 +1,331 @@
-import React, { useState } from 'react';
-import { Button, Input } from '@jbaluch/components';
-import './add-borrower.css';
+import React from 'react';
+import './addBorrower.css';
+import { Button, Input, CloseButton } from "@jbaluch/components";
+// @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
+import '@jbaluch/components/styles';
+import type { Borrower } from '../../types/types';
 
-export const AddBorrower: React.FC = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [annualIncome, setAnnualIncome] = useState('');
-  const [netIncome, setNetIncome] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+interface AddBorrowerProps {
+  onClose?: () => void;
+  onCancel?: () => void;
+  onAdd?: (data: Borrower) => void;
+  initialData?: Partial<Borrower>;
+}
+
+type InputChangeEvent = React.ChangeEvent<HTMLInputElement> | { value: string };
+
+export const AddBorrower: React.FC<AddBorrowerProps> = ({ 
+  onClose,
+  onCancel,
+  onAdd,
+  initialData
+}) => {
+  const [borrowerType, setBorrowerType] = React.useState<'person' | 'institution'>('person');
+  const [formData, setFormData] = React.useState<Partial<Borrower>>({
+    firstName: initialData?.firstName || '',
+    lastName: initialData?.lastName || '',
+    grossIncome: initialData?.grossIncome || '',
+    netIncome: initialData?.netIncome || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
+    type: initialData?.type || 'person',
+    fullName: initialData?.fullName || '',
+    pb: initialData?.pb || '',
+    userId: initialData?.userId || '',
+    bankId: initialData?.bankId || '',
+    notes: initialData?.notes || [],
+    totalPayment: initialData?.totalPayment || 0,
+    unpaidBalance: initialData?.unpaidBalance || 0
+  });
+  const [selectedPhoto, setSelectedPhoto] = React.useState<string | null>(null);
+
+  const handleInputChange = (field: keyof Borrower, value: string | number | string[]): void => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (): void => {
+    if (!formData.firstName && !formData.fullName) {
+      alert('Borrower name is required.');
+      return;
+    }
+    const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
+    if (onAdd) {
+      onAdd({
+        ...formData,
+        fullName,
+        type: borrowerType,
+        photo: selectedPhoto || undefined,
+      } as Borrower);
+      // Nettoyage du formulaire après ajout
+      setFormData({
+        firstName: '',
+        lastName: '',
+        grossIncome: '',
+        netIncome: '',
+        email: '',
+        phone: '',
+        type: 'person',
+        fullName: '',
+        pb: '',
+        userId: '',
+        bankId: '',
+        notes: [],
+        totalPayment: 0,
+        unpaidBalance: 0
+      });
+      setSelectedPhoto(null);
+      if (onClose) onClose();
+    }
+  };
+
+  const handleClose = (): void => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const handleTypeChange = (type: 'person' | 'institution'): void => {
+    setBorrowerType(type);
+    setFormData(prev => ({
+      ...prev,
+      type
+    }));
+  };
+
+  const handlePhotoChange = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          setSelectedPhoto(ev.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  };
 
   return (
-    <div className="add-borrower-modal">
-      <div className="add-borrower-header-row">
-        <h2 className="add-borrower-title">Add Borrower</h2>
-      </div>
-      <div className="add-borrower-tabs">
-        <div className="add-borrower-tab active">General</div>
-      </div>
-      <div className="add-borrower-content">
-        <div className="add-borrower-photo-upload">
-          <div className="photo-circle">
-            <span>Click to<br/>upload a<br/>photo</span>
-          </div>
-        </div>
-        <form>
-          <div style={{ display: 'flex', gap: 16 }}>
-            <Input
-              label="First Name"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
-              style={{ flex: 1 }}
-            />
-            <Input
-              label="Last Name"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
-              style={{ flex: 1 }}
-            />
-          </div>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
-            <Input
-              label="Annual Income"
-              placeholder="$"
-              value={annualIncome}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAnnualIncome(e.target.value)}
-              style={{ flex: 1 }}
-            />
-            <Input
-              label="Net Income"
-              placeholder="$"
-              value={netIncome}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNetIncome(e.target.value)}
-              style={{ flex: 1 }}
-            />
-          </div>
-          <Input
-            label="Email"
-            placeholder="Email"
-            value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-            style={{ marginTop: 8, width: '100%' }}
-          />
-          <Input
-            label="Phone Number"
-            placeholder="Phone Number"
-            value={phone}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
-            style={{ marginTop: 8, width: '100%' }}
-          />
-        </form>
-      </div>
-      <div className="add-borrower-actions">
-        <Button
-          type="secondary"
-          style={{ width: 'auto' }}
-          iconComponent={undefined}
-          onClick={() => {}}
+    <div className="add-borrower">
+      {/* Header */}
+      <div className="add-borrower__header">
+        <h2 className="add-borrower__title">
+          Add Borrower
+        </h2>
+        <CloseButton
+          aria-label="Close"
+          onClick={handleClose}
           onMouseEnter={() => {}}
           onMouseLeave={() => {}}
+          type="dark"
+          interaction=""
+          style={{ width: 36, height: 36 }}
+        />
+      </div>
+
+      {/* Person/Institution Toggle */}
+      <div className="add-borrower__toggle-section">
+        <div className="add-borrower__toggle">
+          <button
+            type="button"
+            className={`add-borrower__toggle-item ${borrowerType === 'person' ? 'add-borrower__toggle-item--active' : ''}`}
+            onClick={() => handleTypeChange('person')}
+          >
+            Person
+          </button>
+          <div className="add-borrower__toggle-divider"></div>
+          <button
+            type="button"
+            className={`add-borrower__toggle-item ${borrowerType === 'institution' ? 'add-borrower__toggle-item--active' : ''}`}
+            onClick={() => handleTypeChange('institution')}
+          >
+            Institution
+          </button>
+        </div>
+      </div>
+
+      {/* Avatar Section */}
+      <div className="add-borrower__avatar-section">
+        {selectedPhoto ? (
+          <>
+            <div className="add-borrower__avatar" style={{overflow: 'hidden', background: '#e9ecef', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <img src={selectedPhoto} alt="Profile" style={{width: 72, height: 72, borderRadius: '50%', objectFit: 'cover'}} />
+            </div>
+            <Button
+              icon="iconless"
+              iconComponent={undefined}
+              interaction="default"
+              justified="right"
+              onClick={handlePhotoChange}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}
+              type="secondary"
+              name="change-photo"
+              form=""
+              ariaLabel="Change photo"
+              width="106px"
+            >
+              Change Photo
+            </Button>
+          </>
+        ) : (
+          <div
+            className="add-borrower__avatar"
+            style={{cursor: 'pointer', background: '#e9ecef', color: '#23263B', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 72, height: 72, borderRadius: '50%', textAlign: 'center', fontSize: 16, fontWeight: 500}}
+            onClick={handlePhotoChange}
+          >
+            Click to<br />Upload a<br />Photo
+          </div>
+        )}
+      </div>
+
+      {/* Form */}
+      <div className="add-borrower__form">
+        {/* First/Last Name Row */}
+        <div className="add-borrower__input-group">
+          <div className="add-borrower__inputs-row">
+            <Input
+              label="First name"
+              onChange={(value: string) => handleInputChange('firstName', value)}
+              placeholder="Enter first name"
+              required
+              value={formData.firstName}
+            />
+            <Input
+              label="Last name"
+              onChange={(value: string) => handleInputChange('lastName', value)}
+              placeholder="Enter last name"
+              value={formData.lastName}
+            />
+          </div>
+        </div>
+
+        {/* Income Row */}
+        <div className="add-borrower__input-group">
+          <div className="add-borrower__inputs-row">
+            <Input
+              currency={{
+                allowNegative: false,
+                currency: 'USD',
+                formatOnType: false,
+                locale: 'en-US',
+                maxDecimals: 2,
+                thousandSeparator: true
+              }}
+              label="Gross income"
+              onChange={(value: string) => handleInputChange('grossIncome', value)}
+              placeholder="Enter gross income"
+              type="currency"
+              value={formData.grossIncome}
+            />
+            <Input
+              currency={{
+                allowNegative: false,
+                currency: 'USD',
+                formatOnType: false,
+                locale: 'en-US',
+                maxDecimals: 2,
+                thousandSeparator: true
+              }}
+              label="Net income"
+              onChange={(value: string) => handleInputChange('netIncome', value)}
+              placeholder="Enter net income"
+              type="currency"
+              value={formData.netIncome}
+            />
+          </div>
+        </div>
+
+        {/* Email */}
+        <div className="add-borrower__input-group add-borrower__input-group--single">
+          <Input
+            label="Email"
+            onChange={(value: string) => handleInputChange('email', value)}
+            placeholder="email@example.com"
+            type="email"
+            validateOnChange
+            value={formData.email}
+          />
+        </div>
+
+        {/* Phone */}
+        <div className="add-borrower__input-group add-borrower__input-group--single">
+          <Input
+            label="Phone Number"
+            onChange={(value: string) => handleInputChange('phone', value)}
+            phone={{
+              format: '(###) ###-####',
+              international: false
+            }}
+            placeholder="(555) 123-4567"
+            type="phone"
+            value={formData.phone}
+          />
+        </div>
+      </div>
+      <div className="modal-footer">
+        <Button
+          icon="iconless"
+          iconComponent={undefined}
           interaction="default"
           justified="right"
-          name="add-borrower-cancel"
-          ariaLabel={undefined}
+          onClick={() => {
+            setFormData({
+              firstName: '',
+              lastName: '',
+              grossIncome: '',
+              netIncome: '',
+              email: '',
+              phone: '',
+              type: 'person',
+              fullName: '',
+              pb: '',
+              userId: '',
+              bankId: '',
+              notes: [],
+              totalPayment: 0,
+              unpaidBalance: 0
+            });
+            setSelectedPhoto(null);
+            if (onCancel) onCancel();
+            if (onClose) onClose();
+          }}
+          onMouseEnter={() => {}}
+          onMouseLeave={() => {}}
+          type="secondary"
+          name="cancel"
           form=""
+          ariaLabel="Cancel"
+          width="106px"
         >
           Cancel
         </Button>
         <Button
-          type="primary"
-          style={{ width: 'auto' }}
+          icon="iconless"
           iconComponent={undefined}
-          onClick={() => {}}
-          onMouseEnter={() => {}}
-          onMouseLeave={() => {}}
           interaction="default"
           justified="right"
-          name="add-borrower-create"
-          ariaLabel={undefined}
+          onClick={handleSubmit}
+          onMouseEnter={() => {}}
+          onMouseLeave={() => {}}
+          type="primary"
+          name="add"
           form=""
+          ariaLabel="Add borrower"
+          width="80px"
         >
-          Create
+          Add
         </Button>
       </div>
     </div>
   );
-}; 
+};
+
+export default AddBorrower;
