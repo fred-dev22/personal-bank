@@ -101,6 +101,7 @@ export interface Borrower {
     email?: string;
     phone?: string;
     type?: 'person' | 'institution';
+    website?: string;
 }
 
 export interface Loan {

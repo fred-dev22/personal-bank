@@ -249,3 +249,16 @@
 .add-borrower__btn--primary:hover {
   background-color: #009a94;
 }
+
+.add-borrower__institution-label {
+  color: var(--text-secondary, #595959);
+  font-family: "DM Sans";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px; /* 133.333% */
+  letter-spacing: 0.24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

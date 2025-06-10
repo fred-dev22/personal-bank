@@ -113,7 +113,7 @@ export const PersonalBank: React.FC = () => {
         {currentPage === 'loans' && <Loans loans={loans} />}
         {currentPage === 'vaults' && <Vaults vaults={vaults} />}
         {currentPage === 'activity' && <Activities />}
-        {currentPage === 'borrowers' && <Borrower borrowers={borrowers} />}
+        {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} />}
         {currentPage === 'settings' && <Settings />}
       </div>
     </div>

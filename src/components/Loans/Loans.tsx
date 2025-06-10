@@ -6,6 +6,7 @@ import '@jbaluch/components/styles';
 import type { Loan } from '../../types/types';
 import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
+import LoanDetails from './LoanDetails';
 
 const SearchIcon = () => <img src={searchIcon} alt="search" />;
 const FilterIcon = () => <img src={filterIcon} alt="filter" />;
@@ -25,6 +26,7 @@ export const Loans: React.FC<LoansProps> = ({
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const filterCount = 4; // à remplacer par la vraie logique de filtre
 
   // Fonction utilitaire pour normaliser la casse et les espaces
@@ -81,6 +83,12 @@ export const Loans: React.FC<LoansProps> = ({
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', dateOptions);
+
+  if (selectedLoan) {
+    // Utilise un mock borrower car le type Loan n'a pas la propriété borrower
+    const borrower = { fullName: 'Borrower' };
+    return <LoanDetails loan={selectedLoan} borrower={borrower} onBack={() => setSelectedLoan(null)} />;
+  }
 
   return (
     <section className={`loans ${className}`}>
@@ -266,10 +274,11 @@ export const Loans: React.FC<LoansProps> = ({
                 }),
               }
             ]}
+            clickableRows
             data={[...filteredLoans]}
             defaultSortColumn="nickname"
             defaultSortDirection="asc"
-            onRowClick={() => {}}
+            onRowClick={setSelectedLoan}
             onSelectionChange={() => {}}
             onSortChange={() => {}}
           />

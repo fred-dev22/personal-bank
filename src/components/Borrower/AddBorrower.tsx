@@ -9,19 +9,40 @@ interface AddBorrowerProps {
   onClose?: () => void;
   onCancel?: () => void;
   onAdd?: (data: Borrower) => void;
+  onEdit?: (data: Borrower) => void;
   initialData?: Partial<Borrower>;
+  mode?: 'add' | 'edit';
 }
 
 export const AddBorrower: React.FC<AddBorrowerProps> = ({ 
   onClose,
   onCancel,
   onAdd,
-  initialData
+  onEdit,
+  initialData,
+  mode = 'add',
 }) => {
-  const [borrowerType, setBorrowerType] = React.useState<'person' | 'institution'>('person');
+  // Détermination du type par défaut
+  const defaultType: 'person' | 'institution' = initialData?.type === 'institution' ? 'institution' : 'person';
+
+  // Découpage du fullName si besoin
+  let firstName = initialData?.firstName || '';
+  let lastName = initialData?.lastName || '';
+  if ((!firstName || !lastName) && initialData?.fullName) {
+    const parts = initialData.fullName.trim().split(' ');
+    if (parts.length > 1) {
+      firstName = parts[0];
+      lastName = parts.slice(1).join(' ');
+    } else {
+      firstName = initialData.fullName;
+      lastName = '';
+    }
+  }
+
+  const [borrowerType, setBorrowerType] = React.useState<'person' | 'institution'>(defaultType);
   const [formData, setFormData] = React.useState<Partial<Borrower>>({
-    firstName: initialData?.firstName || '',
-    lastName: initialData?.lastName || '',
+    firstName,
+    lastName,
     grossIncome: initialData?.grossIncome || '',
     netIncome: initialData?.netIncome || '',
     email: initialData?.email || '',
@@ -33,7 +54,8 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
     bankId: initialData?.bankId || '',
     notes: initialData?.notes || [],
     totalPayment: initialData?.totalPayment || 0,
-    unpaidBalance: initialData?.unpaidBalance || 0
+    unpaidBalance: initialData?.unpaidBalance || 0,
+    website: initialData?.website || ''
   });
   const [selectedPhoto, setSelectedPhoto] = React.useState<string | null>(null);
 
@@ -45,18 +67,28 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
   };
 
   const handleSubmit = (): void => {
-    if (!formData.firstName && !formData.fullName) {
+    if (borrowerType === 'person' && !formData.firstName && !formData.fullName) {
       alert('Borrower name is required.');
       return;
     }
-    const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
-    if (onAdd) {
-      onAdd({
-        ...formData,
-        fullName,
-        type: borrowerType,
-        photo: selectedPhoto || undefined,
-      } as Borrower);
+    if (borrowerType === 'institution' && !formData.fullName) {
+      alert('Institution name is required.');
+      return;
+    }
+    const fullName = borrowerType === 'person'
+      ? `${formData.firstName || ''} ${formData.lastName || ''}`.trim()
+      : formData.fullName || '';
+    const borrowerData = {
+      ...formData,
+      fullName,
+      type: borrowerType,
+      photo: selectedPhoto || undefined,
+    } as Borrower;
+    if (mode === 'edit' && onEdit) {
+      onEdit(borrowerData);
+      if (onClose) onClose();
+    } else if (mode === 'add' && onAdd) {
+      onAdd(borrowerData);
       // Nettoyage du formulaire après ajout
       setFormData({
         firstName: '',
@@ -72,7 +104,8 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
         bankId: '',
         notes: [],
         totalPayment: 0,
-        unpaidBalance: 0
+        unpaidBalance: 0,
+        website: ''
       });
       setSelectedPhoto(null);
       if (onClose) onClose();
@@ -114,8 +147,18 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
     <div className="add-borrower">
       {/* Header */}
       <div className="add-borrower__header">
-        <h2 className="add-borrower__title">
-          Add Borrower
+        <h2 className="add-borrower__title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {mode === 'edit' ? 'Edit Borrower' : 'Add Borrower'}
+          {borrowerType === 'institution' && (
+            <span className="add-borrower__institution-label" style={{ marginLeft: 12 }}>
+              <img
+                src="/Icon-Institution.svg"
+                alt="Institution"
+                style={{ width: 20, height: 20, marginRight: 4 }}
+              />
+              Institution
+            </span>
+          )}
         </h2>
         <CloseButton
           aria-label="Close"
@@ -186,87 +229,112 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
 
       {/* Form */}
       <div className="add-borrower__form">
-        {/* First/Last Name Row */}
-        <div className="add-borrower__input-group">
-          <div className="add-borrower__inputs-row">
-            <Input
-              label="First name"
-              onChange={(value: string) => handleInputChange('firstName', value)}
-              placeholder="Enter first name"
-              required
-              value={formData.firstName}
-            />
-            <Input
-              label="Last name"
-              onChange={(value: string) => handleInputChange('lastName', value)}
-              placeholder="Enter last name"
-              value={formData.lastName}
-            />
-          </div>
-        </div>
+        {borrowerType === 'person' ? (
+          <>
+            {/* First/Last Name Row */}
+            <div className="add-borrower__input-group">
+              <div className="add-borrower__inputs-row">
+                <Input
+                  label="First name"
+                  onChange={(value: string) => handleInputChange('firstName', value)}
+                  placeholder="Enter first name"
+                  required
+                  value={formData.firstName}
+                />
+                <Input
+                  label="Last name"
+                  onChange={(value: string) => handleInputChange('lastName', value)}
+                  placeholder="Enter last name"
+                  value={formData.lastName}
+                />
+              </div>
+            </div>
 
-        {/* Income Row */}
-        <div className="add-borrower__input-group">
-          <div className="add-borrower__inputs-row">
-            <Input
-              currency={{
-                allowNegative: false,
-                currency: 'USD',
-                formatOnType: false,
-                locale: 'en-US',
-                maxDecimals: 2,
-                thousandSeparator: true
-              }}
-              label="Gross income"
-              onChange={(value: string) => handleInputChange('grossIncome', value)}
-              placeholder="Enter gross income"
-              type="currency"
-              value={formData.grossIncome}
-            />
-            <Input
-              currency={{
-                allowNegative: false,
-                currency: 'USD',
-                formatOnType: false,
-                locale: 'en-US',
-                maxDecimals: 2,
-                thousandSeparator: true
-              }}
-              label="Net income"
-              onChange={(value: string) => handleInputChange('netIncome', value)}
-              placeholder="Enter net income"
-              type="currency"
-              value={formData.netIncome}
-            />
-          </div>
-        </div>
+            {/* Income Row */}
+            <div className="add-borrower__input-group">
+              <div className="add-borrower__inputs-row">
+                <Input
+                  currency={{
+                    allowNegative: false,
+                    currency: 'USD',
+                    formatOnType: false,
+                    locale: 'en-US',
+                    maxDecimals: 2,
+                    thousandSeparator: true
+                  }}
+                  label="Gross income"
+                  onChange={(value: string) => handleInputChange('grossIncome', value)}
+                  placeholder="Enter gross income"
+                  type="currency"
+                  value={formData.grossIncome}
+                />
+                <Input
+                  currency={{
+                    allowNegative: false,
+                    currency: 'USD',
+                    formatOnType: false,
+                    locale: 'en-US',
+                    maxDecimals: 2,
+                    thousandSeparator: true
+                  }}
+                  label="Net income"
+                  onChange={(value: string) => handleInputChange('netIncome', value)}
+                  placeholder="Enter net income"
+                  type="currency"
+                  value={formData.netIncome}
+                />
+              </div>
+            </div>
 
-        {/* Email */}
-        <div className="add-borrower__input-group add-borrower__input-group--single">
-          <Input
-            label="Email"
-            onChange={(value: string) => handleInputChange('email', value)}
-            placeholder="email@example.com"
-            type="email"
-            validateOnChange
-            value={formData.email}
-          />
-        </div>
+            {/* Email */}
+            <div className="add-borrower__input-group add-borrower__input-group--single">
+              <Input
+                label="Email"
+                onChange={(value: string) => handleInputChange('email', value)}
+                placeholder="email@example.com"
+                type="email"
+                validateOnChange
+                value={formData.email}
+              />
+            </div>
 
-        {/* Phone */}
-        <div className="add-borrower__input-group add-borrower__input-group--single">
-          <Input
-            label="Phone Number"
-            onChange={(value: string) => handleInputChange('phone', value)}
-            phone={{
-              format: '(###) ###-####',
-              international: false
-            }}
-            placeholder="(555) 123-4567"
-            type="phone"
-            value={formData.phone}
-          />
-        </div>
+            {/* Phone */}
+            <div className="add-borrower__input-group add-borrower__input-group--single">
+              <Input
+                label="Phone Number"
+                onChange={(value: string) => handleInputChange('phone', value)}
+                phone={{
+                  format: '(###) ###-####',
+                  international: false
+                }}
+                placeholder="(555) 123-4567"
+                type="phone"
+                value={formData.phone}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Institution Form */}
+            <div className="add-borrower__input-group add-borrower__input-group--single">
+              <Input
+                label="Name"
+                onChange={(value: string) => handleInputChange('fullName', value)}
+                placeholder="Enter institution name"
+                required
+                value={formData.fullName}
+              />
+            </div>
+            <div className="add-borrower__input-group add-borrower__input-group--single">
+              <Input
+                label="Website"
+                onChange={(value: string) => handleInputChange('website', value)}
+                placeholder="www.site.com"
+                value={formData.website || ''}
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="modal-footer">
         <Button
@@ -289,7 +357,8 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
               bankId: '',
               notes: [],
               totalPayment: 0,
-              unpaidBalance: 0
+              unpaidBalance: 0,
+              website: ''
             });
             setSelectedPhoto(null);
             if (onCancel) onCancel();
@@ -314,12 +383,12 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
           onMouseEnter={() => {}}
           onMouseLeave={() => {}}
           type="primary"
-          name="add"
+          name={mode === 'edit' ? 'edit' : 'add'}
           form=""
-          ariaLabel="Add borrower"
+          ariaLabel={mode === 'edit' ? 'Edit borrower' : 'Add borrower'}
           width="80px"
         >
-          Add
+          {mode === 'edit' ? 'Edit' : 'Add'}
         </Button>
       </div>
     </div>
