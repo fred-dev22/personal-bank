@@ -1,0 +1,95 @@
+.loan-details {
+  background: #fafbfc;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px 0 rgba(16,30,54,0.04);
+  border: 1px solid #ececec;
+  padding: 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 32px auto;
+}
+.loan-header {
+  display: flex;
+  align-items: center;
+  padding: 32px 32px 0 32px;
+  background: transparent;
+}
+.loan-back-btn {
+  background: none;
+  border: none;
+  margin-right: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.loan-back-icon {
+  width: 24px;
+  height: 24px;
+}
+.loan-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ececec;
+  color: #1A314B;
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+.loan-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1A314B;
+  margin-right: 24px;
+}
+.loan-header-spacer {
+  flex: 1;
+}
+.loan-header-btn {
+  background: #f3f3f5;
+  border: 1px solid #ececec;
+  color: #1A314B;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 8px 20px;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.loan-header-btn:hover {
+  background: #ececec;
+}
+.loan-tabs {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 0 32px;
+  margin-top: 32px;
+  border-bottom: 1.5px solid #ececec;
+}
+.loan-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #7B7B93;
+  padding: 8px 0;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-bottom 0.2s;
+}
+.loan-tab.active {
+  color: #00b5ae;
+  border-bottom: 2px solid #00b5ae;
+}
+.loan-tab-content {
+  padding: 32px;
+  min-height: 200px;
+} 
