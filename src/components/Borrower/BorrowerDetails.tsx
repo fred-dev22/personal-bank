@@ -150,35 +150,31 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                   <div className="text-wrapper">Last 12 months</div>
                 </div>
               </div>
-              <div className="card">
-                <div className="body">
-                  <div className="title-subtitle">
-                    <div className="title">+$2,563.00</div>
-                    <div className="subtitle">Surplus</div>
+              <div className="card" style={{ boxShadow: '0 2px 8px 0 rgba(16,30,54,0.04)', border: 'none', background: '#fff' }}>
+                <div className="body" style={{ gap: 16, paddingBottom: 0 }}>
+                  <div className="title-subtitle" style={{ marginBottom: 8 }}>
+                    <div className="title" style={{ color: '#1AC9A0', fontWeight: 700, fontSize: 28, textAlign: 'center', width: '100%', display: 'flex', justifyContent: 'center' }}>+$2,563.00</div>
+                    <div className="subtitle" style={{ color: '#6b6b70', fontWeight: 400, fontSize: 16, textAlign: 'center' }}>Surplus</div>
                   </div>
-                  <div className="divider" />
-                  <div className="static-table">
-                    <div className="row">
-                      <div className="data-table-row">
-                        <div className="legend">
-                          <div className="ellipse-line" />
-                          <div className="text-wrapper">Payments received</div>
-                        </div>
-                      </div>
-                      <div className="static-cells-instance">$102,563.00</div>
+                  <div style={{ width: '100%', margin: '24px 0 0 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#7CB7E8', marginRight: 8 }} />
+                        <span style={{ color: '#6b6b70', fontWeight: 500, fontSize: 15 }}>Payments received</span>
+                      </span>
+                      <span style={{ color: '#23263B', fontWeight: 700, fontSize: 17 }}>$102,563.00</span>
                     </div>
-                    <div className="row">
-                      <div className="data-table-row">
-                        <div className="legend">
-                          <div className="ellipse-line-2" />
-                          <div className="text-wrapper">Payments expected</div>
-                        </div>
-                      </div>
-                      <div className="static-cells-instance static-cells-2">$100,000.00</div>
+                    <div style={{ borderTop: '1px solid #ececec', margin: '8px 0' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#FF7F50', marginRight: 8 }} />
+                        <span style={{ color: '#6b6b70', fontWeight: 500, fontSize: 15 }}>Payments expected</span>
+                      </span>
+                      <span style={{ color: '#23263B', fontWeight: 700, fontSize: 17 }}>$100,000.00</span>
                     </div>
                   </div>
                 </div>
-                <div className="subtitle-2">Total, to date</div>
+                <div className="subtitle-2" style={{ color: '#b5b5b5', fontWeight: 400, fontSize: 15, marginTop: 24, textAlign: 'center' }}>Total, to date</div>
               </div>
             </div>
             {/* Tableau custom summary (remplace BorrowerCashFlow Content) */}
