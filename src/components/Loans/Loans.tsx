@@ -3,16 +3,18 @@ import { Button, IconButton, Input, MenuButton, Tabs, Table, TextCell, MetricCel
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
-import type { Loan } from '../../types/types';
+import type { Loan, Borrower as BorrowerType } from '../../types/types';
 import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
 import LoanDetails from './LoanDetails';
+import BorrowerDetails from '../Borrower/BorrowerDetails';
 
 const SearchIcon = () => <img src={searchIcon} alt="search" />;
 const FilterIcon = () => <img src={filterIcon} alt="filter" />;
 
 interface LoansProps {
   loans: Loan[];
+  borrowers: BorrowerType[];
   className?: string;
   imagesClassName?: string;
   imagesClassNameOverride?: string;
@@ -21,12 +23,14 @@ interface LoansProps {
 
 export const Loans: React.FC<LoansProps> = ({
   loans,
+  borrowers,
   className = ""
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
+  const [selectedBorrower, setSelectedBorrower] = useState<BorrowerType | null>(null);
   const filterCount = 4; // à remplacer par la vraie logique de filtre
 
   // Fonction utilitaire pour normaliser la casse et les espaces
@@ -84,10 +88,24 @@ export const Loans: React.FC<LoansProps> = ({
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', dateOptions);
 
+  if (selectedBorrower) {
+    return (
+      <BorrowerDetails
+        borrower={selectedBorrower}
+        loans={loans}
+        onBack={() => setSelectedBorrower(null)}
+      />
+    );
+  }
   if (selectedLoan) {
-    // Utilise un mock borrower car le type Loan n'a pas la propriété borrower
-    const borrower = { fullName: 'Borrower' };
-    return <LoanDetails loan={selectedLoan} borrower={borrower} onBack={() => setSelectedLoan(null)} />;
+    const borrower = borrowers.find(b => b.id === selectedLoan.borrowerId);
+    if (!borrower) {
+      console.error('Borrower not found for loan:', selectedLoan);
+      return null;
+    }
+    return <LoanDetails loan={selectedLoan} borrower={borrower} onBack={() => setSelectedLoan(null)} onShowBorrowerDetails={() => {
+      setSelectedBorrower(borrower);
+    }} />;
   }
 
   return (
