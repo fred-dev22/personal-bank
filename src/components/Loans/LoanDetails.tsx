@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Tabs, Table } from '@jbaluch/components';
+import { Button, Tabs, Table,TextCell } from '@jbaluch/components';
 import './LoanDetails.css';
 import vaultIcon from '../../assets/vault.svg';
 import borrowerIcon from '../../assets/borrower.svg';
@@ -7,10 +7,14 @@ import summaryIcon from '../../assets/summary.svg';
 import activityIcon from '../../assets/activity.svg';
 import scheduleIcon from '../../assets/schedule.svg';
 import documentIcon from '../../assets/document.svg';
+import mailIcon from '../../assets/mail.svg';
+import uploadIcon from '../../assets/upload.svg';
 import type { Loan, Borrower } from '../../types/types';
 import { IncomeDscrCard } from '../Cards/IncomeDscrCard/IncomeDscrCard';
 import { CashFlowCard } from '../Cards/CashFlowCard/CashFlowCard';
 import { TermsCard } from '../Cards/TermsCard/TermsCard';
+import { EditLoan } from './EditLoan';
+import { Modal } from '../Modal/Modal';
 
 interface LoanDetailsProps {
   loan: Loan;
@@ -54,8 +58,20 @@ const scheduleData: ScheduleRow[] = [
   { due_date: 'Mar 8', payment: '$300.00', fees: '$35.00', balance: '$810.00', status: 'Upcoming' },
 ];
 
+type DocumentRow = {
+  name: string;
+  description: string;
+  uploadDate: string;
+};
+
+const documentsData: DocumentRow[] = [
+  { name: 'Promissory Note.pdf', description: 'Original note', uploadDate: 'April 1, 2023' },
+  { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
+];
+
 export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails }) => {
   const [activeTab, setActiveTab] = useState('summary');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   return (
     <div className="loan-details" style={{ background: 'transparent' }}>
       {/* Header */}
@@ -104,7 +120,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           icon="iconless"
           iconComponent={undefined}
           interaction="default"
-          onClick={() => {}}
+          onClick={() => setIsEditModalOpen(true)}
           onMouseEnter={() => {}}
           onMouseLeave={() => {}}
           type="secondary"
@@ -197,19 +213,80 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             </div>
             <Table
               columns={[
-                { key: 'due_date', label: 'Due date', width: '100%', alignment: 'left', getCellProps: (row: ScheduleRow) => ({ text: row.due_date, alignment: 'left' }) },
-                { key: 'payment', label: 'Payment', width: '100%', alignment: 'left', getCellProps: (row: ScheduleRow) => ({ text: row.payment, alignment: 'left' }) },
-                { key: 'fees', label: 'Fees', width: '100%', alignment: 'left', getCellProps: (row: ScheduleRow) => ({ text: row.fees, alignment: 'left' }) },
-                { key: 'balance', label: 'Balance', width: '100%', alignment: 'left', getCellProps: (row: ScheduleRow) => ({ text: row.balance, alignment: 'left' }) },
-                { key: 'status', label: 'Status', width: '100%', alignment: 'left', getCellProps: (row: ScheduleRow) => ({ text: row.status, alignment: 'left', style: { fontWeight: row.status === 'On Time' ? 'bold' : 'normal' } }) },
+                { key: 'due_date', label: 'Due date', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.due_date, alignment: 'left' }) },
+                { key: 'payment', label: 'Payment', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.payment, alignment: 'left' }) },
+                { key: 'fees', label: 'Fees', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.fees, alignment: 'left' }) },
+                { key: 'balance', label: 'Balance', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.balance, alignment: 'left' }) },
+                { key: 'status', label: 'Status', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.status, alignment: 'left', style: { fontWeight: row.status === 'On Time' ? 'bold' : 'normal' } }) },
               ]}
               data={scheduleData}
               className="schedule-table"
             />
           </div>
         )}
-        {activeTab === 'documents' && <div>Documents content</div>}
+        {activeTab === 'documents' && (
+          <div className="documents-section">
+            <div className="documents-actions">
+              <Button
+                icon="icon"
+                iconComponent={() => <img src={mailIcon} alt="Send Documents" style={{ width: 18, height: 18 }} />}
+                interaction="default"
+                justified="left"
+                onClick={() => {}}
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                type="secondary"
+                name="send-documents"
+                form=""
+                ariaLabel="Send Documents"
+                style={{ minWidth: 210, width: 210 }}
+              >
+                Send Documents
+              </Button>
+              <Button
+                icon="icon"
+                iconComponent={() => <img src={uploadIcon} alt="Upload" style={{ width: 18, height: 18 }} />}
+                interaction="default"
+                justified="left"
+                onClick={() => {}}
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                type="primary"
+                name="upload"
+                form=""
+                ariaLabel="Upload"
+                style={{ minWidth: 123, width: 123 }}
+              >
+                Upload
+              </Button>
+            </div>
+            <Table
+              columns={[
+                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: DocumentRow) => ({ text: row.name, alignment: 'left', style: { fontWeight: 'bold' } }) },
+                { key: 'description', label: 'Description', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: DocumentRow) => ({ text: row.description, alignment: 'left' }) },
+                { key: 'uploadDate', label: 'Upload date', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: DocumentRow) => ({ text: row.uploadDate, alignment: 'right' }) },
+              ]}
+              data={documentsData}
+              className="documents-table"
+            />
+          </div>
+        )}
       </div>
+      <Modal open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <EditLoan
+          onClose={() => setIsEditModalOpen(false)}
+          initialData={{
+            note_id: loan.note_id,
+            nickname: loan.nickname || '',
+            lateFee: '$5.00',
+            gracePeriod: '10 days',
+            dscr_limit: loan.dscr_limit || 1.50,
+            paymentDue: 'Last day of the month',
+          }}
+          env={import.meta.env.VITE_ENV || 'dev'}
+          onSave={() => {}}
+        />
+      </Modal>
     </div>
   );
 };
