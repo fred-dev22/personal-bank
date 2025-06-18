@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
+import { VaultDetails } from "./VaultDetails";
 import "./style.css";
-import type { Vault } from '../../types/types';
+import type { Vault, Loan } from '../../types/types';
 
 interface VaultsProps {
   vaults: Vault[];
+  loans: Loan[];
 }
 
 function getIssues(vault: Vault) {
@@ -44,7 +46,8 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans }) => {
+  const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -53,6 +56,10 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
   // Séparation des vaults par type (mock pour l'instant)
   const gateways = vaults.filter(v => v.is_gateway);
   const otherVaults = vaults.filter(v => !v.is_gateway);
+
+  if (selectedVault) {
+    return <VaultDetails vault={selectedVault} loans={loans} onBack={() => setSelectedVault(null)} />;
+  }
 
   return (
     <section className="loans">
@@ -136,6 +143,8 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
             },
           ]}
           data={gateways}
+          clickableRows
+          onRowClick={setSelectedVault}
         />
       </section>
       {/* Vaults Block */}
@@ -193,6 +202,8 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
             },
           ]}
           data={otherVaults}
+          clickableRows
+          onRowClick={setSelectedVault}
         />
       </section>
     </section>

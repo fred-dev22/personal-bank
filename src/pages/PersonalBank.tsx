@@ -111,7 +111,7 @@ export const PersonalBank: React.FC = () => {
       <div className="content-container">
         {currentPage === 'overview' && <Overview />}
         {currentPage === 'loans' && <Loans loans={loans} borrowers={borrowers} />}
-        {currentPage === 'vaults' && <Vaults vaults={vaults} />}
+        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} />}
         {currentPage === 'activity' && <Activities />}
         {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} />}
         {currentPage === 'settings' && <Settings />}

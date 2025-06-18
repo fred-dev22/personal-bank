@@ -1,0 +1,77 @@
+.vault-financials {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 32px;
+  margin-top: 24px;
+  width: 100%;
+  max-width: 700px;
+}
+.funds-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.funds-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0d1728;
+}
+.funds-label {
+  color: #595959;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+.funds-table {
+  width: 100%;
+  margin-top: 16px;
+}
+.funds-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eeeef2;
+}
+.funds-row:last-child {
+  border-bottom: none;
+}
+.funds-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 12px;
+  display: inline-block;
+}
+.funds-dot.balance { background: #297598; }
+.funds-dot.held { background: #b49d47; }
+.funds-dot.reserve { background: #ff7f50; }
+.funds-dot.pending { background: #f8b195; }
+.funds-dot.available { background: #00b5ae; }
+.funds-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #23263B;
+  min-width: 120px;
+  text-align: right;
+}
+.funds-row.available .funds-value {
+  font-weight: 700;
+  color: #00b5ae;
+}
+.funds-section {
+  margin-top: 48px;
+}
+.funds-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 16px;
+}
+.funds-widget {
+  background: #FFFFFF;
+  border-radius: 8px;
+  padding: 24px;
+}

@@ -1,0 +1,66 @@
+.vault-tab-content {
+  padding: 32px 0px;
+  min-height: 200px;
+}
+
+.loans-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F8F8F8;
+  padding: 16px;
+  width: 100%;
+}
+
+.loans-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loans-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.loans-status,
+.loans-count {
+  font-size: 14px;
+  color: #595959;
+}
+
+.add-loan-button {
+  width: 110px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #F8F8F8;
+  margin-bottom: 24px;
+}
+
+.table-header .frame {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-header .text-wrapper {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.table-header .text-wrapper-2,
+.table-header .subtitle {
+  font-size: 14px;
+  color: #595959;
+}
+
+.table-header .button-instance {
+  width: 110px !important;
+} 
