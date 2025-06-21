@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
 import { VaultDetails } from "./VaultDetails";
 import "./style.css";
-import type { Vault, Loan } from '../../types/types';
+import type { Vault, Loan, Borrower } from '../../types/types';
 
 interface VaultsProps {
   vaults: Vault[];
   loans: Loan[];
+  borrowers: Borrower[];
 }
 
 function getIssues(vault: Vault) {
@@ -46,7 +47,7 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults, loans }) => {
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
   const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
   // Date du jour au format Thursday, June 13
   const today = new Date();
@@ -58,7 +59,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans }) => {
   const otherVaults = vaults.filter(v => !v.is_gateway);
 
   if (selectedVault) {
-    return <VaultDetails vault={selectedVault} loans={loans} onBack={() => setSelectedVault(null)} />;
+    return <VaultDetails vault={selectedVault} loans={loans} borrowers={borrowers} onBack={() => setSelectedVault(null)} />;
   }
 
   return (

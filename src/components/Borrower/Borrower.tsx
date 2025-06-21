@@ -10,6 +10,7 @@ import { Modal } from '../Modal/Modal';
 import { AddBorrower } from './AddBorrower';
 import { fetchBorrowers, addBorrower } from '../../controllers/borrowerController';
 import { useAuth } from '../../contexts/AuthContext';
+import { useActivity } from '../../contexts/ActivityContext';
 import { BorrowerDetails } from './BorrowerDetails';
 
 const SearchIcon = () => <img src={searchIcon} alt="search" />;
@@ -27,6 +28,7 @@ export const Borrower: React.FC<BorrowerProps> = ({
   className = ""
 }) => {
   const { user } = useAuth();
+  const { showActivity, hideActivity } = useActivity();
   const [borrowers, setBorrowers] = useState<BorrowerType[]>(initialBorrowers);
   const [searching, setSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -79,9 +81,12 @@ export const Borrower: React.FC<BorrowerProps> = ({
     const bankId = user?.banks?.[0];
     if (!token || !bankId) return;
     try {
+      showActivity('Loading borrowers...');
       const data = await fetchBorrowers(token, bankId);
       setBorrowers(data);
+      hideActivity();
     } catch {
+      hideActivity();
       // Optionally handle error
     }
   };
@@ -91,14 +96,17 @@ export const Borrower: React.FC<BorrowerProps> = ({
     const bankId = user?.banks?.[0];
     if (!token || !bankId) return;
     try {
+      showActivity('Creating borrower...');
       await addBorrower(token, bankId, {
         ...data,
         userId: user?.id,
         bankId: bankId,
       });
       await refreshBorrowers();
+      hideActivity();
       setIsModalOpen(false);
     } catch {
+      hideActivity();
       // Optionally handle error
     }
   };

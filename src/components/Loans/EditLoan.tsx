@@ -3,6 +3,7 @@ import { Button, Input, CloseButton, Calendar } from "@jbaluch/components";
 import calendarIcon from '../../assets/calendar.svg';
 import './EditLoan.css';
 import { updateLoan } from '../../controllers/loanController';
+import { useActivity } from '../../contexts/ActivityContext';
 import type { Loan } from '../../types/types';
 
 interface UIFormFields {
@@ -28,6 +29,7 @@ interface FormData {
 }
 
 export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, onSave, env }) => {
+  const { showActivity, hideActivity } = useActivity();
   const [form, setForm] = useState<FormData>({
     nickname: initialData.nickname || '',
     dscr_limit: initialData.dscr_limit || 1.50,
@@ -56,15 +58,20 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
   };
 
   const handleSave = async () => {
+    // Show activity indicator immediately when button is clicked
+    showActivity('Editing loan...');
+    
     const token = localStorage.getItem('authToken');
     console.log('handleSave called', { env, noteId: initialData?.note_id, token, form });
     if (!token) {
       console.log('No token found');
+      hideActivity();
       onClose();
       return;
     }
     if (!initialData?.note_id) {
       console.log('No note_id found in initialData');
+      hideActivity();
       onClose();
       return;
     }
@@ -81,10 +88,12 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
         token
       );
       console.log('updateLoan success');
+      hideActivity();
       if (onSave) onSave(form);
       onClose();
     } catch (e) {
       console.log('updateLoan error', e);
+      hideActivity();
       onClose();
     }
   };

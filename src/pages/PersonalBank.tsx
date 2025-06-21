@@ -5,6 +5,8 @@ import { Loans } from '../components/Loans/Loans';
 import { Vaults } from '../components/Vaults/Vaults';
 import { Borrower } from '../components/Borrower/Borrower';
 import { Activities } from '../components/Activities/Activities';
+import { ActivityIndicator } from '../components/ActivityIndicator/ActivityIndicator';
+import { ActivityProvider, useActivity } from '../contexts/ActivityContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import type { Loan, Vault, Borrower as BorrowerType, User } from '../types/types';
@@ -14,13 +16,14 @@ import { fetchBorrowers } from '../controllers/borrowerController';
 import { Settings } from '../components/Settings/Settings';
 import './PersonalBank.css';
 
-export const PersonalBank: React.FC = () => {
+const PersonalBankContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('overview');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [loans, setLoans] = useState<Loan[]>([]);
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [borrowers, setBorrowers] = useState<BorrowerType[]>([]);
   const { user, logout } = useAuth();
+  const { isVisible, message, showActivity, hideActivity } = useActivity();
   const navigate = useNavigate();
 
   const getLoans = async (user: User | null, setLoans: React.Dispatch<React.SetStateAction<Loan[]>>) => {
@@ -28,10 +31,13 @@ export const PersonalBank: React.FC = () => {
       const token = localStorage.getItem('authToken');
       if (!token || !user?.banks?.[0]) return;
       const bankId = user.banks[0];
+      showActivity('Loading loans...');
       const data = await fetchLoans(token, bankId);
       setLoans(data);
+      hideActivity();
       console.log('Loans fetched via API:', data);
     } catch (error) {
+      hideActivity();
       console.error('Error fetching loans:', error);
     }
   };
@@ -41,10 +47,13 @@ export const PersonalBank: React.FC = () => {
       const token = localStorage.getItem('authToken');
       if (!token || !user?.banks?.[0]) return;
       const bankId = user.banks[0];
+      showActivity('Loading vaults...');
       const data = await fetchVaults(token, bankId);
       setVaults(data);
+      hideActivity();
       console.log('Vaults fetched via API:', data);
     } catch (error) {
+      hideActivity();
       console.error('Error fetching vaults:', error);
     }
   };
@@ -54,10 +63,13 @@ export const PersonalBank: React.FC = () => {
       const token = localStorage.getItem('authToken');
       if (!token || !user?.banks?.[0]) return;
       const bankId = user.banks[0];
+      showActivity('Loading borrowers...');
       const data = await fetchBorrowers(token, bankId);
       setBorrowers(data);
+      hideActivity();
       console.log('Borrowers fetched via API:', data);
     } catch (error) {
+      hideActivity();
       console.error('Error fetching borrowers:', error);
     }
   };
@@ -111,11 +123,23 @@ export const PersonalBank: React.FC = () => {
       <div className="content-container">
         {currentPage === 'overview' && <Overview />}
         {currentPage === 'loans' && <Loans loans={loans} borrowers={borrowers} />}
-        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} />}
+        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} />}
         {currentPage === 'activity' && <Activities />}
         {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} />}
         {currentPage === 'settings' && <Settings />}
       </div>
+      <ActivityIndicator 
+        message={message} 
+        isVisible={isVisible} 
+      />
     </div>
+  );
+};
+
+export const PersonalBank: React.FC = () => {
+  return (
+    <ActivityProvider>
+      <PersonalBankContent />
+    </ActivityProvider>
   );
 }; 

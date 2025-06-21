@@ -1,25 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '../Modal/Modal';
 import { Button, Input, CloseButton } from '@jbaluch/components';
 import './EditVault.css';
+import { useActivity } from '../../contexts/ActivityContext';
 import type { Vault } from '../../types/types';
 
 interface EditVaultProps {
   open: boolean;
   onClose: () => void;
   vault: Vault;
+  onSave?: (data: Partial<Vault>) => void;
 }
 
-export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault }) => {
-  const [currency1] = useState('%');
-  const [currency2] = useState('%');
+export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSave }) => {
+  const { showActivity, hideActivity } = useActivity();
+  const [name, setName] = useState('');
+  const [reserveType, setReserveType] = useState<'amount' | 'percentage'>('percentage');
+  const [holdType, setHoldType] = useState<'amount' | 'percentage'>('percentage');
+  const [reserveValue, setReserveValue] = useState<number | string>('');
+  const [holdValue, setHoldValue] = useState<number | string>('');
 
-  // Format percentage value
-  const formatPercentage = (value: number | undefined) => {
-    if (typeof value === 'number') {
-      return `${value.toFixed(2)}%`;
+  useEffect(() => {
+    if (vault) {
+      const isCashVault = vault.type === 'Cash Vault';
+      const isGateway = vault.is_gateway;
+      
+      // For Cash Vault and Gateway, force amount type ($)
+      const initialReserveType = (isCashVault || isGateway) ? 'amount' : (vault.reserve_type || 'percentage');
+      const initialHoldType = (isCashVault || isGateway) ? 'amount' : (vault.hold_type || 'percentage');
+      
+      // For Gateway, show "Edit Gateway", otherwise use vault name
+      setName(isGateway ? 'Edit Gateway' : (vault.nickname || vault.name || ''));
+      setReserveType(initialReserveType);
+      setHoldType(initialHoldType);
+      setReserveValue(vault.reserve ?? 0);
+      setHoldValue(vault.hold ?? 0);
     }
-    return '0.00%';
+  }, [vault, open]);
+
+  const handleSave = () => {
+    // Show activity indicator immediately when button is clicked
+    showActivity('Editing vault...');
+    
+    const vaultData = {
+      ...vault,
+      nickname: vault.is_gateway ? 'Gateway' : name,
+      reserve: Number(reserveValue),
+      hold: Number(holdValue),
+      reserve_type: reserveType,
+      hold_type: holdType,
+    };
+    
+    if (onSave) {
+      onSave(vaultData);
+    }
+    
+    hideActivity();
+    onClose();
   };
 
   return (
@@ -43,24 +80,35 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault }) =>
           
           {/* Form fields */}
           <div className="edit-vault__form">
-            <div className="edit-vault__input-group">
-              <label className="edit-vault__label">
-                <span className="edit-vault__label-required">*</span>
-                Name
-              </label>
-              <Input value={vault.is_gateway ? 'Gateway' : (vault.nickname || vault.name)} readOnly className="edit-vault__input" />
-            </div>
+            {!vault.is_gateway && (
+              <div className="edit-vault__input-group">
+                <label className="edit-vault__label">
+                  <span className="edit-vault__label-required">*</span>
+                  Name
+                </label>
+                <Input value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} className="edit-vault__input" />
+              </div>
+            )}
             <div className="edit-vault__input-group">
               <label className="edit-vault__label">
                 <span className="edit-vault__label-required">*</span>
                 Safety buffer allocation
               </label>
               <div className="edit-vault__currency-group">
-                <select value={currency1} className="edit-vault__currency-select" disabled>
+                <select 
+                  value={reserveType === 'amount' ? '$' : '%'} 
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setReserveType(e.target.value === '$' ? 'amount' : 'percentage')} 
+                  className="edit-vault__currency-select"
+                  disabled={vault.type === 'Cash Vault' || vault.is_gateway}
+                >
                   <option value="$">$</option>
                   <option value="%">%</option>
                 </select>
-                <Input value={formatPercentage(vault.reserve_type === 'percentage' ? vault.reserve : 10)} readOnly className="edit-vault__currency-input" />
+                <Input 
+                  value={reserveValue} 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReserveValue(e.target.value)} 
+                  className="edit-vault__currency-input" 
+                />
               </div>
             </div>
             <div className="edit-vault__input-group">
@@ -69,11 +117,20 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault }) =>
                 Hold allocation
               </label>
               <div className="edit-vault__currency-group">
-                <select value={currency2} className="edit-vault__currency-select" disabled>
+                <select 
+                  value={holdType === 'amount' ? '$' : '%'} 
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setHoldType(e.target.value === '$' ? 'amount' : 'percentage')} 
+                  className="edit-vault__currency-select"
+                  disabled={vault.type === 'Cash Vault' || vault.is_gateway}
+                >
                   <option value="$">$</option>
                   <option value="%">%</option>
                 </select>
-                <Input value={formatPercentage(vault.hold_type === 'percentage' ? vault.hold : 10)} readOnly className="edit-vault__currency-input" />
+                <Input 
+                  value={holdValue} 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setHoldValue(e.target.value)} 
+                  className="edit-vault__currency-input" 
+                />
               </div>
             </div>
             <div className="edit-vault__input-group">
@@ -164,7 +221,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault }) =>
             icon="iconless"
             iconComponent={undefined}
             interaction="default"
-            onClick={() => {}}
+            onClick={handleSave}
             onMouseEnter={() => {}}
             onMouseLeave={() => {}}
             type="primary"

@@ -47,12 +47,12 @@ export const Overview: React.FC = () => {
 
   return (
     <div className="frame-overview">
-      <div className="page-toolbar">
-        <div className="title-parent">
-          <div className="title">Hello, {user?.firstName || 'User'}</div>
-          <div className="subtitle">{formattedDate}</div>
+      <header className="page-toolbar">
+        <div className="page-header">
+          <div className="page-header__title">Hello, {user?.firstName || 'User'}</div>
+          <div className="page-header__subtitle">{formattedDate}</div>
         </div>
-      </div>
+      </header>
       {onboardingStep !== 'done' ? (
         <OnboardingCard step={onboardingStep} onStepChange={handleOnboardingStepChange} />
       ) : (
