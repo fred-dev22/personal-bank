@@ -4,6 +4,7 @@ import { Button, Input, CloseButton } from "@jbaluch/components";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import type { Borrower } from '../../types/types';
+import { useActivity } from '../../contexts/ActivityContext';
 
 interface AddBorrowerProps {
   onClose?: () => void;
@@ -22,6 +23,8 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
   initialData,
   mode = 'add',
 }) => {
+  const { showActivity, hideActivity } = useActivity();
+  
   // Détermination du type par défaut
   const defaultType: 'person' | 'institution' = initialData?.type === 'institution' ? 'institution' : 'person';
 
@@ -67,11 +70,20 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
   };
 
   const handleSubmit = (): void => {
+    // Show activity indicator immediately when button is clicked
+    if (mode === 'add') {
+      showActivity('Creating borrower...');
+    } else if (mode === 'edit') {
+      showActivity('Editing borrower...');
+    }
+    
     if (borrowerType === 'person' && !formData.firstName && !formData.fullName) {
+      hideActivity();
       alert('Borrower name is required.');
       return;
     }
     if (borrowerType === 'institution' && !formData.fullName) {
+      hideActivity();
       alert('Institution name is required.');
       return;
     }
@@ -84,11 +96,14 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
       type: borrowerType,
       photo: selectedPhoto || undefined,
     } as Borrower;
+    
     if (mode === 'edit' && onEdit) {
       onEdit(borrowerData);
+      hideActivity();
       if (onClose) onClose();
     } else if (mode === 'add' && onAdd) {
       onAdd(borrowerData);
+      hideActivity();
       // Nettoyage du formulaire après ajout
       setFormData({
         firstName: '',

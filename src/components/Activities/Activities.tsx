@@ -14,9 +14,9 @@ export const Activities: React.FC = () => {
   return (
     <section className="activities">
       <header className="page-toolbar">
-        <div className="title-parent">
-          <div className="title">Activity</div>
-          <div className="subtitle">{formattedDate}</div>
+        <div className="page-header">
+          <div className="page-header__title">Activity</div>
+          <div className="page-header__subtitle">{formattedDate}</div>
         </div>
         <div className="search-filter-action">
           <MenuButton

@@ -1,5 +1,6 @@
 import React from "react";
 import "./VaultFinancials.css";
+import checkIcon from "../../../assets/Wavy_Check.svg";
 
 export interface VaultFinancialsProps {
   balance: number;
@@ -14,63 +15,86 @@ export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
   held,
   reserve,
   pending,
-  available
+  available,
 }) => {
   const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return amount.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     });
   };
 
   return (
     <div className="funds-section">
-      <h2 className="funds-title">Funds</h2>
-      <div className="funds-widget">
-        <div className="funds-header">
-          <div className="funds-amount">{formatCurrency(available)}</div>
-          <div className="funds-label">Available to lend</div>
-        </div>
-        <div className="funds-table">
-          <div className="funds-row">
-            <div className="funds-left">
-              <span className="funds-dot balance" />
-              <span className="funds-name">Balance</span>
+      <div className="funds-header">
+        <div className="funds-title">Funds</div>
+      </div>
+
+      <div className="vault-financials-card">
+        <div className="vault-financials-content">
+          <div className="financials-top">
+            <div className="financials-main-info">
+              <div className="amount-display">
+                <img
+                  src={checkIcon}
+                  alt="Available"
+                  className="checkmark-icon"
+                />
+                <div className="main-amount">{formatCurrency(available)}</div>
+              </div>
+              <div className="amount-label">Available to lend</div>
             </div>
-            <span className="funds-value">{formatCurrency(balance)}</span>
           </div>
-          <div className="funds-row">
-            <div className="funds-left">
-              <span className="funds-dot held" />
-              <span className="funds-name">Hold</span>
+
+          <div className="divider" />
+
+          <div className="financials-body">
+            <div className="financials-row">
+              <div className="row-left">
+                <div className="indicator-dot balance-dot" />
+                <div className="row-label">Balance</div>
+              </div>
+              <div className="row-value">{formatCurrency(balance)}</div>
             </div>
-            <span className="funds-value">-{formatCurrency(held)}</span>
-          </div>
-          <div className="funds-row">
-            <div className="funds-left">
-              <span className="funds-dot reserve" />
-              <span className="funds-name">Reserve</span>
+
+            <div className="financials-row">
+              <div className="row-left">
+                <div className="indicator-dot hold-dot" />
+                <div className="row-label row-label-dashed">Hold</div>
+              </div>
+              <div className="row-value">-{formatCurrency(held)}</div>
             </div>
-            <span className="funds-value">-{formatCurrency(reserve)}</span>
-          </div>
-          <div className="funds-row">
-            <div className="funds-left">
-              <span className="funds-dot pending" />
-              <span className="funds-name">Pending loan funding</span>
+
+            <div className="financials-row">
+              <div className="row-left">
+                <div className="indicator-dot reserve-dot" />
+                <div className="row-label row-label-dashed">Reserve</div>
+              </div>
+              <div className="row-value">-{formatCurrency(reserve)}</div>
             </div>
-            <span className="funds-value">-{formatCurrency(pending)}</span>
-          </div>
-          <div className="funds-row">
-            <div className="funds-left">
-              <span className="funds-dot available" />
-              <span className="funds-name">Available to lend</span>
+
+            <div className="financials-row">
+              <div className="row-left">
+                <div className="indicator-dot pending-dot" />
+                <div className="row-label row-label-dashed">Pending loan funding</div>
+              </div>
+              <div className="row-value">-{formatCurrency(pending)}</div>
             </div>
-            <span className="funds-value">{formatCurrency(available)}</span>
+
+            <div className="financials-row total-row">
+              <div className="row-left">
+                <div className="indicator-dot available-dot" />
+                <div className="row-label">Available to lend</div>
+              </div>
+              <div className="row-value total-value">
+                {formatCurrency(available)}
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}; 
+};
