@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button, IconButton, Input, MenuButton, Tabs, Table, TextCell, MetricCell, TagCell, EmptyState } from "@jbaluch/components";
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
@@ -31,10 +31,14 @@ export const Loans: React.FC<LoansProps> = ({
   const [searchValue, setSearchValue] = useState("");
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [selectedBorrower, setSelectedBorrower] = useState<BorrowerType | null>(null);
-  const filterCount = 4; // à remplacer par la vraie logique de filtre
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, { min?: string; max?: string } | string>>({});
+  const filterAnchorEl = useRef<HTMLButtonElement>(null);
+  const filterCount = Object.values(appliedFilters).filter(v => {
+    if (typeof v === 'string') return v.length > 0;
+    if (typeof v === 'object') return v.min || v.max;
+    return false;
+  }).length;
 
-  // Fonction utilitaire pour normaliser la casse et les espaces
-  const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, ' ').trim();
   const filteredLoans = loans.filter(loan => {
     const search = normalize(searchValue);
     const searchMatch = search === '' || (loan.nickname && normalize(loan.nickname).includes(search));
@@ -57,20 +61,52 @@ export const Loans: React.FC<LoansProps> = ({
       default:
         tabMatch = true;
     }
-    return tabMatch && searchMatch;
+    
+    if (!tabMatch || !searchMatch) return false;
+
+    // Advanced filters
+    const filterMatch = Object.entries(appliedFilters).every(([key, value]) => {
+      if (!value) return true;
+
+      const loanValue = loan[key as keyof Loan];
+
+      if (typeof loanValue === 'string' && typeof value === 'string') {
+        return loanValue.toLowerCase().includes(value.toLowerCase());
+      }
+      
+      if (typeof loanValue === 'number' && typeof value === 'object' && (value.min || value.max)) {
+        const { min, max } = value;
+        const minMatch = min ? loanValue >= Number(min) : true;
+        const maxMatch = max ? loanValue <= Number(max) : true;
+        return minMatch && maxMatch;
+      }
+      return true;
+    });
+
+    return filterMatch;
   });
 
   const handleClearAll = () => {
     setSearchValue("");
     setSearching(false);
-    // reset filters ici si besoin
+    setAppliedFilters({});
   };
 
-  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value);
+  const handleSearchInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setSearching(false);
+      return;
+    }
+    // On sauvegarde la référence à l'élément car l'objet 'e' sera nullifié.
+    const inputElement = e.currentTarget;
+    // On attend un instant pour que la valeur du champ soit mise à jour.
+    setTimeout(() => {
+      setSearchValue(inputElement.value);
+    }, 0);
+  };
 
   const handleFilterClick = () => {
-    // ouvrir la fenêtre de filtre ici
-    // setFilterCount(nouveauNombre) après application d'un filtre
+    // setIsFilterOpen(prev => !prev);
   };
 
   const handleMenuAction = (item: { id: string; label: string }) => {
@@ -87,6 +123,8 @@ export const Loans: React.FC<LoansProps> = ({
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', dateOptions);
+
+  const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, ' ').trim();
 
   if (selectedBorrower) {
     return (
@@ -137,12 +175,9 @@ export const Loans: React.FC<LoansProps> = ({
           )}
           {searching || searchValue !== "" ? (
             <Input
-              onChange={handleSearchInputChange}
               placeholder="Search loans"
-              value={searchValue}
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === "Enter") setSearching(false);
-              }}
+              defaultValue={searchValue}
+              onKeyDown={handleSearchInputKeyDown}
               style={{ width: 150 }}
               onBlur={() => setSearching(false)}
               autoFocus
@@ -160,6 +195,7 @@ export const Loans: React.FC<LoansProps> = ({
             />
           )}
           <IconButton
+            ref={filterAnchorEl}
             aria-label={`Filter - ${filterCount} filters applied`}
             icon={FilterIcon}
             notificationCount={filterCount}
@@ -224,32 +260,32 @@ export const Loans: React.FC<LoansProps> = ({
                 cellComponent: TextCell,
                 width: '100%',
                 alignment: 'left',
+
                 getCellProps: (row: Loan) => ({
                   text: row.nickname,
-                  alignment: 'left',
                 }),
               },
               {
                 key: 'loan_number',
                 label: 'ID',
                 cellComponent: TextCell,
+                alignment: 'center',
+
                 width: '100%',
-                alignment: 'left',
                 getCellProps: (row: Loan) => ({
                   text: `Loan ${row.loan_number}`,
-                  alignment: 'left',
                 }),
               },
               {
                 key: 'loan_type',
                 label: 'Tag',
                 cellComponent: TagCell,
+                alignment: 'center',
+
                 width: '100%',
-                alignment: 'left',
                 getCellProps: (row: Loan) => ({
                   label: row.loan_type,
                   emoji: '🏷️',
-                  alignment: 'left',
                   size: 'small',
                 }),
               },
@@ -257,12 +293,12 @@ export const Loans: React.FC<LoansProps> = ({
                 key: 'dscr_limit',
                 label: 'DSCR',
                 cellComponent: MetricCell,
+                alignment: 'center',
+
                 width: '100%',
-                alignment: 'left',
                 getCellProps: (row: Loan) => ({
                   value: row.dscr_limit ? `${row.dscr_limit.toFixed(2)}` : '',
                   status: row.dscr_limit < 1 ? 'bad' : 'good',
-                  alignment: 'left',
                 }),
               },
               {
@@ -270,12 +306,11 @@ export const Loans: React.FC<LoansProps> = ({
                 label: 'Payment Due',
                 cellComponent: TextCell,
                 width: '100%',
-                alignment: 'left',
+                alignment: 'center',
                 getCellProps: (row: Loan) => ({
                   text: row.initial_payment_amount !== undefined
                     ? `$${row.initial_payment_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                     : '',
-                  alignment: 'left',
                 }),
               },
               {
@@ -283,12 +318,11 @@ export const Loans: React.FC<LoansProps> = ({
                 label: 'Balance',
                 cellComponent: TextCell,
                 width: '100%',
-                alignment: 'left',
+                alignment: 'right',
                 getCellProps: (row: Loan) => ({
                   text: row.current_balance !== undefined
                     ? `$${row.current_balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                     : '',
-                  alignment: 'left',
                 }),
               }
             ]}

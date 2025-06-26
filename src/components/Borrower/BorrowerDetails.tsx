@@ -196,10 +196,9 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'Loan ID',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'center',
+                    alignment: 'left',
                     getCellProps: (row: SummaryRow) => ({
                       text: row.loan_id,
-                      alignment: 'center',
                       style: { fontWeight: 500 },
                     }),
                   },
@@ -211,7 +210,6 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     alignment: 'center',
                     getCellProps: (row: SummaryRow) => ({
                       text: row.payment_received,
-                      alignment: 'center',
                       style: { fontWeight: 600 },
                     }),
                   },
@@ -223,7 +221,6 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     alignment: 'center',
                     getCellProps: (row: SummaryRow) => ({
                       text: row.payment_expected,
-                      alignment: 'center',
                     }),
                   },
                   {
@@ -231,10 +228,9 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'Difference',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'center',
+                    alignment: 'right',
                     getCellProps: (row: SummaryRow) => ({
                       text: row.difference,
-                      alignment: 'center',
                       style: { color: '#1AC9A0', fontWeight: 600 },
                     }),
                   },
@@ -352,7 +348,6 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     alignment: 'left',
                     getCellProps: (row: Loan) => ({
                       text: row.nickname,
-                      alignment: 'left',
                     }),
                   },
                   {
@@ -360,10 +355,9 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'ID',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'left',
+                    alignment: 'center',
                     getCellProps: (row: Loan) => ({
                       text: row.loan_number ? `${row.loan_number}` : '',
-                      alignment: 'left',
                     }),
                   },
                   {
@@ -371,12 +365,11 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'Payment',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'left',
+                    alignment: 'center',
                     getCellProps: (row: Loan) => ({
                       text: row.initial_payment_amount !== undefined
                         ? `$${row.initial_payment_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         : '',
-                      alignment: 'left',
                     }),
                   },
                   {
@@ -384,12 +377,11 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'No.',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'left',
+                    alignment: 'center',
                     getCellProps: (row: Loan) => ({
                       text: row.initial_number_of_payments
                         ? `${row.loan_number} / ${row.initial_number_of_payments}`
                         : '',
-                      alignment: 'left',
                     }),
                   },
                   {
@@ -397,12 +389,11 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'Loan constant',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'left',
+                    alignment: 'center',
                     getCellProps: (row: Loan) => ({
                       text: row.initial_annual_rate !== undefined
                         ? `${row.initial_annual_rate.toFixed(2)}%`
                         : '',
-                      alignment: 'left',
                     }),
                   },
                   {
@@ -410,12 +401,11 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'Target UPB',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'left',
+                    alignment: 'center',
                     getCellProps: (row: Loan) => ({
                       text: row.initial_balance !== undefined
                         ? `$${row.initial_balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         : '',
-                      alignment: 'left',
                     }),
                   },
                   {
@@ -423,12 +413,11 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'Actual UPB',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'left',
+                    alignment: 'center',
                     getCellProps: (row: Loan) => ({
                       text: row.current_balance !== undefined
                         ? `$${row.current_balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                         : '',
-                      alignment: 'left',
                     }),
                   },
                   {
@@ -436,7 +425,7 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     label: 'Difference',
                     cellComponent: TextCell,
                     width: '100%',
-                    alignment: 'left',
+                    alignment: 'right',
                     getCellProps: (row: Loan) => {
                       const diff = (row.current_balance ?? 0) - (row.initial_balance ?? 0);
                       let color = '#1AC9A0';
@@ -445,7 +434,6 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                       else color = '#7B7B93';
                       return {
                         text: `${diff >= 0 ? '+' : ''}${diff.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`,
-                        alignment: 'left',
                         style: { color, fontWeight: 600 },
                       };
                     },
@@ -491,7 +479,6 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                   alignment: 'left',
                   getCellProps: (row: CommentRow) => ({
                     text: row.date,
-                    alignment: 'left',
                     style: { fontWeight: 600 },
                   }),
                 },
@@ -500,10 +487,9 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                   label: 'Description',
                   cellComponent: TextCell,
                   width: '100%',
-                  alignment: 'left',
+                  alignment: 'center',
                   getCellProps: (row: CommentRow) => ({
                     text: row.description,
-                    alignment: 'left',
                   }),
                 },
                 {
@@ -511,10 +497,9 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                   label: 'Creator',
                   cellComponent: TextCell,
                   width: '100%',
-                  alignment: 'left',
+                  alignment: 'right',
                   getCellProps: (row: CommentRow) => ({
                     text: row.creator,
-                    alignment: 'left',
                   }),
                 },
               ]}

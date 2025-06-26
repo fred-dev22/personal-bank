@@ -1,0 +1,64 @@
+.activities-header {
+  align-items: flex-start;
+  display: flex;
+  position: relative;
+}
+
+.activities-header .activities-table-header {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 8px;
+  padding: 0px 12px;
+  position: relative;
+}
+
+.activities-header .activities-label {
+  color: #000000b2;
+  font-family: var(--body-text-body-2-bold-font-family);
+  font-size: var(--body-text-body-2-bold-font-size);
+  font-style: var(--body-text-body-2-bold-font-style);
+  font-weight: var(--body-text-body-2-bold-font-weight);
+  letter-spacing: var(--body-text-body-2-bold-letter-spacing);
+  line-height: var(--body-text-body-2-bold-line-height);
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+  background: none;
+}
+
+.activities-header .activities-label-wrapper {
+  align-items: flex-end;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 8px;
+  justify-content: center;
+  padding: 0px 12px;
+  position: relative;
+}
+
+.activities-header .activities-div-wrapper {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 8px;
+  justify-content: center;
+  padding: 0px 12px;
+  position: relative;
+}
+
+.activities-header .activities-div {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 0px 12px;
+  position: relative;
+  background: none;
+} 

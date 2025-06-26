@@ -47,6 +47,7 @@
 .activities .search-filter-action {
   display: flex;
   gap: 16px;
+  align-items: center;
 }
 
 .empty-state-center {

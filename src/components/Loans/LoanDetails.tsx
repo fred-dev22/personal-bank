@@ -213,11 +213,11 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             </div>
             <Table
               columns={[
-                { key: 'due_date', label: 'Due date', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.due_date, alignment: 'left' }) },
-                { key: 'payment', label: 'Payment', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.payment, alignment: 'left' }) },
-                { key: 'fees', label: 'Fees', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.fees, alignment: 'left' }) },
-                { key: 'balance', label: 'Balance', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.balance, alignment: 'left' }) },
-                { key: 'status', label: 'Status', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.status, alignment: 'left', style: { fontWeight: row.status === 'On Time' ? 'bold' : 'normal' } }) },
+                { key: 'due_date', label: 'Due date', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.due_date }) },
+                { key: 'payment', label: 'Payment', width: '100%', alignment: 'center', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.payment }) },
+                { key: 'fees', label: 'Fees', width: '100%', alignment: 'center', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.fees }) },
+                { key: 'balance', label: 'Balance', width: '100%', alignment: 'center', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.balance }) },
+                { key: 'status', label: 'Status', width: '100%', alignment: 'rigth', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.status, style: { fontWeight: row.status === 'On Time' ? 'bold' : 'normal' } }) },
               ]}
               data={scheduleData}
               className="schedule-table"
@@ -262,9 +262,9 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             </div>
             <Table
               columns={[
-                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: DocumentRow) => ({ text: row.name, alignment: 'left', style: { fontWeight: 'bold' } }) },
-                { key: 'description', label: 'Description', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: DocumentRow) => ({ text: row.description, alignment: 'left' }) },
-                { key: 'uploadDate', label: 'Upload date', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: DocumentRow) => ({ text: row.uploadDate, alignment: 'right' }) },
+                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: DocumentRow) => ({ text: row.name, style: { fontWeight: 'bold' } }) },
+                { key: 'description', label: 'Description', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row: DocumentRow) => ({ text: row.description }) },
+                { key: 'uploadDate', label: 'Upload date', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: DocumentRow) => ({ text: row.uploadDate}) },
               ]}
               data={documentsData}
               className="documents-table"
