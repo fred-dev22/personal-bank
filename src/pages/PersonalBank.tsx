@@ -9,10 +9,11 @@ import { ActivityIndicator } from '../components/ActivityIndicator/ActivityIndic
 import { ActivityProvider, useActivity } from '../contexts/ActivityContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import type { Loan, Vault, Borrower as BorrowerType, User } from '../types/types';
+import type { Loan, Vault, Borrower as BorrowerType, User, Activity } from '../types/types';
 import { fetchLoans } from '../controllers/loanController';
 import { fetchVaults } from '../controllers/vaultController';
 import { fetchBorrowers } from '../controllers/borrowerController';
+import { fetchAllUserActivities } from '../controllers/activityController';
 import { Settings } from '../components/Settings/Settings';
 import './PersonalBank.css';
 
@@ -22,6 +23,9 @@ const PersonalBankContent: React.FC = () => {
   const [loans, setLoans] = useState<Loan[]>([]);
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [borrowers, setBorrowers] = useState<BorrowerType[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [activitiesError, setActivitiesError] = useState<string | null>(null);
   const { user, logout } = useAuth();
   const { isVisible, message, showActivity, hideActivity } = useActivity();
   const navigate = useNavigate();
@@ -80,6 +84,29 @@ const PersonalBankContent: React.FC = () => {
     getBorrowers(user, setBorrowers);
   }, [user?.banks]);
 
+  useEffect(() => {
+    const fetchActivities = async () => {
+      setActivitiesLoading(true);
+      setActivitiesError(null);
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) throw new Error('No token');
+        const data = await fetchAllUserActivities(loans, vaults, token);
+        setActivities(data);
+      } catch (e: unknown) {
+        const err = e as Error;
+        setActivitiesError(err.message || 'Erreur lors du chargement des activités');
+      } finally {
+        setActivitiesLoading(false);
+      }
+    };
+    if (loans.length > 0 || vaults.length > 0) {
+      fetchActivities();
+    } else {
+      setActivities([]);
+    }
+  }, [loans, vaults]);
+
   // Navigation items
   const mainNavItems = [
     { id: 'overview', label: 'Overview' },
@@ -124,7 +151,7 @@ const PersonalBankContent: React.FC = () => {
         {currentPage === 'overview' && <Overview />}
         {currentPage === 'loans' && <Loans loans={loans} borrowers={borrowers} />}
         {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} />}
-        {currentPage === 'activity' && <Activities />}
+        {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
         {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} />}
         {currentPage === 'settings' && <Settings />}
       </div>

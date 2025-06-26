@@ -100,20 +100,19 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
               cellComponent: TextCell,
               width: '100%',
               alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname, alignment: 'left' }),
+              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname}),
             },
             {
               key: 'issues',
               label: 'Issues',
               cellComponent: MetricCell,
               width: '100%',
-              alignment: 'left',
+              alignment: 'center',
               getCellProps: (row: Vault) => {
                 const issues = getIssues(row);
                 return {
                   value: issues,
                   status: issues > 0 ? 'bad' : 'good',
-                  alignment: 'left',
                   style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
                 };
               },
@@ -123,24 +122,24 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
               label: 'Total Spread',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getTotalSpread(row), alignment: 'left' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ text: getTotalSpread(row) }),
             },
             {
               key: 'equity_trend',
               label: 'Equity Trend',
               cellComponent: TagCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), alignment: 'left', size: 'small' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), size: 'small' }),
             },
             {
               key: 'available',
               label: 'Available',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getAvailable(row), alignment: 'left' }),
+              alignment: 'right',
+              getCellProps: (row: Vault) => ({ text: getAvailable(row) }),
             },
           ]}
           data={gateways}
@@ -159,20 +158,19 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
               cellComponent: TextCell,
               width: '100%',
               alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname, alignment: 'left' }),
+              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname }),
             },
             {
               key: 'issues',
               label: 'Issues',
               cellComponent: MetricCell,
               width: '100%',
-              alignment: 'left',
+              alignment: 'center',
               getCellProps: (row: Vault) => {
                 const issues = getIssues(row);
                 return {
                   value: issues,
                   status: issues > 0 ? 'bad' : 'good',
-                  alignment: 'left',
                   style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
                 };
               },
@@ -182,24 +180,24 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
               label: 'Total Spread',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getTotalSpread(row), alignment: 'left' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ text: getTotalSpread(row) }),
             },
             {
               key: 'equity_trend',
               label: 'Equity Trend',
               cellComponent: TagCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), alignment: 'left', size: 'small' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), size: 'small' }),
             },
             {
               key: 'available',
               label: 'Available',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getAvailable(row), alignment: 'left' }),
+              alignment: 'right',
+              getCellProps: (row: Vault) => ({ text: getAvailable(row) }),
             },
           ]}
           data={otherVaults}
