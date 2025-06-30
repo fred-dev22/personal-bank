@@ -19,7 +19,7 @@ const vaults: Vault[] = [
 
 export const Overview: React.FC = () => {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('one');
-  const [selectedVaultId, setSelectedVaultId] = useState<string>(vaults[0].id);
+  const [selectedVaultId] = useState<string>(vaults[0].id);
   const { user } = useAuth();
 
   const selectedVault = vaults.find(v => v.id === selectedVaultId) ?? vaults[0];

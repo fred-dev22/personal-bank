@@ -1,20 +1,5 @@
-import { Input, Table } from "@jbaluch/components";
+import { Input } from "@jbaluch/components";
 import "./vaults.css";
-
-const archivedVaults = [
-  {
-    name: "Vault 123",
-    totalLoans: 3,
-    created: "Jun 3, 2024",
-    archived: "Jun 3, 2024",
-  },
-  {
-    name: "Vault ABC",
-    totalLoans: 5,
-    created: "Jun 3, 2024",
-    archived: "Jun 3, 2024",
-  },
-];
 
 export const Vaults = () => {
   return (
