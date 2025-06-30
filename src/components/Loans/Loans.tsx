@@ -8,6 +8,7 @@ import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
 import LoanDetails from './LoanDetails';
 import BorrowerDetails from '../Borrower/BorrowerDetails';
+import { FilterPopover } from '../FilterPopover/FilterPopover';
 
 const SearchIcon = () => <img src={searchIcon} alt="search" />;
 const FilterIcon = () => <img src={filterIcon} alt="filter" />;
@@ -21,6 +22,8 @@ interface LoansProps {
   divClassName?: string;
 }
 
+type FilterValue = string | { min: string; max: string };
+
 export const Loans: React.FC<LoansProps> = ({
   loans,
   borrowers,
@@ -31,13 +34,39 @@ export const Loans: React.FC<LoansProps> = ({
   const [searchValue, setSearchValue] = useState("");
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [selectedBorrower, setSelectedBorrower] = useState<BorrowerType | null>(null);
-  const [appliedFilters, setAppliedFilters] = useState<Record<string, { min?: string; max?: string } | string>>({});
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, FilterValue>>({ amount: { min: '', max: '' }, date: { min: '', max: '' } });
   const filterAnchorEl = useRef<HTMLButtonElement>(null);
   const filterCount = Object.values(appliedFilters).filter(v => {
     if (typeof v === 'string') return v.length > 0;
     if (typeof v === 'object') return v.min || v.max;
     return false;
   }).length;
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, ' ').trim();
+
+  const filterFields: import('../FilterPopover/FilterPopover').FilterField[] = [
+    {
+      name: 'amount',
+      label: 'Amount Range',
+      type: 'number-range',
+      section: 'Financial',
+    },
+    {
+      name: 'date',
+      label: 'Date Range',
+      type: 'text',
+      section: 'Date & Time',
+    },
+  ];
+
+  const normalizeRange = (v: unknown): { min: string; max: string } => {
+    if (typeof v === 'object' && v !== null && 'min' in v && 'max' in v) {
+      const obj = v as { min?: string; max?: string };
+      return { min: obj.min ?? '', max: obj.max ?? '' };
+    }
+    return { min: '', max: '' };
+  };
 
   const filteredLoans = loans.filter(loan => {
     const search = normalize(searchValue);
@@ -67,15 +96,18 @@ export const Loans: React.FC<LoansProps> = ({
     // Advanced filters
     const filterMatch = Object.entries(appliedFilters).every(([key, value]) => {
       if (!value) return true;
-
+      if (key === 'amount' && typeof value === 'object' && (value.min || value.max)) {
+        const { min, max } = normalizeRange(value);
+        const minMatch = min ? loan.current_balance >= Number(min) : true;
+        const maxMatch = max ? loan.current_balance <= Number(max) : true;
+        return minMatch && maxMatch;
+      }
       const loanValue = loan[key as keyof Loan];
-
       if (typeof loanValue === 'string' && typeof value === 'string') {
         return loanValue.toLowerCase().includes(value.toLowerCase());
       }
-      
       if (typeof loanValue === 'number' && typeof value === 'object' && (value.min || value.max)) {
-        const { min, max } = value;
+        const { min, max } = normalizeRange(value);
         const minMatch = min ? loanValue >= Number(min) : true;
         const maxMatch = max ? loanValue <= Number(max) : true;
         return minMatch && maxMatch;
@@ -89,7 +121,7 @@ export const Loans: React.FC<LoansProps> = ({
   const handleClearAll = () => {
     setSearchValue("");
     setSearching(false);
-    setAppliedFilters({});
+    setAppliedFilters({ amount: { min: '', max: '' }, date: { min: '', max: '' } });
   };
 
   const handleSearchInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -103,10 +135,6 @@ export const Loans: React.FC<LoansProps> = ({
     setTimeout(() => {
       setSearchValue(inputElement.value);
     }, 0);
-  };
-
-  const handleFilterClick = () => {
-    // setIsFilterOpen(prev => !prev);
   };
 
   const handleMenuAction = (item: { id: string; label: string }) => {
@@ -123,8 +151,6 @@ export const Loans: React.FC<LoansProps> = ({
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', dateOptions);
-
-  const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, ' ').trim();
 
   if (selectedBorrower) {
     return (
@@ -147,8 +173,7 @@ export const Loans: React.FC<LoansProps> = ({
   }
 
   return (
-    <section className={`loans ${className}`}>
-      <header className="page-toolbar">
+    <section className={`loans ${className}`}>      <header className="page-toolbar">
         <div className="title-parent">
           <div className="title">Loans</div>
           <div className="subtitle">{formattedDate}</div>
@@ -194,18 +219,27 @@ export const Loans: React.FC<LoansProps> = ({
               notificationCount={0}
             />
           )}
-          <IconButton
-            ref={filterAnchorEl}
-            aria-label={`Filter - ${filterCount} filters applied`}
-            icon={FilterIcon}
-            notificationCount={filterCount}
-            onClick={handleFilterClick}
-            onMouseEnter={() => {}}
-            onMouseLeave={() => {}}
-            showNotification
-            type="secondary"
-            interaction="secondary"
-          />
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <IconButton
+              ref={filterAnchorEl}
+              aria-label={`Filter - ${filterCount} filters applied`}
+              icon={FilterIcon}
+              notificationCount={filterCount}
+              onClick={() => setFilterOpen(true)}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}
+              showNotification={filterCount > 0}
+              type="secondary"
+              interaction="secondary"
+            />
+            <FilterPopover
+              open={filterOpen}
+              onClose={() => setFilterOpen(false)}
+              fields={filterFields}
+              appliedFilters={appliedFilters}
+              onApply={setAppliedFilters}
+            />
+          </div>
           <MenuButton
             items={[
               { id: 'add-loan', label: 'Add loan' },

@@ -93,7 +93,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
       );
     }
 
-    if (vault.type === 'cash') {
+    if (vault.type === 'Cash Vault') {
       return (
         <VaultFinancials
           balance={vault.balance ?? 0}
@@ -167,23 +167,25 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
                     const borrower = borrowers.find(b => b.id === row.borrower_id || b.id === row.borrowerId);
                     return { name: row?.nickname ?? 'N/A', borrowerName: borrower?.fullName ?? '' };
                   }, 
-                  width: '25%' 
+                  width: '100%' ,
+                alignment: 'left'
                 },
-                { key: 'loan_number', label: 'ID', cellComponent: TextCell, getCellProps: (row: Loan) => ({ text: row ? `Loan ${row.loan_number}` : '' }) , width: '12%'},
-                { key: 'status', label: 'Status', cellComponent: StatusCell, getCellProps: (row: Loan) => ({ status: row?.status ?? 'Unknown' }), width: '15%' },
+                { key: 'loan_number', label: 'ID', cellComponent: TextCell, alignment: 'center',getCellProps: (row: Loan) => ({ text: row ? `Loan ${row.loan_number}` : '' }) , width: '100%'},
+                { key: 'status', label: 'Status',alignment: 'center', cellComponent: StatusCell, getCellProps: (row: Loan) => ({ status: row?.status ?? 'Unknown' }), width: '100%' },
                 { 
                   key: 'dscr_limit', 
                   label: 'DSCR', 
+                  alignment: 'center',
                   cellComponent: MetricCell, 
                   getCellProps: (row: Loan) => {
                     const value = row?.dscr_limit;
                     const status = value === null || typeof value === 'undefined' ? 'neutral' : value < 1 ? 'bad' : 'good';
-                    return { value: value ?? 'N/A', status: status,  alignment: 'left' };
+                    return { value: value ?? 'N/A', status: status };
                   }, 
-                  width: '10%' 
+                  width: '100%' 
                 },
-                { key: 'initial_annual_rate', label: 'Loan constant', cellComponent: TextCell, getCellProps: (row: Loan) => ({ text: row ? `${row.initial_annual_rate}%` : '0%' }), width: '15%'},
-                { key: 'current_balance', label: 'Unpaid balance', cellComponent: TextCell, getCellProps: () => ({ text: 'Not available yet' }), width: '23%' },
+                { key: 'initial_annual_rate', label: 'Loan constant',alignment: 'center', cellComponent: TextCell, getCellProps: (row: Loan) => ({ text: row ? `${row.initial_annual_rate}%` : '0%' }), width: '100%'},
+                { key: 'current_balance', label: 'Unpaid balance',alignment: 'right', cellComponent: TextCell, getCellProps: () => ({ text: 'Not available yet' }), width: '100%' },
               ]}
               data={vaultLoans}
               className="loans-table"

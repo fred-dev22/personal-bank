@@ -5,7 +5,10 @@ import '@jbaluch/components/styles';
 import "./activities.css";
 import { Header } from "./Header";
 import { AddEditActivity } from "./AddEditActivity";
+import { FilterPopover } from "../FilterPopover/FilterPopover";
+import type { FilterField } from "../FilterPopover/FilterPopover";
 import type { Activity } from '../../types/types';
+import type { FilterValue } from '../FilterPopover/FilterPopover';
 
 const SearchIcon = () => <img src={"/search.svg"} alt="search" />;
 const FilterIcon = () => <img src={"/filter_alt.svg"} alt="filter" />;
@@ -37,6 +40,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
   const [searchValue, setSearchValue] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState<Record<string, { min?: string; max?: string } | string>>({});
   const filterAnchorEl = useRef<HTMLButtonElement>(null);
   const filterCount = Object.values(appliedFilters).filter(v => {
@@ -44,6 +48,50 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
     if (typeof v === 'object') return v.min || v.max;
     return false;
   }).length;
+
+  // Champs de filtre pour les activités
+  const filterFields: FilterField[] = [
+    {
+      name: 'type',
+      label: 'Activity Type',
+      type: 'select',
+      section: 'Activity Details',
+      options: [
+        { label: 'Loan Activity', value: 'loan' },
+        { label: 'Vault Activity', value: 'vault' },
+        { label: 'Payment', value: 'payment' },
+        { label: 'Transfer', value: 'transfer' },
+        { label: 'Withdrawal', value: 'withdrawal' },
+        { label: 'Deposit', value: 'deposit' }
+      ]
+    },
+    {
+      name: 'tag',
+      label: 'Category',
+      type: 'select',
+      section: 'Activity Details',
+      options: [
+        { label: 'Income', value: 'income' },
+        { label: 'Expense', value: 'expense' },
+        { label: 'Transfer', value: 'transfer' },
+        { label: 'Investment', value: 'investment' },
+        { label: 'Loan', value: 'loan' },
+        { label: 'Vault', value: 'vault' }
+      ]
+    },
+    {
+      name: 'amount',
+      label: 'Amount Range',
+      type: 'number-range',
+      section: 'Financial'
+    },
+    {
+      name: 'date',
+      label: 'Date Range',
+      type: 'text',
+      section: 'Date & Time'
+    }
+  ];
 
   const handleClearAll = () => {
     setSearchValue("");
@@ -60,6 +108,15 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
     }, 0);
   };
 
+  // Helper pour garantir que min et max sont toujours des string
+  const normalizeRange = (v: unknown): { min: string; max: string } => {
+    if (typeof v === 'object' && v !== null && 'min' in v && 'max' in v) {
+      const obj = v as { min?: string; max?: string };
+      return { min: obj.min ?? '', max: obj.max ?? '' };
+    }
+    return { min: '', max: '' };
+  };
+
   // Filtrage dynamique
   const filteredActivities = activities.filter(a => {
     const val = searchValue.toLowerCase();
@@ -73,14 +130,18 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
     // Advanced filters
     const filterMatch = Object.entries(appliedFilters).every(([key, value]) => {
       if (!value) return true;
-
+      if (key === 'amount' && typeof value === 'object' && (value.min || value.max)) {
+        const { min, max } = normalizeRange(value);
+        const minMatch = min ? a.amount >= Number(min) : true;
+        const maxMatch = max ? a.amount <= Number(max) : true;
+        return minMatch && maxMatch;
+      }
       const activityValue = a[key as keyof Activity];
-
       if (typeof activityValue === 'string' && typeof value === 'string') {
         return activityValue.toLowerCase().includes(value.toLowerCase());
       }
       if (typeof activityValue === 'number' && typeof value === 'object' && (value.min || value.max)) {
-        const { min, max } = value;
+        const { min, max } = normalizeRange(value);
         const minMatch = min ? activityValue >= Number(min) : true;
         const maxMatch = max ? activityValue <= Number(max) : true;
         return minMatch && maxMatch;
@@ -210,20 +271,29 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
                 notificationCount={0}
               />
             )}
-            <IconButton
-              ref={filterAnchorEl}
-              aria-label="Filter"
-              icon={FilterIcon}
-              onClick={() => {}}
-              type="secondary"
-              interaction="secondary"
-              notificationCount={filterCount}
-              showNotification={filterCount > 0}
-              iconComponent={undefined}
-              onMouseEnter={() => {}}
-              onMouseLeave={() => {}}
-              form=""
-            />
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <IconButton
+                ref={filterAnchorEl}
+                aria-label="Filter"
+                icon={FilterIcon}
+                onClick={() => setFilterOpen(true)}
+                type="secondary"
+                interaction="secondary"
+                notificationCount={filterCount}
+                showNotification={filterCount > 0}
+                iconComponent={undefined}
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                form=""
+              />
+              <FilterPopover
+                open={filterOpen}
+                onClose={() => setFilterOpen(false)}
+                fields={filterFields}
+                appliedFilters={appliedFilters as { [key: string]: FilterValue }}
+                onApply={setAppliedFilters}
+              />
+            </div>
             <Button
               icon="iconless"
               interaction="default"
@@ -251,7 +321,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
           }}
         />
         <section className="all-activities-table">
-          <Header />
+          {(loading || error || filteredActivities.length > 0) && <Header />}
           {loading ? (
             <div className="empty-state-center"><div>Loading...</div></div>
           ) : error ? (

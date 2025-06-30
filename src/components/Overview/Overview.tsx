@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { OnboardingCard } from '../OnboardingCard/OnboardingCard';
-import { Button } from '@jbaluch/components';
+import { Button, IconButton } from '@jbaluch/components';
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import "./Overview.css";
 import type { Vault } from '../../types/types';
 import { useAuth } from '../../contexts/AuthContext';
+import filterIcon from '/filter_alt.svg';
+import { FilterPopover } from '../FilterPopover/FilterPopover';
 
 type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
 
@@ -17,10 +19,22 @@ const vaults: Vault[] = [
   { id: 'safebox', name: 'SafeBox', issues: 0, balance: 22000, financials: { paidIn: 1000, paidOut: 16000 }, health: { reserves: 16000, loanToValue: 72, incomeDSCR: 2.0, growthDSCR: 1.8 } },
 ];
 
+type FilterType = 'text' | 'number-range' | 'select';
+type FilterField = {
+  name: string;
+  label: string;
+  type: FilterType;
+  options?: { label: string; value: string }[];
+  section?: string;
+};
+
 export const Overview: React.FC = () => {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('one');
   const [selectedVaultId, setSelectedVaultId] = useState<string>(vaults[0].id);
   const { user } = useAuth();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<{ [key: string]: string }>({});
+  const filterAnchorEl = useRef<HTMLButtonElement>(null);
 
   const selectedVault = vaults.find(v => v.id === selectedVaultId) ?? vaults[0];
 
@@ -45,6 +59,22 @@ export const Overview: React.FC = () => {
     }
   };
 
+  const filterFields: FilterField[] = [
+    { name: 'name', label: 'Vault Name', type: 'text', section: 'Vaults' },
+    { name: 'type', label: 'Type', type: 'select', section: 'Vaults', options: [
+      { label: 'All', value: '' },
+      { label: 'Super Vault', value: 'Super Vault' },
+      { label: 'Cash Vault', value: 'Cash Vault' },
+      { label: 'Gateway', value: 'Gateway' },
+    ] },
+  ];
+
+  const filteredVaults = vaults.filter(vault => {
+    const nameMatch = !appliedFilters.name || vault.name.toLowerCase().includes(appliedFilters.name.toLowerCase());
+    const typeMatch = !appliedFilters.type || (appliedFilters.type === 'Gateway' ? vault.id === 'gateway' : vault.type === appliedFilters.type);
+    return nameMatch && typeMatch;
+  });
+
   return (
     <div className="frame-overview">
       <header className="page-toolbar">
@@ -52,6 +82,32 @@ export const Overview: React.FC = () => {
           <div className="page-header__title">Hello, {user?.firstName || 'User'}</div>
           <div className="page-header__subtitle">{formattedDate}</div>
         </div>
+        <IconButton
+          ref={filterAnchorEl}
+          aria-label="Filter"
+          icon={() => <img src={filterIcon} alt="filter" />}
+          onClick={() => setIsFilterOpen(true)}
+          type="secondary"
+          interaction="secondary"
+          notificationCount={Object.values(appliedFilters).filter(Boolean).length}
+          showNotification={Object.values(appliedFilters).filter(Boolean).length > 0}
+          onMouseEnter={() => {}}
+          onMouseLeave={() => {}}
+        />
+        <FilterPopover
+          open={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          fields={filterFields}
+          appliedFilters={appliedFilters}
+          onApply={filters => {
+            // Only keep string filters
+            const stringFilters: { [key: string]: string } = {};
+            Object.entries(filters).forEach(([k, v]) => {
+              if (typeof v === 'string') stringFilters[k] = v;
+            });
+            setAppliedFilters(stringFilters);
+          }}
+        />
       </header>
       {onboardingStep !== 'done' ? (
         <OnboardingCard step={onboardingStep} onStepChange={handleOnboardingStepChange} />
@@ -116,7 +172,7 @@ export const Overview: React.FC = () => {
             <div className="row">
               <div className="vault-financials">
                 <div className="table">
-                  {vaults.map((vault, idx) => (
+                  {filteredVaults.map((vault, idx) => (
                     <div className="vault-card-row-wrapper" key={vault.id}>
                       <div
                         className={
