@@ -15,12 +15,17 @@ import { CashFlowCard } from '../Cards/CashFlowCard/CashFlowCard';
 import { TermsCard } from '../Cards/TermsCard/TermsCard';
 import { EditLoan } from './EditLoan';
 import { Modal } from '../Modal/Modal';
+import { fetchLoanById } from '../../controllers/loanController';
+import { EmptyState } from '@jbaluch/components';
+import { useAuth } from '../../contexts/AuthContext';
+import { useActivity } from '../../contexts/ActivityContext';
 
 interface LoanDetailsProps {
   loan: Loan;
   borrower: Borrower;
   onBack: () => void;
   onShowBorrowerDetails: () => void;
+  onShowVaultDetails?: (vaultId: string) => void;
 }
 
 function getInitials(name: string) {
@@ -49,15 +54,6 @@ type ScheduleRow = {
   status: string;
 };
 
-const scheduleData: ScheduleRow[] = [
-  { due_date: 'Oct 8', payment: '$300.00 / $300.00', fees: '$35.00', balance: '$2,135.00', status: 'On Time' },
-  { due_date: 'Nov 8', payment: '$300.00 / $300.00', fees: '$40.00', balance: '$1,870.00', status: 'On Time' },
-  { due_date: 'Dec 8', payment: '$300.00', fees: '$35.00', balance: '$1,605.00', status: 'Upcoming' },
-  { due_date: 'Jan 8', payment: '$300.00', fees: '$35.00', balance: '$1,340.00', status: 'Upcoming' },
-  { due_date: 'Feb 8', payment: '$300.00', fees: '$35.00', balance: '$1,075.00', status: 'Upcoming' },
-  { due_date: 'Mar 8', payment: '$300.00', fees: '$35.00', balance: '$810.00', status: 'Upcoming' },
-];
-
 type DocumentRow = {
   name: string;
   description: string;
@@ -69,9 +65,80 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails }) => {
+export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
+  const [scheduleRows, setScheduleRows] = useState<ScheduleRow[] | null>(null);
+  const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { showActivity, hideActivity } = useActivity();
+
+  React.useEffect(() => {
+    if (
+      activeTab === 'schedule' &&
+      (scheduleRows === null || loan.id !== lastFetchedLoanId)
+    ) {
+      setScheduleLoading(true);
+      setScheduleError(null);
+      showActivity('Payments are loading...');
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setScheduleError('Vous devez être connecté pour voir le schedule.');
+        setScheduleLoading(false);
+        hideActivity();
+        return;
+      }
+      fetchLoanById(loan.id, token)
+        .then(data => {
+          if (Array.isArray(data.actual_payments_scheduled)) {
+            setScheduleRows(data.actual_payments_scheduled.map((row: any) => ({
+              due_date: row.date ? new Date(row.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+              payment: row.amount_due !== undefined ? `$${row.amount_due}` : '',
+              fees: row.fees !== undefined ? `$${row.fees}` : '',
+              balance: row.unpaid_balance !== undefined ? `$${row.unpaid_balance}` : '',
+              status: row.status || '',
+            })));
+          } else {
+            setScheduleRows([]);
+          }
+          setLastFetchedLoanId(loan.id);
+          setScheduleLoading(false);
+          hideActivity();
+        })
+        .catch(() => {
+          setScheduleError('Erreur lors du chargement du schedule.');
+          setScheduleLoading(false);
+          hideActivity();
+        });
+    }
+  }, [activeTab, loan.id]);
+
+  // Helper pour formater les montants avec 2 décimales
+  const formatMoney = (val: string | number) => {
+    const num = typeof val === 'string' ? parseFloat(val.replace(/[^\d.\-]/g, '')) : val;
+    if (isNaN(num)) return '$0.00';
+    return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  // Helper pour le header du schedule
+  const payoffDate = (scheduleRows && scheduleRows.length > 0)
+    ? new Date(scheduleRows[scheduleRows.length - 1].due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : '';
+
+  const paidToDate = scheduleRows && scheduleRows.length > 0
+    ? scheduleRows.filter(r => r.status.toLowerCase() === 'paid').reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
+    : 0;
+
+  const remaining = scheduleRows && scheduleRows.length > 0
+    ? formatMoney(
+        scheduleRows
+          .filter(r => r.status.toLowerCase() !== 'paid')
+          .reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
+      )
+    : formatMoney(0);
+
   return (
     <div className="loan-details" style={{ background: 'transparent' }}>
       {/* Header */}
@@ -89,7 +156,9 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           iconComponent={() => <img src={vaultIcon} alt="Vault" style={{ width: 18, height: 18 }} />}
           interaction="default"
           justified="left"
-          onClick={() => {}}
+          onClick={() => {
+            if (onShowVaultDetails && loan.vaultId) onShowVaultDetails(loan.vaultId);
+          }}
           onMouseEnter={() => {}}
           onMouseLeave={() => {}}
           type="secondary"
@@ -194,34 +263,97 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             </div>
           </div>
         )}
-        {activeTab === 'activity' && <div>Activity content</div>}
-        {activeTab === 'schedule' && (
-          <div className="schedule-section">
-            <div className="table-header">
-              <div className="vaults-description">
-                <div className="subtitle">Payoff date</div>
-                <div className="title">{formatDateMD(loan.funded_date)}</div>
-              </div>
-              <div className="vaults-description">
-                <div className="subtitle">Paid to date</div>
-                <div className="text-wrapper">$600.00</div>
-              </div>
-              <div className="vaults-description">
-                <div className="subtitle">Remaining</div>
-                <div className="title">$1,870.00</div>
-              </div>
-            </div>
+        {activeTab === 'activity' && (
+          <div className="activity-section">
             <Table
               columns={[
-                { key: 'due_date', label: 'Due date', width: '100%', alignment: 'left', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.due_date }) },
-                { key: 'payment', label: 'Payment', width: '100%', alignment: 'center', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.payment }) },
-                { key: 'fees', label: 'Fees', width: '100%', alignment: 'center', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.fees }) },
-                { key: 'balance', label: 'Balance', width: '100%', alignment: 'center', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.balance }) },
-                { key: 'status', label: 'Status', width: '100%', alignment: 'rigth', cellComponent: TextCell, getCellProps: (row: ScheduleRow) => ({ text: row.status, style: { fontWeight: row.status === 'On Time' ? 'bold' : 'normal' } }) },
+                { key: 'name', label: 'Name', cellComponent: TextCell, width: '100%', alignment: 'left', getCellProps: (row: any) => ({ text: row.name }) },
+                { key: 'category', label: 'Category', cellComponent: TextCell, width: '100%', alignment: 'center', getCellProps: (row: any) => ({ text: row.category, style: { fontWeight: 'bold', color: row.categoryColor, background: row.categoryBg, borderRadius: 8, padding: '2px 8px', display: 'inline-block' } }) },
+                { key: 'date', label: 'Date', cellComponent: TextCell, width: '100%', alignment: 'center', getCellProps: (row: any) => ({ text: row.date }) },
+                { key: 'amount', label: 'Amount', cellComponent: TextCell, width: '100%', alignment: 'right', getCellProps: (row: any) => ({ text: row.amount, style: { color: row.amountColor || undefined } }) },
               ]}
-              data={scheduleData}
-              className="schedule-table"
+              data={[
+                { name: 'Paypal', category: 'Transfer fee', categoryColor: '#e53935', categoryBg: '#fdeaea', date: 'Nov 8', amount: '$2.55' },
+                { name: 'Paypal', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$2.55' },
+                { name: 'Paypal', category: 'Transfer fee', categoryColor: '#e53935', categoryBg: '#fdeaea', date: 'Nov 8', amount: '$2.55' },
+                { name: 'Interest 9', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$5.00' },
+                { name: 'Interest 9', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$5.00' },
+                { name: 'Payment 9', category: 'Loan payment', categoryColor: '#388e3c', categoryBg: '#eafaf1', date: 'Nov 8', amount: '$3000.00', amountColor: '#388e3c' },
+                { name: 'Payment 9', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$300.00' },
+                { name: 'Payment 9', category: 'Loan payment', categoryColor: '#388e3c', categoryBg: '#eafaf1', date: 'Nov 8', amount: '$3000.00', amountColor: '#388e3c' },
+              ]}
+              className="activity-table"
             />
+          </div>
+        )}
+        {activeTab === 'schedule' && (
+          <div className="schedule-section">
+            {scheduleError ? (
+              <EmptyState title="Erreur" description={scheduleError} imageName="empty" severity="info" customImage={undefined} />
+            ) : scheduleRows && scheduleRows.length > 0 ? (
+              <>
+                <div className="table-header">
+                  <div className="vaults-description">
+                    <div className="subtitle">Payoff date</div>
+                    <div className="title">{payoffDate}</div>
+                  </div>
+                  <div className="vaults-description">
+                    <div className="subtitle">Paid to date</div>
+                    <div className="text-wrapper">{formatMoney(paidToDate)}</div>
+                  </div>
+                  <div className="vaults-description">
+                    <div className="subtitle">Remaining</div>
+                    <div className="title">{remaining}</div>
+                  </div>
+                </div>
+                <Table
+                  columns={[
+                    {
+                      key: 'due_date',
+                      label: 'Due date',
+                      cellComponent: TextCell,
+                      width: '100%',
+                      alignment: 'left',
+                      getCellProps: (row: ScheduleRow) => ({ text: row.due_date })
+                    },
+                    {
+                      key: 'payment',
+                      label: 'Payment',
+                      cellComponent: TextCell,
+                      width: '100%',
+                      alignment: 'center',
+                      getCellProps: (row: ScheduleRow) => ({ text: formatMoney(row.payment) })
+                    },
+                    {
+                      key: 'fees',
+                      label: 'Fees',
+                      width: '100%',
+                      cellComponent: TextCell,
+                      alignment: 'center',
+                      getCellProps: (row: ScheduleRow) => ({ text: formatMoney(row.fees) })
+                    },
+                    {
+                      key: 'balance',
+                      label: 'Balance',
+                      cellComponent: TextCell,
+                      width: '100%',
+                      alignment: 'center',
+                      getCellProps: (row: ScheduleRow) => ({ text: formatMoney(row.balance) })
+                    },
+                    {
+                      key: 'status',
+                      label: 'Status',
+                      cellComponent: TextCell,
+                      width: '100%',
+                      alignment: 'right',
+                      getCellProps: (row: ScheduleRow) => ({ text: row.status, style: { fontWeight: row.status === 'On Time' ? 'bold' : 'normal' } })
+                    },
+                  ]}
+                  data={scheduleRows || []}
+                  className="schedule-table"
+                />
+              </>
+            ) : null}
           </div>
         )}
         {activeTab === 'documents' && (

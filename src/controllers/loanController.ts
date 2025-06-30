@@ -46,4 +46,23 @@ export const updateLoan = async (
     console.error('Error updating loan:', error);
     throw error;
   }
+};
+
+export const fetchLoanById = async (noteId: string, token: string): Promise<Loan> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/notes/${noteId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch loan by id');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching loan by id:', error);
+    throw error;
+  }
 }; 

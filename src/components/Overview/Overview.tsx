@@ -1,13 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { OnboardingCard } from '../OnboardingCard/OnboardingCard';
-import { Button, IconButton } from '@jbaluch/components';
+import { Button} from '@jbaluch/components';
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import "./Overview.css";
 import type { Vault } from '../../types/types';
 import { useAuth } from '../../contexts/AuthContext';
-import filterIcon from '/filter_alt.svg';
-import { FilterPopover } from '../FilterPopover/FilterPopover';
 
 type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
 
@@ -19,22 +17,10 @@ const vaults: Vault[] = [
   { id: 'safebox', name: 'SafeBox', issues: 0, balance: 22000, financials: { paidIn: 1000, paidOut: 16000 }, health: { reserves: 16000, loanToValue: 72, incomeDSCR: 2.0, growthDSCR: 1.8 } },
 ];
 
-type FilterType = 'text' | 'number-range' | 'select';
-type FilterField = {
-  name: string;
-  label: string;
-  type: FilterType;
-  options?: { label: string; value: string }[];
-  section?: string;
-};
-
 export const Overview: React.FC = () => {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('one');
   const [selectedVaultId, setSelectedVaultId] = useState<string>(vaults[0].id);
   const { user } = useAuth();
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState<{ [key: string]: string }>({});
-  const filterAnchorEl = useRef<HTMLButtonElement>(null);
 
   const selectedVault = vaults.find(v => v.id === selectedVaultId) ?? vaults[0];
 
@@ -58,23 +44,6 @@ export const Overview: React.FC = () => {
       setOnboardingStep(step);
     }
   };
-
-  const filterFields: FilterField[] = [
-    { name: 'name', label: 'Vault Name', type: 'text', section: 'Vaults' },
-    { name: 'type', label: 'Type', type: 'select', section: 'Vaults', options: [
-      { label: 'All', value: '' },
-      { label: 'Super Vault', value: 'Super Vault' },
-      { label: 'Cash Vault', value: 'Cash Vault' },
-      { label: 'Gateway', value: 'Gateway' },
-    ] },
-  ];
-
-  const filteredVaults = vaults.filter(vault => {
-    const nameMatch = !appliedFilters.name || vault.name.toLowerCase().includes(appliedFilters.name.toLowerCase());
-    const typeMatch = !appliedFilters.type || (appliedFilters.type === 'Gateway' ? vault.id === 'gateway' : vault.type === appliedFilters.type);
-    return nameMatch && typeMatch;
-  });
-
   return (
     <div className="frame-overview">
       <header className="page-toolbar">
@@ -82,32 +51,6 @@ export const Overview: React.FC = () => {
           <div className="page-header__title">Hello, {user?.firstName || 'User'}</div>
           <div className="page-header__subtitle">{formattedDate}</div>
         </div>
-        <IconButton
-          ref={filterAnchorEl}
-          aria-label="Filter"
-          icon={() => <img src={filterIcon} alt="filter" />}
-          onClick={() => setIsFilterOpen(true)}
-          type="secondary"
-          interaction="secondary"
-          notificationCount={Object.values(appliedFilters).filter(Boolean).length}
-          showNotification={Object.values(appliedFilters).filter(Boolean).length > 0}
-          onMouseEnter={() => {}}
-          onMouseLeave={() => {}}
-        />
-        <FilterPopover
-          open={isFilterOpen}
-          onClose={() => setIsFilterOpen(false)}
-          fields={filterFields}
-          appliedFilters={appliedFilters}
-          onApply={filters => {
-            // Only keep string filters
-            const stringFilters: { [key: string]: string } = {};
-            Object.entries(filters).forEach(([k, v]) => {
-              if (typeof v === 'string') stringFilters[k] = v;
-            });
-            setAppliedFilters(stringFilters);
-          }}
-        />
       </header>
       {onboardingStep !== 'done' ? (
         <OnboardingCard step={onboardingStep} onStepChange={handleOnboardingStepChange} />
@@ -168,34 +111,11 @@ export const Overview: React.FC = () => {
           <div className="vault-summary">
             <div className="title">
               <div className="div">Vaults</div>
-            </div>
-            <div className="row">
-              <div className="vault-financials">
-                <div className="table">
-                  {filteredVaults.map((vault, idx) => (
-                    <div className="vault-card-row-wrapper" key={vault.id}>
-                      <div
-                        className={
-                          (idx === 0 ? "vault-card-row" : "vault-card-row-2") +
-                          (selectedVaultId === vault.id ? " selected" : "")
-                        }
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => setSelectedVaultId(vault.id)}
-                      >
-                        <div className={idx === 0 ? "label-wrapper" : "table-cell-2"}>
-                          <div className="label-2">{vault.name}</div>
-                        </div>
-                        <div className={idx === 0 ? undefined : "table-cell-3"}>
-                          <span className={idx === 0 ? "table-cell-instance design-component-instance-node" : "label-4"}>{vault.issues && vault.issues > 0 ? `${vault.issues} issues` : ''}</span>
-                        </div>
-                        <div className={idx === 0 ? "div-wrapper" : "table-cell-4"}>
-                          <div className="label-3">${vault.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                        </div>
-                      </div>
+          
+            
+
                     </div>
-                  ))}
-                </div>
-              </div>
+
               <div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <div style={{background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.03)', padding: 32, minWidth: 320}}>
                   <div style={{fontWeight: 700, fontSize: 18, marginBottom: 16}}>{selectedVault.name}</div>
@@ -209,7 +129,7 @@ export const Overview: React.FC = () => {
                   <div><b>Growth DSCR:</b> {selectedVault.health.growthDSCR.toFixed(2)}</div>
                 </div>
               </div>
-            </div>
+          
           </div>
         </div>
       )}

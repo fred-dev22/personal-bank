@@ -5,7 +5,6 @@ import { Loans } from '../components/Loans/Loans';
 import { Vaults } from '../components/Vaults/Vaults';
 import { Borrower } from '../components/Borrower/Borrower';
 import { Activities } from '../components/Activities/Activities';
-import { ActivityIndicator } from '../components/ActivityIndicator/ActivityIndicator';
 import { ActivityProvider, useActivity } from '../contexts/ActivityContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -15,11 +14,14 @@ import { fetchVaults } from '../controllers/vaultController';
 import { fetchBorrowers } from '../controllers/borrowerController';
 import { fetchAllUserActivities } from '../controllers/activityController';
 import { Settings } from '../components/Settings/Settings';
+import { Snackbar } from '@jbaluch/components';
 import './PersonalBank.css';
 
 const PersonalBankContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('overview');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [selectedBorrowerId, setSelectedBorrowerId] = useState<string | null>(null);
+  const [selectedVaultId, setSelectedVaultId] = useState<string | null>(null);
   const [loans, setLoans] = useState<Loan[]>([]);
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [borrowers, setBorrowers] = useState<BorrowerType[]>([]);
@@ -27,7 +29,7 @@ const PersonalBankContent: React.FC = () => {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [activitiesError, setActivitiesError] = useState<string | null>(null);
   const { user, logout } = useAuth();
-  const { isVisible, message, showActivity, hideActivity } = useActivity();
+  const { showActivity, hideActivity, isVisible, message } = useActivity();
   const navigate = useNavigate();
 
   const getLoans = async (user: User | null, setLoans: React.Dispatch<React.SetStateAction<Loan[]>>) => {
@@ -137,29 +139,49 @@ const PersonalBankContent: React.FC = () => {
   };
 
   return (
-    <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
-      <NavigationBar
-        mainNavItems={mainNavItems}
-        bottomNavItems={bottomNavItems}
-        activeItemId={currentPage}
-        isCollapsed={sidebarCollapsed}
-        onNavItemClick={handleNavigation}
-        onSignOut={handleSignOut}
-        onToggleCollapse={handleToggleCollapse}
-      />
-      <div className="content-container">
-        {currentPage === 'overview' && <Overview />}
-        {currentPage === 'loans' && <Loans loans={loans} borrowers={borrowers} />}
-        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} />}
-        {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
-        {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} />}
-        {currentPage === 'settings' && <Settings />}
+    <>
+      <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
+        <NavigationBar
+          mainNavItems={mainNavItems}
+          bottomNavItems={bottomNavItems}
+          activeItemId={currentPage}
+          isCollapsed={sidebarCollapsed}
+          onNavItemClick={handleNavigation}
+          onSignOut={handleSignOut}
+          onToggleCollapse={handleToggleCollapse}
+        />
+        <div className="content-container">
+          {currentPage === 'overview' && <Overview />}
+          {currentPage === 'loans' && (
+            <Loans
+              loans={loans}
+              borrowers={borrowers}
+              onShowBorrowerDetails={(borrowerId: string) => {
+                setSelectedBorrowerId(borrowerId);
+                setCurrentPage('borrowers');
+              }}
+              onShowVaultDetails={(vaultId: string) => {
+                setSelectedVaultId(vaultId);
+                setCurrentPage('vaults');
+              }}
+            />
+          )}
+          {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} />}
+          {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
+          {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} />}
+          {currentPage === 'settings' && <Settings />}
+        </div>
       </div>
-      <ActivityIndicator 
-        message={message} 
-        isVisible={isVisible} 
-      />
-    </div>
+      {isVisible && (
+        <Snackbar
+          icon={function Xs(){}}
+          text={message}
+          type="success"
+          className="snackbar-fixed-bottom-right"
+          style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 9999, height: 45, width: 300 }}
+        />
+      )}
+    </>
   );
 };
 

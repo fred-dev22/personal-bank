@@ -20,6 +20,8 @@ interface LoansProps {
   imagesClassName?: string;
   imagesClassNameOverride?: string;
   divClassName?: string;
+  onShowBorrowerDetails?: (borrowerId: string) => void;
+  onShowVaultDetails?: (vaultId: string) => void;
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -27,7 +29,9 @@ type FilterValue = string | { min: string; max: string };
 export const Loans: React.FC<LoansProps> = ({
   loans,
   borrowers,
-  className = ""
+  className = "",
+  onShowBorrowerDetails,
+  onShowVaultDetails
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
@@ -169,6 +173,9 @@ export const Loans: React.FC<LoansProps> = ({
     }
     return <LoanDetails loan={selectedLoan} borrower={borrower} onBack={() => setSelectedLoan(null)} onShowBorrowerDetails={() => {
       setSelectedBorrower(borrower);
+      if (onShowBorrowerDetails) onShowBorrowerDetails(borrower.id);
+    }} onShowVaultDetails={(vaultId: string) => {
+      if (onShowVaultDetails) onShowVaultDetails(vaultId);
     }} />;
   }
 

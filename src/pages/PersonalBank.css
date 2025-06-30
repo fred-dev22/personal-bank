@@ -26,4 +26,14 @@
   overflow-x: auto;
 }
 
-/* Les styles pour mainContainer et mainContainerCollapsed sont maintenant dans App.css */ 
+/* Les styles pour mainContainer et mainContainerCollapsed sont maintenant dans App.css */
+
+.snackbar-fixed-bottom-right {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 9999 !important;
+  height: 45px !important;
+  width: 300px !important;
+  box-sizing: border-box;
+} 
