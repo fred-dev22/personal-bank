@@ -8,6 +8,8 @@ interface VaultsProps {
   vaults: Vault[];
   loans: Loan[];
   borrowers: Borrower[];
+  selectedVaultId?: string | null;
+  onBackToList?: () => void;
 }
 
 function getIssues(vault: Vault) {
@@ -47,7 +49,7 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, selectedVaultId, onBackToList }) => {
   const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
 
   // Date du jour au format Thursday, June 13
@@ -59,8 +61,11 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
   const gateways = vaults.filter(v => v.is_gateway);
   const otherVaults = vaults.filter(v => !v.is_gateway);
 
-  if (selectedVault) {
-    return <VaultDetails vault={selectedVault} loans={loans} borrowers={borrowers} onBack={() => setSelectedVault(null)} />;
+  if (selectedVaultId) {
+    const vault = vaults.find(v => v.id === selectedVaultId);
+    if (vault) {
+      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} onBack={onBackToList || (() => {})} />;
+    }
   }
 
   return (

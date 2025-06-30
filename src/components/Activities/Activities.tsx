@@ -322,9 +322,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
         />
         <section className="all-activities-table">
           {(loading || error || filteredActivities.length > 0) && <Header />}
-          {loading ? (
-            <div className="empty-state-center"><div>Loading...</div></div>
-          ) : error ? (
+          {error ? (
             <div className="empty-state-center"><div style={{ color: 'red' }}>{error}</div></div>
           ) : filteredActivities.length === 0 ? (
             <div className="empty-state-center">

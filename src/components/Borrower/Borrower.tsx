@@ -21,6 +21,8 @@ const FilterIcon = () => <img src={filterIcon} alt="filter" />;
 interface BorrowerProps {
   borrowers: BorrowerType[];
   loans: Loan[];
+  selectedBorrowerId?: string | null;
+  onBackToList?: () => void;
   className?: string;
 }
 
@@ -54,6 +56,8 @@ const filterFields: FilterField[] = [
 export const Borrower: React.FC<BorrowerProps> = ({ 
   borrowers: initialBorrowers, 
   loans,
+  selectedBorrowerId,
+  onBackToList,
   className = ""
 }) => {
   const { user } = useAuth();
@@ -191,6 +195,13 @@ export const Borrower: React.FC<BorrowerProps> = ({
 
   // Just before rendering the Modal
   console.log('Rendering Modal, isModalOpen:', isModalOpen);
+
+  if (selectedBorrowerId) {
+    const borrower = borrowers.find(b => b.id === selectedBorrowerId);
+    if (borrower) {
+      return <BorrowerDetails borrower={borrower} loans={loans} onBack={onBackToList || (() => {})} />;
+    }
+  }
 
   return (
     <>

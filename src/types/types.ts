@@ -133,6 +133,7 @@ export interface Loan {
     activities: string[];
     id: string;
     sub_state?: string;
+    actual_payments_scheduled?: any[];
 }
 
 export interface Activity {
