@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Tabs, Button, Table, TextCell, MetricCell } from "@jbaluch/components";
+import { Tabs, Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
 import { Transfers } from "./Vault Widgets/Transfers";
 import { VaultFinancials } from "./Vault Widgets/VaultFinancials";
-import type { Vault, Loan, Borrower } from "../../types/types";
+import type { Vault, Loan, Borrower, Activity } from "../../types/types";
 import { EditVault } from "./EditVault";
 import "./VaultDetails.css";
 import summaryIcon from "../../assets/summary.svg";
@@ -36,8 +36,7 @@ const NameCell = ({ name, avatarUrl, borrowerName }: { name: string; avatarUrl?:
 
 // Custom Cell for Status
 const StatusCell = ({ status }: { status: string }) => (
-  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', backgroundColor: '#eef7ff', borderRadius: '12px', color: '#175cd3', fontWeight: 500, fontSize: '13px' }}>
-    <span style={{ fontFamily: 'Material Icons', fontSize: '14px' }}>◆</span>
+  <div style={{textAlign:"center"}}>
     <span>{status}</span>
   </div>
 );
@@ -46,6 +45,7 @@ interface VaultDetailsProps {
   vault: Vault;
   loans: Loan[];
   borrowers: Borrower[];
+  activities: Activity[];
   onBack: () => void;
 }
 
@@ -53,6 +53,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   vault,
   loans,
   borrowers,
+  activities,
   onBack,
 }) => {
   const [activeTab, setActiveTab] = useState("summary");
@@ -76,6 +77,17 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
     typeof vault.available_for_lending_amount === "string"
       ? parseFloat(vault.available_for_lending_amount)
       : vault.available_for_lending_amount ?? 0;
+
+  // Filtrage des activités liées à ce vault
+  const vaultActivityIds = vault.activities || [];
+  const vaultActivities = activities.filter(a => vaultActivityIds.includes(a.id));
+  const activityRows = vaultActivities.map(a => ({
+    name: a.name,
+    category: a.tag || '',
+    date: a.date ? new Date(a.date).toLocaleString('en-US', { month: 'short', day: 'numeric' }) : '',
+    amount: a.amount,
+    type: a.type,
+  }));
 
   const renderSummaryContent = () => {
     if (vault.is_gateway) {
@@ -123,9 +135,38 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
         );
       case "activity":
         return (
-          <div className="tab-content">
-            <div className="coming-soon">Activity content coming soon</div>
-          </div>
+          <section className="all-activities-table">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ fontWeight: 600, fontSize: 16 }}>
+                ${vaultActivities.reduce((sum, a) => sum + (a.amount || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 })}
+                <span style={{ color: '#6b6b70', fontWeight: 400, fontSize: 14, marginLeft: 8 }}>payoff amount</span>
+              </div>
+              <Button
+                icon="iconless"
+                iconComponent={undefined}
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                name="add-activity"
+                form=""
+                ariaLabel="Add"
+                type="primary"
+                style={{ width: 120, height: 40, fontWeight: 600 }}
+                onClick={() => {}}
+              >
+                Add
+              </Button>
+            </div>
+            <Table
+              columns={[
+                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: typeof activityRows[0]) => ({ text: row.name }) },
+                { key: 'category', label: 'Category', width: '100%', cellComponent: TagCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.category }) },
+                { key: 'date', label: 'Date', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.date }) },
+                { key: 'amount', label: 'Amount', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: typeof activityRows[0]) => ({ text: row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }) }) },
+              ]}
+              data={[]}
+              className="activities-table-fullwidth"
+            />
+          </section>
         );
       case "loans":
         return (
@@ -170,8 +211,8 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
                   width: '100%' ,
                 alignment: 'left'
                 },
-                { key: 'loan_number', label: 'ID', cellComponent: TextCell, alignment: 'center',getCellProps: (row: Loan) => ({ text: row ? `Loan ${row.loan_number}` : '' }) , width: '100%'},
-                { key: 'status', label: 'Status',alignment: 'center', cellComponent: StatusCell, getCellProps: (row: Loan) => ({ status: row?.status ?? 'Unknown' }), width: '100%' },
+                { key: 'loan_number', label: 'ID', cellComponent: TextCell, width: '100%', alignment: 'center',getCellProps: (row: Loan) => ({ text: row ? `Loan ${row.loan_number}` : '' }) },
+                { key: 'status', label: 'Status',alignment: 'center', width: '100%',  cellComponent: StatusCell, getCellProps: (row: Loan) => ({ status: row?.status ?? 'Unknown' })},
                 { 
                   key: 'dscr_limit', 
                   label: 'DSCR', 

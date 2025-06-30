@@ -30,22 +30,22 @@ export const ProfileBox = ({
         <div className="profile-image">
           <div className="profile-avatar">
             <img 
-              src={`https://ui-avatars.com/api/?name=${user?.firstName?.[0] || 'P'}${user?.lastName?.[0] || 'B'}&background=random`} 
+              src={`https://ui-avatars.com/api/?name=${user?.firstName?.[0] || 'X'}${user?.lastName?.[0] || 'X'}&background=random`} 
               alt="Profile Avatar"
               className="avatar-image"
             />
           </div>
           <div className="profile">
             <div className="name">
-              <div className="text-wrapper">{user?.fullName || 'Patrick Bateman'}</div>
+              <div className="text-wrapper">{user?.fullName || 'xxxxxx'}</div>
             </div>
 
             <div className="occupation-income">
-              <div className="div">{user?.roles?.[0] || 'UI Designer'}</div>
+              <div className="div">{user?.roles?.[0] || 'xxxxxx'}</div>
               <img className="line" alt="Line" src={line} />
-              <div className="div">$100,000 gross</div>
+              <div className="div">{'$xx,xxx gross'}</div>
               <img className="line" alt="Line" src={img} />
-              <div className="div">$75,000 after tax</div>
+              <div className="div">{'$xx,xxx after tax'}</div>
             </div>
           </div>
         </div>
@@ -64,6 +64,7 @@ export const ProfileBox = ({
           name="edit-profile"
           form=""
           ariaLabel=""
+          style={{ height: '40px', width: '120px' }}
         >
           Edit Profile
         </Button>
@@ -72,20 +73,20 @@ export const ProfileBox = ({
       <div className="contact">
         <div className="profile-contact-row">
           <img className="img" alt="Mail outline" src={mailOutline} />
-          <span className="email">{user?.email || "pbateman@email.com"}</span>
+          <span className="email">{user?.email || "xxxxxx"}</span>
         </div>
 
         <div className="profile-contact-row">
           <img className="img" alt="Call" src={call} />
           <div className="number-wrapper">
-            <div className="number">(503) 564-3456</div>
+            <div className="number">{'xxx-xxx-xxxx'}</div>
           </div>
         </div>
 
         <div className="location">
           <img className="img" alt="Location on" src={locationOn} />
           <div className="number-wrapper">
-            <div className="number-2">AZ 51244, United States</div>
+            <div className="number-2">{'xxxxxx'}</div>
           </div>
         </div>
       </div>

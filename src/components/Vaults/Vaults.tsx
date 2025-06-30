@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+// import React from "react";
 import { Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
 import { VaultDetails } from "./VaultDetails";
 import "./style.css";
-import type { Vault, Loan, Borrower } from '../../types/types';
+import type { Vault, Loan, Borrower, Activity } from '../../types/types';
 
 interface VaultsProps {
   vaults: Vault[];
   loans: Loan[];
   borrowers: Borrower[];
+  activities?: Activity[];
   selectedVaultId?: string | null;
   onBackToList?: () => void;
+  onSelectVault?: (vaultId: string) => void;
 }
 
 function getIssues(vault: Vault) {
@@ -49,9 +51,7 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, selectedVaultId, onBackToList }) => {
-  const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
-
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault }) => {
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -64,7 +64,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, select
   if (selectedVaultId) {
     const vault = vaults.find(v => v.id === selectedVaultId);
     if (vault) {
-      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} onBack={onBackToList || (() => {})} />;
+      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} activities={activities} onBack={onBackToList || (() => {})} />;
     }
   }
 
@@ -150,7 +150,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, select
           ]}
           data={gateways}
           clickableRows
-          onRowClick={setSelectedVault}
+          onRowClick={(row: Vault) => onSelectVault && onSelectVault(row.id)}
         />
       </section>
       {/* Vaults Block */}
@@ -208,7 +208,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, select
           ]}
           data={otherVaults}
           clickableRows
-          onRowClick={setSelectedVault}
+          onRowClick={(row: Vault) => onSelectVault && onSelectVault(row.id)}
         />
       </section>
     </section>

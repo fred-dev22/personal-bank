@@ -82,7 +82,6 @@ export const Loans = () => {
           {/* Remplacer par CustomTagList de la bibliothèque si dispo */}
           <div className="custom-tag-list-instance">
             {/* CustomTagList ici */}
-            <span>CustomTagList</span>
           </div>
         </div>
       </div>

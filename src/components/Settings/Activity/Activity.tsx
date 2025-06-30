@@ -50,19 +50,7 @@ export const Activity = () => {
           <div className="title">Custom categories</div>
           <p className="subtitle">Organize your activities your way.</p>
         </div>
-        <div className="settings-caption">
-          {/* Remplacer par CustomCategoryList de la bibliothèque si dispo */}
-          <div className="custom-category-list-instance">
-            <div className="category-row"><span role="img" aria-label="emoji">🟡</span> Custom 1 <button className="delete-btn">🗑️</button></div>
-            <div className="category-row"><span role="img" aria-label="emoji">🟡</span> Custom 2 <button className="delete-btn">🗑️</button></div>
-            <div className="category-row"><span role="img" aria-label="emoji">🟡</span> Custom 3 <button className="delete-btn">🗑️</button></div>
-          </div>
-          <div className="category-caption">You must remove a category from all activities to delete it.</div>
-        </div>
-        {/* Remplacer par Button de la bibliothèque si dispo */}
-        <button className="add-category-btn">
-          + new category
-        </button>
+      
       </div>
     </div>
   );

@@ -76,21 +76,6 @@ export const Vaults = () => {
           <p className="subtitle">You cannot lend from an archived vault.</p>
         </div>
         <div className="settings-caption">
-          <Table
-            columns={[
-              { Header: "Name", accessor: "name" },
-              { Header: "Total loans", accessor: "totalLoans" },
-              { Header: "Created", accessor: "created" },
-              { Header: "Archived", accessor: "archived" },
-              {
-                Header: "",
-                accessor: "restore",
-                Cell: () => <button className="restore-btn">Restore</button>,
-              },
-            ]}
-            data={archivedVaults.map(vault => ({ ...vault, restore: "" }))}
-            className="archived-vaults-table"
-          />
         </div>
       </div>
     </div>

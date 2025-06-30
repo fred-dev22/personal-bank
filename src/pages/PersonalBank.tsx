@@ -156,6 +156,7 @@ const PersonalBankContent: React.FC = () => {
             <Loans
               loans={loans}
               borrowers={borrowers}
+              activities={activities}
               onShowBorrowerDetails={(borrowerId: string) => {
                 setSelectedBorrowerId(borrowerId);
                 setCurrentPage('borrowers');
@@ -166,7 +167,7 @@ const PersonalBankContent: React.FC = () => {
               }}
             />
           )}
-          {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} />}
+          {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} />}
           {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
           {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} />}
           {currentPage === 'settings' && <Settings />}
