@@ -49,6 +49,7 @@ function getTotalSpread(vault: Vault) {
 
 export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers }) => {
   const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
+
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };

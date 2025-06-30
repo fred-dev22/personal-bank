@@ -249,18 +249,27 @@ export const Borrower: React.FC<BorrowerProps> = ({
                   notificationCount={0}
                 />
               )}
-              <IconButton
-                ref={filterAnchorEl}
-                aria-label={`Filter - ${filterCount} filters applied`}
-                icon={FilterIcon}
-                notificationCount={filterCount}
-                onClick={handleFilterClick}
-                onMouseEnter={() => {}}
-                onMouseLeave={() => {}}
-                showNotification
-                type="secondary"
-                interaction="secondary"
-              />
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <IconButton
+                  ref={filterAnchorEl}
+                  aria-label={`Filter - ${filterCount} filters applied`}
+                  icon={FilterIcon}
+                  notificationCount={filterCount}
+                  onClick={handleFilterClick}
+                  onMouseEnter={() => {}}
+                  onMouseLeave={() => {}}
+                  showNotification
+                  type="secondary"
+                  interaction="secondary"
+                />
+                <FilterPopover
+                  open={isFilterOpen}
+                  onClose={() => setIsFilterOpen(false)}
+                  fields={filterFields}
+                  appliedFilters={appliedFilters}
+                  onApply={setAppliedFilters}
+                />
+              </div>
               <Button
                 icon="iconless"
                 iconComponent={undefined}
@@ -350,14 +359,6 @@ export const Borrower: React.FC<BorrowerProps> = ({
           <Modal open={isModalOpen} onClose={handleCloseModal}>
             <AddBorrower onClose={handleCloseModal} onAdd={handleAddBorrowerApi} />
           </Modal>
-          <FilterPopover
-            open={isFilterOpen}
-            anchorEl={filterAnchorEl.current}
-            onClose={() => setIsFilterOpen(false)}
-            fields={filterFields}
-            appliedFilters={appliedFilters}
-            onApply={setAppliedFilters}
-          />
         </section>
       )}
     </>
