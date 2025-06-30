@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Tabs, Table,TextCell } from '@jbaluch/components';
+import { Button, Tabs, Table, TextCell, TagCell } from '@jbaluch/components';
 import './LoanDetails.css';
 import vaultIcon from '../../assets/vault.svg';
 import borrowerIcon from '../../assets/borrower.svg';
@@ -9,7 +9,7 @@ import scheduleIcon from '../../assets/schedule.svg';
 import documentIcon from '../../assets/document.svg';
 import mailIcon from '../../assets/mail.svg';
 import uploadIcon from '../../assets/upload.svg';
-import type { Loan, Borrower } from '../../types/types';
+import type { Loan, Borrower, Activity } from '../../types/types';
 import { IncomeDscrCard } from '../Cards/IncomeDscrCard/IncomeDscrCard';
 import { CashFlowCard } from '../Cards/CashFlowCard/CashFlowCard';
 import { TermsCard } from '../Cards/TermsCard/TermsCard';
@@ -26,6 +26,7 @@ interface LoanDetailsProps {
   onBack: () => void;
   onShowBorrowerDetails: () => void;
   onShowVaultDetails?: (vaultId: string) => void;
+  activities: Activity[];
 }
 
 function getInitials(name: string) {
@@ -65,7 +66,7 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails }) => {
+export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [scheduleLoading, setScheduleLoading] = useState(false);
@@ -74,6 +75,19 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
   const { user } = useAuth();
   const { showActivity, hideActivity } = useActivity();
+
+  // Filtrage des activités liées à ce loan
+  const loanActivityIds = loan.activities || [];
+  const loanActivities = activities.filter(a => loanActivityIds.includes(a.id));
+
+  // Mapping pour la table
+  const activityRows = loanActivities.map(a => ({
+    name: a.name,
+    category: a.tag || '',
+    date: a.date ? new Date(a.date).toLocaleString('en-US', { month: 'short', day: 'numeric' }) : '',
+    amount: a.amount,
+    type: a.type,
+  }));
 
   React.useEffect(() => {
     if (
@@ -264,27 +278,32 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           </div>
         )}
         {activeTab === 'activity' && (
-          <div className="activity-section">
+          <section className="all-activities-table">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ fontWeight: 600, fontSize: 16 }}>
+                ${loanActivities.reduce((sum, a) => sum + (a.amount || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 })}
+                <span style={{ color: '#6b6b70', fontWeight: 400, fontSize: 14, marginLeft: 8 }}>payoff amount</span>
+              </div>
+              <Button
+                icon="iconless"
+                type="primary"
+                style={{ width: 120, height: 40, fontWeight: 600 }}
+                onClick={() => {}}
+              >
+                Add
+              </Button>
+            </div>
             <Table
               columns={[
-                { key: 'name', label: 'Name', cellComponent: TextCell, width: '100%', alignment: 'left', getCellProps: (row: any) => ({ text: row.name }) },
-                { key: 'category', label: 'Category', cellComponent: TextCell, width: '100%', alignment: 'center', getCellProps: (row: any) => ({ text: row.category, style: { fontWeight: 'bold', color: row.categoryColor, background: row.categoryBg, borderRadius: 8, padding: '2px 8px', display: 'inline-block' } }) },
-                { key: 'date', label: 'Date', cellComponent: TextCell, width: '100%', alignment: 'center', getCellProps: (row: any) => ({ text: row.date }) },
-                { key: 'amount', label: 'Amount', cellComponent: TextCell, width: '100%', alignment: 'right', getCellProps: (row: any) => ({ text: row.amount, style: { color: row.amountColor || undefined } }) },
+                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row) => ({ text: row.name }) },
+                { key: 'category', label: 'Category', width: '100%', cellComponent: TagCell, alignment: 'center', getCellProps: (row) => ({ text: row.category }) },
+                { key: 'date', label: 'Date', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row) => ({ text: row.date }) },
+                { key: 'amount', label: 'Amount', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row) => ({ text: row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }) }) },
               ]}
-              data={[
-                { name: 'Paypal', category: 'Transfer fee', categoryColor: '#e53935', categoryBg: '#fdeaea', date: 'Nov 8', amount: '$2.55' },
-                { name: 'Paypal', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$2.55' },
-                { name: 'Paypal', category: 'Transfer fee', categoryColor: '#e53935', categoryBg: '#fdeaea', date: 'Nov 8', amount: '$2.55' },
-                { name: 'Interest 9', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$5.00' },
-                { name: 'Interest 9', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$5.00' },
-                { name: 'Payment 9', category: 'Loan payment', categoryColor: '#388e3c', categoryBg: '#eafaf1', date: 'Nov 8', amount: '$3000.00', amountColor: '#388e3c' },
-                { name: 'Payment 9', category: 'Interest fee', categoryColor: '#757575', categoryBg: '#f3f3f3', date: 'Nov 8', amount: '$300.00' },
-                { name: 'Payment 9', category: 'Loan payment', categoryColor: '#388e3c', categoryBg: '#eafaf1', date: 'Nov 8', amount: '$3000.00', amountColor: '#388e3c' },
-              ]}
-              className="activity-table"
+              data={activityRows}
+              className="activities-table-fullwidth"
             />
-          </div>
+          </section>
         )}
         {activeTab === 'schedule' && (
           <div className="schedule-section">

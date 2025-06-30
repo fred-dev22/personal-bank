@@ -3,7 +3,7 @@ import { Button, IconButton, Input, MenuButton, Tabs, Table, TextCell, MetricCel
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
-import type { Loan, Borrower as BorrowerType } from '../../types/types';
+import type { Loan, Borrower as BorrowerType, Activity } from '../../types/types';
 import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
 import LoanDetails from './LoanDetails';
@@ -22,6 +22,7 @@ interface LoansProps {
   divClassName?: string;
   onShowBorrowerDetails?: (borrowerId: string) => void;
   onShowVaultDetails?: (vaultId: string) => void;
+  activities?: Activity[];
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -31,7 +32,8 @@ export const Loans: React.FC<LoansProps> = ({
   borrowers,
   className = "",
   onShowBorrowerDetails,
-  onShowVaultDetails
+  onShowVaultDetails,
+  activities = [],
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
@@ -176,7 +178,7 @@ export const Loans: React.FC<LoansProps> = ({
       if (onShowBorrowerDetails) onShowBorrowerDetails(borrower.id);
     }} onShowVaultDetails={(vaultId: string) => {
       if (onShowVaultDetails) onShowVaultDetails(vaultId);
-    }} />;
+    }} activities={activities} />;
   }
 
   return (
