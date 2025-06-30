@@ -17,7 +17,6 @@ import { EditLoan } from './EditLoan';
 import { Modal } from '../Modal/Modal';
 import { fetchLoanById } from '../../controllers/loanController';
 import { EmptyState } from '@jbaluch/components';
-import { useAuth } from '../../contexts/AuthContext';
 import { useActivity } from '../../contexts/ActivityContext';
 
 interface LoanDetailsProps {
@@ -69,11 +68,9 @@ const documentsData: DocumentRow[] = [
 export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [scheduleLoading, setScheduleLoading] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[] | null>(null);
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
-  const { user } = useAuth();
   const { showActivity, hideActivity } = useActivity();
 
   // Filtrage des activités liées à ce loan
@@ -94,13 +91,11 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
       activeTab === 'schedule' &&
       (scheduleRows === null || loan.id !== lastFetchedLoanId)
     ) {
-      setScheduleLoading(true);
       setScheduleError(null);
       showActivity('Payments are loading...');
       const token = localStorage.getItem('authToken');
       if (!token) {
         setScheduleError('Vous devez être connecté pour voir le schedule.');
-        setScheduleLoading(false);
         hideActivity();
         return;
       }
@@ -118,12 +113,10 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             setScheduleRows([]);
           }
           setLastFetchedLoanId(loan.id);
-          setScheduleLoading(false);
           hideActivity();
         })
         .catch(() => {
           setScheduleError('Erreur lors du chargement du schedule.');
-          setScheduleLoading(false);
           hideActivity();
         });
     }
@@ -198,6 +191,20 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           style={{ width: 130 }}
         >
           Borrower
+        </Button>
+        <Button
+          icon="iconless"
+          iconComponent={undefined}
+          onMouseEnter={() => {}}
+          onMouseLeave={() => {}}
+          name="add-activity"
+          form=""
+          ariaLabel="Add"
+          type="primary"
+          style={{ width: 120, height: 40, fontWeight: 600 }}
+          onClick={() => {}}
+        >
+          Add
         </Button>
         <Button
           icon="iconless"
@@ -286,6 +293,12 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
               </div>
               <Button
                 icon="iconless"
+                iconComponent={undefined}
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                name="add-activity"
+                form=""
+                ariaLabel="Add"
                 type="primary"
                 style={{ width: 120, height: 40, fontWeight: 600 }}
                 onClick={() => {}}
@@ -295,10 +308,10 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             </div>
             <Table
               columns={[
-                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row) => ({ text: row.name }) },
-                { key: 'category', label: 'Category', width: '100%', cellComponent: TagCell, alignment: 'center', getCellProps: (row) => ({ text: row.category }) },
-                { key: 'date', label: 'Date', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row) => ({ text: row.date }) },
-                { key: 'amount', label: 'Amount', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row) => ({ text: row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }) }) },
+                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: typeof activityRows[0]) => ({ text: row.name }) },
+                { key: 'category', label: 'Category', width: '100%', cellComponent: TagCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.category }) },
+                { key: 'date', label: 'Date', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.date }) },
+                { key: 'amount', label: 'Amount', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: typeof activityRows[0]) => ({ text: row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }) }) },
               ]}
               data={activityRows}
               className="activities-table-fullwidth"
