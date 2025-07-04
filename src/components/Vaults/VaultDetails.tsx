@@ -47,6 +47,7 @@ interface VaultDetailsProps {
   borrowers: Borrower[];
   activities: Activity[];
   onBack: () => void;
+  onShowLoanDetails?: (loanId: string) => void;
 }
 
 export const VaultDetails: React.FC<VaultDetailsProps> = ({
@@ -55,6 +56,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   borrowers,
   activities,
   onBack,
+  onShowLoanDetails
 }) => {
   const [activeTab, setActiveTab] = useState("summary");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -80,6 +82,9 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
 
   // Filtrage des activités liées à ce vault
   const vaultActivityIds = vault.activities || [];
+  // Log pour debug
+  console.log('vault.activities:', vaultActivityIds);
+  console.log('activities ids:', activities.map(a => a.id));
   const vaultActivities = activities.filter(a => vaultActivityIds.includes(a.id));
   const activityRows = vaultActivities.map(a => ({
     name: a.name,
@@ -163,7 +168,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
                 { key: 'date', label: 'Date', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.date }) },
                 { key: 'amount', label: 'Amount', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: typeof activityRows[0]) => ({ text: row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }) }) },
               ]}
-              data={[]}
+              data={activityRows}
               className="activities-table-fullwidth"
             />
           </section>
@@ -230,6 +235,8 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
               ]}
               data={vaultLoans}
               className="loans-table"
+              onRowClick={onShowLoanDetails ? (row: Loan) => onShowLoanDetails(row.id) : undefined}
+              clickableRows={true}
             />
           </div>
         );
@@ -237,6 +244,8 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
         return null;
     }
   };
+
+
 
   return (
     <div className="vault-details-container">

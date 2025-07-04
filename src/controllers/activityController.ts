@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../config/api';
 // Mapping utilitaire pour adapter l'API au type Activity du front
 function mapApiActivity(apiAct: any): Activity {
   return {
-    id: apiAct.id || apiAct._id || Math.random().toString(36).slice(2),
+    id: apiAct.id || apiAct._id || '',
     name: apiAct.state || apiAct.name || '',
     type: apiAct.state || '',
     date: apiAct.date ? new Date(apiAct.date) : new Date(),

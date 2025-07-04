@@ -22,6 +22,7 @@ const PersonalBankContent: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedBorrowerId, setSelectedBorrowerId] = useState<string | null>(null);
   const [selectedVaultId, setSelectedVaultId] = useState<string | null>(null);
+  const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null);
   const [loans, setLoans] = useState<Loan[]>([]);
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [borrowers, setBorrowers] = useState<BorrowerType[]>([]);
@@ -138,6 +139,11 @@ const PersonalBankContent: React.FC = () => {
     setSidebarCollapsed(data.isCollapsed);
   };
 
+  const handleShowLoanDetails = (loanId: string) => {
+    setCurrentPage('loans');
+    setSelectedLoanId(loanId);
+  };
+
   return (
     <>
       <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
@@ -157,6 +163,7 @@ const PersonalBankContent: React.FC = () => {
               loans={loans}
               borrowers={borrowers}
               activities={activities}
+              selectedLoanId={selectedLoanId}
               onShowBorrowerDetails={(borrowerId: string) => {
                 setSelectedBorrowerId(borrowerId);
                 setCurrentPage('borrowers');
@@ -165,11 +172,12 @@ const PersonalBankContent: React.FC = () => {
                 setSelectedVaultId(vaultId);
                 setCurrentPage('vaults');
               }}
+              onShowLoanDetails={handleShowLoanDetails}
             />
           )}
-          {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} />}
+          {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} onShowLoanDetails={handleShowLoanDetails} />}
           {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
-          {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} />}
+          {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={handleShowLoanDetails} />}
           {currentPage === 'settings' && <Settings />}
         </div>
       </div>

@@ -3,6 +3,11 @@ import { Button, Input } from '@jbaluch/components';
 // @ts-ignore
 import '@jbaluch/components/styles';
 import "./OnboardingCard.css";
+import bankNameIcon from '../../assets/bank-name.svg';
+import gatewayIcon from '../../assets/gateway.svg';
+import walletIcon from '../../assets/wallet.svg';
+import loanIcon from '../../assets/loan.svg';
+import doneIcon from '../../assets/done.svg';
 
 export interface OnboardingCardProps {
   step: "one" | "two" | "three" | "four";
@@ -16,22 +21,22 @@ const steps = [
   {
     key: "one",
     label: "Name your bank",
-    icon: "✏️",
+    icon: bankNameIcon,
   },
   {
     key: "two",
     label: "Setup the gateway",
-    icon: "🏦",
+    icon: gatewayIcon,
   },
   {
     key: "three",
     label: "Add your vaults",
-    icon: "💼",
+    icon: walletIcon,
   },
   {
     key: "four",
     label: "Upload your loans",
-    icon: "🔄",
+    icon: loanIcon,
   },
 ];
 
@@ -55,22 +60,27 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
     <div className="onboarding-card">
       <div className="onboarding-main-row onboarding-frame-row">
         {/* Colonne de progression à gauche */}
-        <div className="onboarding-progress-col">
+        <div className="onboarding-progress-col" style={{ width: 350, minWidth: 350, maxWidth: 350 }}>
           <div className="onboarding-progress-title">Bank setup</div>
           <ul className="onboarding-progress-list">
             {steps.map((s, idx) => (
               <li
                 key={s.key}
                 className={`onboarding-progress-item${idx === currentStepIdx ? ' active' : ''}${idx < currentStepIdx ? ' done' : ''}`}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 0' }}
               >
-                <span className="onboarding-progress-icon">{s.icon}</span>
-                <span className="onboarding-progress-label">
-                  {idx < currentStepIdx ? (
-                    <span style={{ textDecoration: 'line-through', color: '#b0b0b0' }}>{s.label}</span>
-                  ) : s.label}
+                <span className="onboarding-progress-icon" style={{ marginRight: 16, display: 'flex', alignItems: 'center' }}>
+                  <img src={s.icon} alt="" style={{ width: 20, height: 20 }} />
                 </span>
-                {idx < currentStepIdx && <span className="onboarding-progress-check">✔️</span>}
-                {idx === currentStepIdx && <span className="onboarding-progress-radio" />}
+                <span className="onboarding-progress-label" style={{ flex: 1, fontWeight: idx === currentStepIdx ? 700 : 500, color: idx < currentStepIdx ? '#b0b0b0' : '#23263B', textDecoration: idx < currentStepIdx ? 'line-through' : 'none' }}>
+                  {s.label}
+                </span>
+                {idx < currentStepIdx && (
+                  <span className="onboarding-progress-check" style={{ marginLeft: 16 }}>
+                    <img src={doneIcon} alt="done" style={{ width: 20, height: 20 }} />
+                  </span>
+                )}
+                {idx === currentStepIdx && <span className="onboarding-progress-radio" style={{ marginLeft: 16, width: 16, height: 16, borderRadius: 8, border: '2px solid #1AC9A0', background: '#fff', display: 'inline-block' }} />}
               </li>
             ))}
           </ul>

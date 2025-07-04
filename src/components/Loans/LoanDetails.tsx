@@ -26,6 +26,8 @@ interface LoanDetailsProps {
   onShowBorrowerDetails: () => void;
   onShowVaultDetails?: (vaultId: string) => void;
   activities: Activity[];
+  loans: Loan[];
+  activeTabId?: string;
 }
 
 function getInitials(name: string) {
@@ -65,16 +67,20 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities }) => {
-  const [activeTab, setActiveTab] = useState('summary');
+export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId }) => {
+  const [activeTab, setActiveTab] = useState(activeTabId || 'summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[] | null>(null);
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
   const { showActivity, hideActivity } = useActivity();
 
-  // Filtrage des activités liées à ce loan
-  const loanActivityIds = loan.activities || [];
+  // Filtrage des activités liées à ce loan à partir de la liste globale de loans
+  const currentLoan = loans.find(l => l.id === loan.id);
+  const loanActivityIds = currentLoan?.activities || [];
+  // Log pour debug
+  console.log('loan.activities:', loanActivityIds);
+  console.log('activities ids:', activities.map(a => a.id));
   const loanActivities = activities.filter(a => loanActivityIds.includes(a.id));
 
   // Mapping pour la table
@@ -146,6 +152,13 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
       )
     : formatMoney(0);
 
+  // Permet de changer d'onglet dynamiquement si activeTabId change
+  React.useEffect(() => {
+    if (activeTabId && activeTab !== activeTabId) {
+      setActiveTab(activeTabId);
+    }
+  }, [activeTabId]);
+
   return (
     <div className="loan-details" style={{ background: 'transparent' }}>
       {/* Header */}
@@ -191,20 +204,6 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           style={{ width: 130 }}
         >
           Borrower
-        </Button>
-        <Button
-          icon="iconless"
-          iconComponent={undefined}
-          onMouseEnter={() => {}}
-          onMouseLeave={() => {}}
-          name="add-activity"
-          form=""
-          ariaLabel="Add"
-          type="primary"
-          style={{ width: 120, height: 40, fontWeight: 600 }}
-          onClick={() => {}}
-        >
-          Add
         </Button>
         <Button
           icon="iconless"
