@@ -24,6 +24,7 @@ interface BorrowerProps {
   selectedBorrowerId?: string | null;
   onBackToList?: () => void;
   className?: string;
+  onShowLoanDetails?: (loanId: string) => void;
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -58,8 +59,10 @@ export const Borrower: React.FC<BorrowerProps> = ({
   loans,
   selectedBorrowerId,
   onBackToList,
-  className = ""
+  className = "",
+  onShowLoanDetails
 }) => {
+  console.log('!!! Borrower ACTIF !!!');
   const { user } = useAuth();
   const { showActivity, hideActivity } = useActivity();
   const [borrowers, setBorrowers] = useState<BorrowerType[]>(initialBorrowers);
@@ -199,7 +202,7 @@ export const Borrower: React.FC<BorrowerProps> = ({
   if (selectedBorrowerId) {
     const borrower = borrowers.find(b => b.id === selectedBorrowerId);
     if (borrower) {
-      return <BorrowerDetails borrower={borrower} loans={loans} onBack={onBackToList || (() => {})} />;
+      return <BorrowerDetails borrower={borrower} loans={loans} onBack={onBackToList || (() => {})} onShowLoanDetails={onShowLoanDetails} />;
     }
   }
 
@@ -210,6 +213,7 @@ export const Borrower: React.FC<BorrowerProps> = ({
           borrower={selectedBorrower}
           loans={loans}
           onBack={() => setSelectedBorrower(null)}
+          onShowLoanDetails={onShowLoanDetails}
         />
       ) : (
         <section className={`borrower ${className}`}>

@@ -12,6 +12,7 @@ interface VaultsProps {
   selectedVaultId?: string | null;
   onBackToList?: () => void;
   onSelectVault?: (vaultId: string) => void;
+  onShowLoanDetails?: (loanId: string) => void;
 }
 
 function getIssues(vault: Vault) {
@@ -51,7 +52,7 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault }) => {
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault, onShowLoanDetails }) => {
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -64,7 +65,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
   if (selectedVaultId) {
     const vault = vaults.find(v => v.id === selectedVaultId);
     if (vault) {
-      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} activities={activities} onBack={onBackToList || (() => {})} />;
+      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} activities={activities} onBack={onBackToList || (() => {})} onShowLoanDetails={onShowLoanDetails} />;
     }
   }
 

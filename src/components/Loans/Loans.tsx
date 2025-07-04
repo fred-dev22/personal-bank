@@ -23,6 +23,8 @@ interface LoansProps {
   onShowBorrowerDetails?: (borrowerId: string) => void;
   onShowVaultDetails?: (vaultId: string) => void;
   activities?: Activity[];
+  selectedLoanId?: string | null;
+  onShowLoanDetails?: (loanId: string) => void;
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -34,6 +36,8 @@ export const Loans: React.FC<LoansProps> = ({
   onShowBorrowerDetails,
   onShowVaultDetails,
   activities = [],
+  selectedLoanId = null,
+  onShowLoanDetails,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
@@ -158,17 +162,27 @@ export const Loans: React.FC<LoansProps> = ({
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', dateOptions);
 
+  // Si selectedLoanId est passé en prop, sélectionne automatiquement ce loan
+  React.useEffect(() => {
+    if (selectedLoanId) {
+      const found = loans.find(l => l.id === selectedLoanId);
+      setSelectedLoan(found || null);
+      console.log('Loans.tsx: selectedLoanId changed, selectedLoan =', found);
+    }
+  }, [selectedLoanId, loans]);
+
   if (selectedBorrower) {
     return (
       <BorrowerDetails
         borrower={selectedBorrower}
         loans={loans}
         onBack={() => setSelectedBorrower(null)}
+        onShowLoanDetails={onShowLoanDetails}
       />
     );
   }
   if (selectedLoan) {
-    const borrower = borrowers.find(b => b.id === selectedLoan.borrowerId);
+    const borrower = borrowers.find(b => b.id === selectedLoan.borrowerId || b.id === selectedLoan.borrower_id);
     if (!borrower) {
       console.error('Borrower not found for loan:', selectedLoan);
       return null;
@@ -178,7 +192,7 @@ export const Loans: React.FC<LoansProps> = ({
       if (onShowBorrowerDetails) onShowBorrowerDetails(borrower.id);
     }} onShowVaultDetails={(vaultId: string) => {
       if (onShowVaultDetails) onShowVaultDetails(vaultId);
-    }} activities={activities} />;
+    }} activities={activities} loans={loans} />;
   }
 
   return (
