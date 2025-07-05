@@ -157,7 +157,7 @@ const PersonalBankContent: React.FC = () => {
           onToggleCollapse={handleToggleCollapse}
         />
         <div className="content-container">
-          {currentPage === 'overview' && <Overview />}
+          {currentPage === 'overview' && <Overview vaults={vaults} />}
           {currentPage === 'loans' && (
             <Loans
               loans={loans}

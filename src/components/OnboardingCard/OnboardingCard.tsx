@@ -67,7 +67,15 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               <li
                 key={s.key}
                 className={`onboarding-progress-item${idx === currentStepIdx ? ' active' : ''}${idx < currentStepIdx ? ' done' : ''}`}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 0' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '16px 12px',
+                  background: idx === currentStepIdx ? '#EEEFF2' : 'transparent',
+                  borderRadius: 8,
+                  marginBottom: 4
+                }}
               >
                 <span className="onboarding-progress-icon" style={{ marginRight: 16, display: 'flex', alignItems: 'center' }}>
                   <img src={s.icon} alt="" style={{ width: 20, height: 20 }} />
@@ -80,7 +88,9 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                     <img src={doneIcon} alt="done" style={{ width: 20, height: 20 }} />
                   </span>
                 )}
-                {idx === currentStepIdx && <span className="onboarding-progress-radio" style={{ marginLeft: 16, width: 16, height: 16, borderRadius: 8, border: '2px solid #1AC9A0', background: '#fff', display: 'inline-block' }} />}
+                {(idx === currentStepIdx || idx > currentStepIdx) && (
+                  <span style={{ marginLeft: 16, width: 20, height: 20, borderRadius: 10, background: '#DFDFE6', display: 'inline-block' }} />
+                )}
               </li>
             ))}
           </ul>
