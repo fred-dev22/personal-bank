@@ -13,6 +13,7 @@ interface VaultsProps {
   onBackToList?: () => void;
   onSelectVault?: (vaultId: string) => void;
   onShowLoanDetails?: (loanId: string) => void;
+  onAddVault?: () => void;
 }
 
 function getIssues(vault: Vault) {
@@ -52,7 +53,7 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault, onShowLoanDetails }) => {
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault, onShowLoanDetails, onAddVault }) => {
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -82,7 +83,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
             iconComponent={undefined}
             interaction="default"
             justified="right"
-            onClick={() => {}}
+            onClick={onAddVault}
             onMouseEnter={() => {}}
             onMouseLeave={() => {}}
             type="primary"

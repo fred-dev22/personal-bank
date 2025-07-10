@@ -15,6 +15,7 @@ export interface OnboardingCardProps {
   accountsVaultsClassName?: string;
   leverageLoansClassName?: string;
   onStepChange?: (step: string) => void;
+  onAddVault?: () => void;
 }
 
 const steps = [
@@ -42,7 +43,8 @@ const steps = [
 
 export const OnboardingCard: React.FC<OnboardingCardProps> = ({
   step,
-  onStepChange
+  onStepChange,
+  onAddVault
 }) => {
   const currentStepIdx = steps.findIndex(s => s.key === step);
 
@@ -123,7 +125,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               <div className="step-desc">A vault is a secure space for both storing and leveraging your money. This allows the same dollars to be in two places at once. You must add a vault before you can add or upload loans.</div>
               {/*@ts-ignore*/}
 
-              <Button className="step-btn fit-content-btn" onClick={() => { }}>Add Vault</Button>
+              <Button className="step-btn fit-content-btn" onClick={onAddVault}>Add Vault</Button>
               {/*@ts-ignore*/}
 
               <Button className="step-btn fit-content-btn" type={"secondary"} onClick={nextStep}>Next Step</Button>
