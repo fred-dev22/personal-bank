@@ -618,6 +618,10 @@
   --white: rgba(255, 255, 255, 1);
 }
 
+body, button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, span, div, th, td, label, a {
+  font-family: var(--body-text-body-regular-font-family) !important;
+}
+
 body {
   margin: 0;
   padding: 0;

@@ -86,7 +86,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
                   <span className="edit-vault__label-required">*</span>
                   Name
                 </label>
-                <Input value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} className="edit-vault__input" />
+                <Input value={name} onChange={(value: string) => setName(value)} className="edit-vault__input" />
               </div>
             )}
             <div className="edit-vault__input-group">
@@ -106,7 +106,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
                 </select>
                 <Input 
                   value={reserveValue} 
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReserveValue(e.target.value)} 
+                  onChange={(value: string) => setReserveValue(value)} 
                   className="edit-vault__currency-input" 
                 />
               </div>
@@ -128,7 +128,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
                 </select>
                 <Input 
                   value={holdValue} 
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setHoldValue(e.target.value)} 
+                  onChange={(value: string) => setHoldValue(value)} 
                   className="edit-vault__currency-input" 
                 />
               </div>

@@ -11,6 +11,7 @@ type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
 
 type OverviewProps = {
   vaults: Vault[];
+  onAddVault?: () => void;
 };
 
 export const Overview: React.FC<OverviewProps> = ({ vaults }) => {

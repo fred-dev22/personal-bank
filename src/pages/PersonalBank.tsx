@@ -16,6 +16,7 @@ import { fetchAllUserActivities } from '../controllers/activityController';
 import { Settings } from '../components/Settings/Settings';
 import { Snackbar } from '@jbaluch/components';
 import './PersonalBank.css';
+import { VaultWizard } from '../components/wizards/vault-wizard';
 
 const PersonalBankContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('overview');
@@ -32,6 +33,7 @@ const PersonalBankContent: React.FC = () => {
   const { user, logout } = useAuth();
   const { showActivity, hideActivity, isVisible, message } = useActivity();
   const navigate = useNavigate();
+  const [showVaultWizard, setShowVaultWizard] = useState(false);
 
   const getLoans = async (user: User | null, setLoans: React.Dispatch<React.SetStateAction<Loan[]>>) => {
     try {
@@ -144,42 +146,45 @@ const PersonalBankContent: React.FC = () => {
     setSelectedLoanId(loanId);
   };
 
+  const handleAddVault = () => setShowVaultWizard(true);
+
+  if (showVaultWizard) {
+    return <VaultWizard onClose={() => setShowVaultWizard(false)} />;
+  }
   return (
-    <>
-      <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
-        <NavigationBar
-          mainNavItems={mainNavItems}
-          bottomNavItems={bottomNavItems}
-          activeItemId={currentPage}
-          isCollapsed={sidebarCollapsed}
-          onNavItemClick={handleNavigation}
-          onSignOut={handleSignOut}
-          onToggleCollapse={handleToggleCollapse}
-        />
-        <div className="content-container">
-          {currentPage === 'overview' && <Overview vaults={vaults} />}
-          {currentPage === 'loans' && (
-            <Loans
-              loans={loans}
-              borrowers={borrowers}
-              activities={activities}
-              selectedLoanId={selectedLoanId}
-              onShowBorrowerDetails={(borrowerId: string) => {
-                setSelectedBorrowerId(borrowerId);
-                setCurrentPage('borrowers');
-              }}
-              onShowVaultDetails={(vaultId: string) => {
-                setSelectedVaultId(vaultId);
-                setCurrentPage('vaults');
-              }}
-              onShowLoanDetails={handleShowLoanDetails}
-            />
-          )}
-          {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} onShowLoanDetails={handleShowLoanDetails} />}
-          {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
-          {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={handleShowLoanDetails} />}
-          {currentPage === 'settings' && <Settings />}
-        </div>
+    <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
+      <NavigationBar
+        mainNavItems={mainNavItems}
+        bottomNavItems={bottomNavItems}
+        activeItemId={currentPage}
+        isCollapsed={sidebarCollapsed}
+        onNavItemClick={handleNavigation}
+        onSignOut={handleSignOut}
+        onToggleCollapse={handleToggleCollapse}
+      />
+      <div className="content-container">
+        {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} />}
+        {currentPage === 'loans' && (
+          <Loans
+            loans={loans}
+            borrowers={borrowers}
+            activities={activities}
+            selectedLoanId={selectedLoanId}
+            onShowBorrowerDetails={(borrowerId: string) => {
+              setSelectedBorrowerId(borrowerId);
+              setCurrentPage('borrowers');
+            }}
+            onShowVaultDetails={(vaultId: string) => {
+              setSelectedVaultId(vaultId);
+              setCurrentPage('vaults');
+            }}
+            onShowLoanDetails={handleShowLoanDetails}
+          />
+        )}
+        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} />}
+        {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
+        {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={handleShowLoanDetails} />}
+        {currentPage === 'settings' && <Settings />}
       </div>
       {isVisible && (
         <Snackbar
@@ -190,7 +195,7 @@ const PersonalBankContent: React.FC = () => {
           style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 9999, height: 45, width: 300 }}
         />
       )}
-    </>
+    </div>
   );
 };
 

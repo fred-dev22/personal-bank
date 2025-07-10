@@ -193,4 +193,18 @@ export interface Vault {
     liquidity_source?: {
         appreciation?: number;
     };
+    // Champs dynamiques pour le wizard
+    assetType?: string;
+    assetName?: string;
+    assetStartDate?: string;
+    annualNonMecLimit?: string;
+    annualGuidelineAmount?: string;
+    annualGrowthRate?: string;
+    premiumPaidThisYear?: string;
+    debtBalance?: string;
+    debtCeilingRate?: string;
+    debtLtv?: string;
+    amount?: string | number;
+    interestRate?: string;
+    accountType?: string;
 } 
