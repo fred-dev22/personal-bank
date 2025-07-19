@@ -34,12 +34,13 @@ const PersonalBankContent: React.FC = () => {
   const { showActivity, hideActivity, isVisible, message } = useActivity();
   const navigate = useNavigate();
   const [showVaultWizard, setShowVaultWizard] = useState(false);
+  const [showGatewayWizard, setShowGatewayWizard] = useState(false);
 
   const getLoans = async (user: User | null, setLoans: React.Dispatch<React.SetStateAction<Loan[]>>) => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token || !user?.banks?.[0]) return;
-      const bankId = user.banks[0];
+      if (!token || !user?.current_pb) return;
+      const bankId = user.current_pb;
       showActivity('Loading loans...');
       const data = await fetchLoans(token, bankId);
       setLoans(data);
@@ -54,8 +55,8 @@ const PersonalBankContent: React.FC = () => {
   const getVaults = async (user: User | null, setVaults: React.Dispatch<React.SetStateAction<Vault[]>>) => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token || !user?.banks?.[0]) return;
-      const bankId = user.banks[0];
+      if (!token || !user?.current_pb) return;
+      const bankId = user.current_pb;
       showActivity('Loading vaults...');
       const data = await fetchVaults(token, bankId);
       setVaults(data);
@@ -70,8 +71,8 @@ const PersonalBankContent: React.FC = () => {
   const getBorrowers = async (user: User | null, setBorrowers: React.Dispatch<React.SetStateAction<BorrowerType[]>>) => {
     try {
       const token = localStorage.getItem('authToken');
-      if (!token || !user?.banks?.[0]) return;
-      const bankId = user.banks[0];
+      if (!token || !user?.current_pb) return;
+      const bankId = user.current_pb;
       showActivity('Loading borrowers...');
       const data = await fetchBorrowers(token, bankId);
       setBorrowers(data);
@@ -87,7 +88,7 @@ const PersonalBankContent: React.FC = () => {
     getLoans(user, setLoans);
     getVaults(user, setVaults);
     getBorrowers(user, setBorrowers);
-  }, [user?.banks]);
+  }, [user?.current_pb]);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -148,8 +149,28 @@ const PersonalBankContent: React.FC = () => {
 
   const handleAddVault = () => setShowVaultWizard(true);
 
+  const handleShowGatewayWizard = () => setShowGatewayWizard(true);
+
+  const handleGatewayCreated = (vault: Vault) => {
+    setVaults(prev => [...prev, vault]);
+  };
+
+  const handleVaultCreated = (vault: Vault) => {
+    setVaults(prev => [...prev, vault]);
+    // L'onboarding_state sera mis à jour automatiquement par OnboardingCard
+  };
+
   if (showVaultWizard) {
-    return <VaultWizard onClose={() => setShowVaultWizard(false)} />;
+    return <VaultWizard onClose={() => setShowVaultWizard(false)} onVaultCreated={handleVaultCreated} />;
+  }
+  if (showGatewayWizard) {
+    return (
+      <VaultWizard
+        onClose={() => setShowGatewayWizard(false)}
+        gatewayMode
+        onVaultCreated={handleGatewayCreated}
+      />
+    );
   }
   return (
     <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
@@ -163,7 +184,7 @@ const PersonalBankContent: React.FC = () => {
         onToggleCollapse={handleToggleCollapse}
       />
       <div className="content-container">
-        {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} />}
+        {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} onShowGatewayWizard={handleShowGatewayWizard} />}
         {currentPage === 'loans' && (
           <Loans
             loans={loans}

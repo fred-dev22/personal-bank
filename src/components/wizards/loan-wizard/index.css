@@ -1,0 +1,217 @@
+.loan-wizard {
+  width: 100%;
+  padding: 32px;
+  box-sizing: border-box;
+  padding-bottom: 120px;
+}
+
+.loan-wizard-step {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.loan-wizard-step h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.loan-wizard-step p {
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.loan-wizard-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.loan-wizard-form-grid {
+  max-width: 600px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.loan-wizard-form-group {
+  margin-bottom: 16px;
+}
+
+.loan-wizard-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.loan-wizard-form-group input,
+.loan-wizard-form-group textarea,
+.loan-wizard-form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.loan-wizard-form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.loan-wizard-form-group .required {
+  color: red;
+}
+
+.loan-wizard-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.loan-wizard-button {
+  padding: 16px 32px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  min-width: 120px;
+  transition: all 0.2s ease;
+}
+
+.loan-wizard-button:hover {
+  background: #f5f5f5;
+}
+
+.loan-wizard-button.selected {
+  background: #1AC9A0;
+  color: #fff;
+  border-color: #1AC9A0;
+}
+
+.loan-wizard-funding-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+  margin-bottom: 16px;
+}
+
+.loan-wizard-funding-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loan-wizard-funding-card-title {
+  font-weight: 600;
+}
+
+.loan-wizard-funding-card-subtitle {
+  color: #666;
+  font-size: 14px;
+}
+
+.loan-wizard-funding-card-amount {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+.loan-wizard-summary-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 24px;
+  background: #fff;
+  margin-bottom: 24px;
+}
+
+.loan-wizard-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+
+.loan-wizard-summary-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.loan-wizard-summary-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.loan-wizard-slider {
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.loan-wizard-slider-thumb {
+  position: absolute;
+  left: 70%;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  background: #1AC9A0;
+  border-radius: 50%;
+}
+
+.loan-wizard-slider-labels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.loan-wizard-download-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.loan-wizard-download-icon {
+  color: red;
+  font-size: 20px;
+}
+
+.loan-wizard-download-name {
+  font-weight: 600;
+}
+
+.loan-wizard-download-arrow {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.loan-wizard-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  padding: 24px 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  z-index: 2000;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  gap: 16;
+} 

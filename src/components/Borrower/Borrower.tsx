@@ -158,7 +158,7 @@ export const Borrower: React.FC<BorrowerProps> = ({
 
   const refreshBorrowers = async () => {
     const token = localStorage.getItem('authToken');
-    const bankId = user?.banks?.[0];
+    const bankId = user?.current_pb;
     if (!token || !bankId) return;
     try {
       showActivity('Loading borrowers...');
@@ -173,7 +173,7 @@ export const Borrower: React.FC<BorrowerProps> = ({
 
   const handleAddBorrowerApi = async (data: Partial<BorrowerType>) => {
     const token = localStorage.getItem('authToken');
-    const bankId = user?.banks?.[0];
+    const bankId = user?.current_pb;
     if (!token || !bankId) return;
     try {
       showActivity('Creating borrower...');

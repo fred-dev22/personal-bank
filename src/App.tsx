@@ -6,8 +6,8 @@ import { PersonalBank } from './pages/PersonalBank';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/personal-bank" element={
@@ -17,8 +17,8 @@ function App() {
           } />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
