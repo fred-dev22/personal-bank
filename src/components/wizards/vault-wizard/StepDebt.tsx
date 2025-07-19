@@ -19,7 +19,7 @@ export const StepDebt: React.FC<{
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
               <span style={{ color: '#b50007', fontWeight: 700 }}>*</span>
-              <span style={{ color: '#595959', fontWeight: 600 }}>Name</span>
+              <span style={{ color: '#595959', fontWeight: 600 }}>Outstanding balance</span>
             </div>
             <Input
               value={vaultData.debtBalance || ''}
@@ -37,7 +37,7 @@ export const StepDebt: React.FC<{
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
               <span style={{ color: '#b50007', fontWeight: 700 }}>*</span>
-              <span style={{ color: '#595959', fontWeight: 600 }}>Name</span>
+              <span style={{ color: '#595959', fontWeight: 600 }}>Interest rate</span>
             </div>
             <Input
               value={vaultData.debtCeilingRate || ''}
@@ -55,7 +55,7 @@ export const StepDebt: React.FC<{
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
               <span style={{ color: '#b50007', fontWeight: 700 }}>*</span>
-              <span style={{ color: '#595959', fontWeight: 600 }}>Name</span>
+              <span style={{ color: '#595959', fontWeight: 600 }}>Credit limit</span>
             </div>
             <Input
               value={vaultData.debtLtv || ''}

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Login } from '@jbaluch/components';
 import { API_BASE_URL } from '../config/api';
@@ -8,7 +7,6 @@ import './Login.css';
 const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogin = async (email: string, password: string) => {
     setError('');
@@ -36,8 +34,14 @@ const LoginPage: React.FC = () => {
         setError('Invalid email or password. Please try again.');
       } else {
         console.log('Login - User data:', result);
+        
+        // Let the AuthContext handle validation and show popup if needed
+        // The login function will validate and show popup automatically
         login(result);
-        navigate('/personal-bank');
+        
+        // Don't navigate immediately - let AuthContext handle it
+        // If validation passes, the user will be set and ProtectedRoute will handle navigation
+        // If validation fails, the popup will be shown
       }
     } catch (error) {
       console.error('Login failed:', error);

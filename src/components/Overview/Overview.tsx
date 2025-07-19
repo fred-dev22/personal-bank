@@ -5,19 +5,18 @@ import { Button} from '@jbaluch/components';
 import '@jbaluch/components/styles';
 import "./Overview.css";
 import type { Vault } from '../../types/types';
+import type { OnboardingStep } from '../../types/types';
 import { useAuth } from '../../contexts/AuthContext';
 
-type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
-
-type OverviewProps = {
+interface OverviewProps {
   vaults: Vault[];
   onAddVault?: () => void;
-};
+  onShowGatewayWizard?: () => void;
+}
 
-export const Overview: React.FC<OverviewProps> = ({ vaults }) => {
-  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('one');
+export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGatewayWizard }) => {
   const [selectedVaultId, setSelectedVaultId] = useState<string>(vaults[0]?.id || '');
-  const { user } = useAuth();
+  const { user, current_pb_onboarding_state, setCurrentPbOnboardingState } = useAuth();
 
   // Synchronise selectedVaultId avec le premier vault dès que vaults change
   useEffect(() => {
@@ -25,6 +24,8 @@ export const Overview: React.FC<OverviewProps> = ({ vaults }) => {
       setSelectedVaultId(vaults[0].id);
     }
   }, [vaults]);
+
+
 
   const selectedVault = vaults.find(v => v.id === selectedVaultId) ?? vaults[0];
 
@@ -36,21 +37,16 @@ export const Overview: React.FC<OverviewProps> = ({ vaults }) => {
     day: 'numeric'
   });
 
-  // Callback pour passer à l'étape suivante de l'onboarding
-  const handleOnboardingStepChange = (step: string) => {
-    if (
-      step === 'one' ||
-      step === 'two' ||
-      step === 'three' ||
-      step === 'four' ||
-      step === 'done'
-    ) {
-      setOnboardingStep(step);
-    }
-  };
-
   // DEBUG: Affiche le contenu des vaults
   console.log('[DEBUG VAULTS]', vaults);
+
+  // Affichage : si current_pb_onboarding_state n'est pas défini ou n'est pas dans la liste, on affiche l'overview direct
+  const showOnboarding = current_pb_onboarding_state && [
+    'bank-name',
+    'setup-gateway',
+    'add-vault',
+    'add-loan',
+  ].includes(current_pb_onboarding_state);
 
   return (
     <div className="frame-overview">
@@ -60,8 +56,13 @@ export const Overview: React.FC<OverviewProps> = ({ vaults }) => {
           <div className="page-header__subtitle">{formattedDate}</div>
         </div>
       </header>
-      {onboardingStep !== 'done' ? (
-        <OnboardingCard step={onboardingStep} onStepChange={handleOnboardingStepChange} />
+      {showOnboarding ? (
+        <OnboardingCard
+          step={current_pb_onboarding_state as OnboardingStep}
+          onStepChange={(step: string) => setCurrentPbOnboardingState(step)}
+          onAddVault={onAddVault}
+          onShowGatewayWizard={onShowGatewayWizard}
+        />
       ) : (
         <div className="div">
           <div className="upcoming">

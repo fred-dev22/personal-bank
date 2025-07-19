@@ -12,7 +12,8 @@ export const StepConfig: React.FC<{
   setVaultData: (data: Vault) => void;
   onNext?: () => void;
   onPrev?: () => void;
-}> = ({ vaultData, setVaultData }) => {
+  gatewayMode?: boolean;
+}> = ({ vaultData, setVaultData, gatewayMode }) => {
   const isSuperVault = vaultData.type === 'super';
   return (
     <div style={{ alignItems: 'center', borderRadius: 8, display: 'flex', flexDirection: 'column', gap: 32, overflow: 'hidden', padding: '32px 0 0 0', position: 'relative', width: 800, margin: '0 auto' }}>
@@ -28,12 +29,13 @@ export const StepConfig: React.FC<{
             <span style={{ color: '#595959', fontWeight: 600 }}>Name</span>
           </div>
           <Input
-            value={vaultData.name || ''}
-            onChange={(value: string) => setVaultData({ ...vaultData, name: value })}
+            value={gatewayMode ? 'Gateway' : (vaultData.name || '')}
+            onChange={gatewayMode ? undefined : (value: string) => setVaultData({ ...vaultData, name: value })}
             placeholder={isSuperVault ? 'Super Vault' : 'Cash Vault'}
             style={{ width: '100%' }}
             required
             type="text"
+            disabled={gatewayMode}
           />
         </div>
         {/* Les autres champs sont masqués pour super vault */}
