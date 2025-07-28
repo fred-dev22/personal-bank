@@ -1,5 +1,5 @@
 import React from "react";
-import { CloseButton } from "@jbaluch/components";
+import { CloseButton, IconButton } from "@jbaluch/components";
 import "./HeaderWizard.css";
 
 export const HeaderWizard: React.FC<{
@@ -16,16 +16,25 @@ export const HeaderWizard: React.FC<{
       alignItems: 'center',
       justifyContent: 'space-between',
       minHeight: 64,
-      marginBottom: 24,
+      marginBottom: 12,
       width: '100%'
     }}
   >
     <div style={{ display: 'flex', alignItems: 'center', minWidth: 120 }}>
       {showPreview ? (
-        <button className="icon-button" onClick={onPreview} style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 16 }}>
-          <img src="/nav_arrow_back.svg" alt="Back" style={{ width: 20, height: 20 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 16 }}>
+          <IconButton
+            aria-label="Previous"
+            icon={() => <img src="/nav_arrow_back.svg" alt="Back" style={{ width: 20, height: 20 }} />}
+            onClick={onPreview || (() => {})}
+            onMouseEnter={() => {}}
+            onMouseLeave={() => {}}
+            type="tertiary"
+            notificationCount={0}
+            interaction="default"
+          />
           <span style={{ fontWeight: 700, fontSize: 16, color: '#222', marginLeft: 4 }}>Preview</span>
-        </button>
+        </div>
       ) : null}
     </div>
     <h2 className="wizard-header-title">{title}</h2>

@@ -5,7 +5,8 @@ import type { Vault } from '../../../types/types';
 export const StepReserve: React.FC<{
   vaultData: Vault;
   setVaultData: (data: Vault) => void;
-}> = ({ vaultData, setVaultData }) => {
+  validationErrors?: {[key: string]: string};
+}> = ({ vaultData, setVaultData, validationErrors = {} }) => {
   return (
     <div style={{
       display: 'flex',
@@ -48,14 +49,15 @@ export const StepReserve: React.FC<{
               <span style={{ color: '#b50007', fontWeight: 700 }}>*</span>
               <span style={{ color: '#595959', fontWeight: 600 }}>Reserve</span>
             </div>
-            <Input
-              value={vaultData.reserve ?? ''}
-              onChange={(value: string) => setVaultData({ ...vaultData, reserve: value === '' ? undefined : Number(value) })}
-              placeholder="$1,000.00"
-              style={{ width: '100%' }}
-              required
-              type="currency"
-            />
+                         <Input
+               value={vaultData.reserve ?? ''}
+               onChange={(value: string) => setVaultData({ ...vaultData, reserve: value === '' ? undefined : Number(value) })}
+               placeholder="$1,000.00"
+               style={{ width: '100%' }}
+               required
+               type="currency"
+               error={validationErrors.reserve}
+             />
           </div>
         </form>
       </div>

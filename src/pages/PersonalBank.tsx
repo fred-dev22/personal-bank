@@ -17,6 +17,7 @@ import { Settings } from '../components/Settings/Settings';
 import { Snackbar } from '@jbaluch/components';
 import './PersonalBank.css';
 import { VaultWizard } from '../components/wizards/vault-wizard';
+import { LoanWizard } from '../components/wizards/loan-wizard';
 
 const PersonalBankContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('overview');
@@ -30,11 +31,12 @@ const PersonalBankContent: React.FC = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [activitiesError, setActivitiesError] = useState<string | null>(null);
-  const { user, logout } = useAuth();
+  const { user, logout, current_pb_onboarding_state } = useAuth();
   const { showActivity, hideActivity, isVisible, message } = useActivity();
   const navigate = useNavigate();
   const [showVaultWizard, setShowVaultWizard] = useState(false);
   const [showGatewayWizard, setShowGatewayWizard] = useState(false);
+  const [showLoanWizard, setShowLoanWizard] = useState(false);
 
   const getLoans = async (user: User | null, setLoans: React.Dispatch<React.SetStateAction<Loan[]>>) => {
     try {
@@ -113,14 +115,16 @@ const PersonalBankContent: React.FC = () => {
     }
   }, [loans, vaults]);
 
-  // Navigation items
-  const mainNavItems = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'loans', label: 'Loans' },
-    { id: 'vaults', label: 'Vaults' },
-    { id: 'activity', label: 'Activity' },
-    { id: 'borrowers', label: 'Borrowers' },
-  ];
+  // Adapter le menu principal selon l'état d'onboarding
+  const mainNavItems = current_pb_onboarding_state !== 'done'
+    ? [{ id: 'overview', label: 'Overview' }]
+    : [
+        { id: 'overview', label: 'Overview' },
+        { id: 'loans', label: 'Loans' },
+        { id: 'vaults', label: 'Vaults' },
+        { id: 'activity', label: 'Activity' },
+        { id: 'borrowers', label: 'Borrowers' },
+      ];
 
   const bottomNavItems = [
     { id: 'settings', label: 'Settings' },
@@ -172,6 +176,19 @@ const PersonalBankContent: React.FC = () => {
       />
     );
   }
+  if (showLoanWizard) {
+    return (
+      <LoanWizard 
+        onClose={() => setShowLoanWizard(false)} 
+        borrowers={borrowers}
+        onBorrowersUpdate={setBorrowers}
+        loans={loans}
+        setLoans={setLoans}
+        vaults={vaults}
+        onVaultsUpdate={() => getVaults(user, setVaults)}
+      />
+    );
+  }
   return (
     <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
       <NavigationBar
@@ -184,7 +201,7 @@ const PersonalBankContent: React.FC = () => {
         onToggleCollapse={handleToggleCollapse}
       />
       <div className="content-container">
-        {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} onShowGatewayWizard={handleShowGatewayWizard} />}
+        {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} onShowGatewayWizard={handleShowGatewayWizard} onAddLoan={() => setShowLoanWizard(true)} />}
         {currentPage === 'loans' && (
           <Loans
             loans={loans}
@@ -200,9 +217,10 @@ const PersonalBankContent: React.FC = () => {
               setCurrentPage('vaults');
             }}
             onShowLoanDetails={handleShowLoanDetails}
+            onAddLoan={() => setShowLoanWizard(true)}
           />
         )}
-        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} />}
+        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} onAddLoan={() => setShowLoanWizard(true)} />}
         {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
         {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={handleShowLoanDetails} />}
         {currentPage === 'settings' && <Settings />}

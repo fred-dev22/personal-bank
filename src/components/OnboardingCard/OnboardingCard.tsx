@@ -12,6 +12,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useActivity } from '../../contexts/ActivityContext';
 import { createBank } from '../../controllers/bankController';
 import { updateUser } from '../../controllers/userController';
+import { addBorrower } from '../../controllers/borrowerController';
 import type { BankCreateInput, UserUpdateInput } from '../../types/types';
 
 export interface OnboardingCardProps {
@@ -23,6 +24,7 @@ export interface OnboardingCardProps {
   onAddVault?: () => void;
   onShowGatewayWizard?: () => void;
   onGatewayCreated?: (bankId: string) => void;
+  onAddLoan?: () => void;
 }
 
 const steps = [
@@ -53,12 +55,14 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
   onStepChange,
   onAddVault,
   onShowGatewayWizard,
-  onGatewayCreated
+  onGatewayCreated,
+  onAddLoan
 }) => {
   const currentStepIdx = steps.findIndex(s => s.key === step);
   const { user } = useAuth();
   const { showActivity, hideActivity } = useActivity();
   const [bankName, setBankName] = useState('');
+
 
   const handleBankNameChange = (value: string) => {
     setBankName(value);
@@ -70,6 +74,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
     try {
       const token = localStorage.getItem('authToken');
       if (!token) throw new Error('No auth token');
+      
       // 1. Create the bank
       const bankData: BankCreateInput = {
         name: bankName,
@@ -77,13 +82,26 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
         onboarding_state: 'setup-gateway',
       } as BankCreateInput & { onboarding_state: string };
       const newBank = await createBank(token, bankData);
-      // 2. Update the user
+      
+      // 2. Create the first borrower with user's information
+      const borrowerData = {
+        first_name: user.firstName || '',
+        last_name: user.lastName || '',
+        email: user.email || '',
+        phone_number: '', // Pas disponible sur User, laisser vide
+        annual_income: 0, // Pas disponible sur User, laisser à 0
+        // Utiliser les propriétés disponibles sur User
+      };
+      await addBorrower(token, newBank.id, borrowerData);
+      
+      // 3. Update the user
       const updatedBanks = Array.isArray(user.banks) ? [...user.banks, newBank.id] : [newBank.id];
       const userUpdate: UserUpdateInput = {
         current_pb: newBank.id,
         banks: updatedBanks
       };
       await updateUser(token, user.id, userUpdate);
+      
       hideActivity();
       if (onStepChange) onStepChange('setup-gateway');
       if (onGatewayCreated) onGatewayCreated(newBank.id);
@@ -276,7 +294,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                   onMouseLeave={() => {}}
                   type="secondary"
                   style={{ minWidth: 120 }}
-                  onClick={() => { }}
+                  onClick={onAddLoan}
                 >
                   Add New Loan
                 </Button>

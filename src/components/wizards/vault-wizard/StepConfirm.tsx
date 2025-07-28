@@ -29,8 +29,6 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
     <div style={{
       width: 488,
       margin: '0 auto',
-      background: '#fff',
-      borderRadius: 8,
       display: 'flex',
       flexDirection: 'column',
       gap: 32,
