@@ -5,7 +5,8 @@ import type { Vault } from '../../../types/types';
 export const StepHold: React.FC<{
   vaultData: Vault;
   setVaultData: (data: Vault) => void;
-}> = ({ vaultData, setVaultData }) => {
+  validationErrors?: {[key: string]: string};
+}> = ({ vaultData, setVaultData, validationErrors = {} }) => {
   return (
     <div style={{ display: 'flex', gap: 32, width: 800, margin: '0 auto' }}>
       {/* Colonne gauche */}
@@ -36,14 +37,15 @@ export const StepHold: React.FC<{
               <span style={{ color: '#b50007', fontWeight: 700 }}>*</span>
               <span style={{ color: '#595959', fontWeight: 600 }}>Hold</span>
             </div>
-            <Input
-              value={vaultData.hold ?? ''}
-              onChange={(value: string) => setVaultData({ ...vaultData, hold: value === '' ? undefined : Number(value) })}
-              placeholder="$500.00"
-              style={{ width: '100%' }}
-              required
-              type="currency"
-            />
+                         <Input
+               value={vaultData.hold ?? ''}
+               onChange={(value: string) => setVaultData({ ...vaultData, hold: value === '' ? undefined : Number(value) })}
+               placeholder="$500.00"
+               style={{ width: '100%' }}
+               required
+               type="currency"
+               error={validationErrors.hold}
+             />
           </div>
         </form>
       </div>

@@ -344,7 +344,7 @@ export interface Holding {
 export type HoldingCreateInput = Omit<Holding, 'id'>;
 export type HoldingUpdateInput = Partial<HoldingCreateInput>;
 
-export type OnboardingStep = 'bank-name' | 'setup-gateway' | 'add-vault' | 'add-loan'; 
+export type OnboardingStep = 'bank-name' | 'setup-gateway' | 'add-vault' | 'add-loan' | 'done'; 
 
 export interface Bank {
   id: string;

@@ -48,6 +48,7 @@ interface VaultDetailsProps {
   activities: Activity[];
   onBack: () => void;
   onShowLoanDetails?: (loanId: string) => void;
+  onAddLoan?: () => void;
 }
 
 export const VaultDetails: React.FC<VaultDetailsProps> = ({
@@ -56,7 +57,8 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   borrowers,
   activities,
   onBack,
-  onShowLoanDetails
+  onShowLoanDetails,
+  onAddLoan
 }) => {
   const [activeTab, setActiveTab] = useState("summary");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -95,6 +97,10 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   }));
 
   const renderSummaryContent = () => {
+    // Debug: afficher le type du vault
+    console.log('Vault type:', vault.type, 'Is gateway:', vault.is_gateway, 'Vault:', vault);
+    
+    // Gateway : Transfers + VaultFinancials
     if (vault.is_gateway) {
       return (
         <>
@@ -110,7 +116,15 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
       );
     }
 
-    if (vault.type === 'Cash Vault') {
+    // Cash Vault (non-gateway) : Seulement VaultFinancials (même style que Gateway mais sans Transfers)
+    // Élargi la condition pour inclure plus de types possibles
+    if (vault.type === 'Cash Vault' || 
+        vault.type === 'Checking' || 
+        vault.type === 'Savings' || 
+        vault.type === 'cash' ||
+        vault.type === 'Cash' ||
+        !vault.type || // Si pas de type défini, considérer comme cash vault
+        (vault.type && vault.type.toLowerCase().includes('cash'))) {
       return (
         <VaultFinancials
           balance={vault.balance ?? 0}
@@ -193,7 +207,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
                   style={{ width: '100px', height: '36px', borderRadius: '18px' }}
                   icon="iconless"
                   iconComponent={undefined}
-                  onClick={() => {}}
+                  onClick={onAddLoan}
                   onMouseEnter={() => {}}
                   onMouseLeave={() => {}}
                   name="add-loan"

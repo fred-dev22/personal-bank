@@ -78,14 +78,13 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
     try {
       console.log('Calling updateLoan...');
       await updateLoan(
-        env,
+        token,
         initialData.note_id,
         {
           ...initialData,
           nickname: form.nickname,
           dscr_limit: Number(form.dscr_limit)
-        },
-        token
+        }
       );
       console.log('updateLoan success');
       hideActivity();

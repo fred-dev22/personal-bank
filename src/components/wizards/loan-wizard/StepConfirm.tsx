@@ -1,71 +1,203 @@
-import React from 'react';
-import type { Loan } from '../../../types/types';
+import React, { useState } from 'react';
+import type { Loan, Vault } from '../../../types/types';
 
 export const StepConfirm: React.FC<{
   loanData: Partial<Loan>;
-}> = ({ loanData }) => {
+  vaults: Vault[];
+}> = ({ loanData, vaults }) => {
+  const [activeTab, setActiveTab] = useState<'summary' | 'instructions'>('summary');
+  
+  // Trouver le vault sélectionné
+  const selectedVault = vaults.find(vault => vault.id === loanData.vault_id);
+
   return (
     <div style={{ padding: '32px 0' }}>
       <div style={{ maxWidth: 600, margin: '0 auto' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 32, textAlign: 'center' }}>
-          {loanData.nickname}
-        </h2>
-        
-        <div className="loan-wizard-summary-card">
-          <div className="loan-wizard-summary-grid">
-            <div>
-              <div className="loan-wizard-summary-value">
-                ${loanData.initial_balance?.toFixed(2) || '0.00'}
+        {/* Onglets */}
+        <div style={{ 
+          display: 'flex', 
+          borderBottom: '1px solid #e0e0e0',
+          marginBottom: '32px'
+        }}>
+          <button
+            onClick={() => setActiveTab('summary')}
+            style={{
+              padding: '12px 24px',
+              border: 'none',
+              background: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              color: activeTab === 'summary' ? '#00B5AE' : '#666',
+              borderBottom: activeTab === 'summary' ? '2px solid #00B5AE' : '2px solid transparent',
+              transition: 'all 0.2s'
+            }}
+          >
+            Summary
+          </button>
+          <button
+            onClick={() => setActiveTab('instructions')}
+            style={{
+              padding: '12px 24px',
+              border: 'none',
+              background: 'none',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              color: activeTab === 'instructions' ? '#00B5AE' : '#666',
+              borderBottom: activeTab === 'instructions' ? '2px solid #00B5AE' : '2px solid transparent',
+              transition: 'all 0.2s'
+            }}
+          >
+            Instructions
+          </button>
+        </div>
+
+        {/* Contenu Summary */}
+        {activeTab === 'summary' && (
+          <>
+            <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '32px', textAlign: 'center' }}>
+              {loanData.nickname || 'Loan 123'}
+            </h2>
+            
+            {/* Carte de résumé principal */}
+            <div style={{
+              background: '#fff',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              padding: '24px',
+              marginBottom: '24px'
+            }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(3, 1fr)', 
+                gap: '24px',
+                textAlign: 'center'
+              }}>
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>
+                    ${loanData.initial_balance?.toFixed(2) || '12.00'}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666' }}>funding amount</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>
+                    ${((loanData.initial_balance || 0) / (loanData.initial_number_of_payments || 1)).toFixed(2) || '12.01'}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666' }}>1 month</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>
+                    {loanData.initial_annual_rate?.toFixed(0) || '100'}%
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666' }}>Amortized: Due-Date</div>
+                </div>
               </div>
-              <div className="loan-wizard-summary-label">funding amount</div>
             </div>
-            <div>
-              <div className="loan-wizard-summary-value">
-                ${loanData.initial_payment_amount?.toFixed(2) || '0.00'}
+
+            {/* Carte du vault sélectionné */}
+            {selectedVault && (
+              <div style={{
+                background: '#fff',
+                border: '1px solid #e0e0e0',
+                borderRadius: '8px',
+                padding: '24px',
+                marginBottom: '24px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '4px' }}>
+                    {selectedVault.nickname || selectedVault.name}
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666' }}>
+                    {selectedVault.type || 'Cash vault'}
+                  </div>
+                </div>
+                <div style={{ fontSize: '18px', fontWeight: '700' }}>
+                  ${selectedVault.available_for_lending_amount || selectedVault.balance || 0}
+                </div>
               </div>
-              <div className="loan-wizard-summary-label">
-                {loanData.initial_number_of_payments || 0} months
+            )}
+
+            {/* Section Downloads */}
+            <div>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>Downloads</h3>
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#666', 
+                marginBottom: '16px',
+                lineHeight: '1.5'
+              }}>
+                Download this promissory note, or upload an existing one after the loan is added to the app.
+              </p>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                border: '1px solid #e0e0e0',
+                borderRadius: '8px',
+                background: '#f9f9f9',
+                cursor: 'pointer'
+              }}>
+                <span style={{ color: '#d32f2f', fontSize: '20px' }}>📄</span>
+                <span style={{ fontSize: '16px', fontWeight: '500', flex: 1 }}>Promissory.pdf</span>
+                <span style={{ fontSize: '16px', color: '#666' }}>↗</span>
               </div>
             </div>
-            <div>
-              <div className="loan-wizard-summary-value">
-                {loanData.initial_annual_rate?.toFixed(2) || '0.00'}%
+          </>
+        )}
+
+        {/* Contenu Instructions */}
+        {activeTab === 'instructions' && (
+          <div style={{ padding: '16px 0' }}>
+            <div style={{
+              background: '#fff',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              padding: '24px',
+              marginBottom: '24px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', margin: 0 }}>Funding</h3>
+                <span style={{ fontSize: '20px' }}>📋</span>
               </div>
-              <div className="loan-wizard-summary-label">{loanData.loan_type}</div>
+              <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.6' }}>
+                <li style={{ marginBottom: '8px' }}>Send fred the new Promissory Note and have them sign it.</li>
+                <li style={{ marginBottom: '8px' }}>Store the signed Note for your records.</li>
+                <li style={{ marginBottom: '8px' }}>Disburse ${loanData.initial_balance || 0} to {loanData.borrower_id} from {selectedVault?.nickname || selectedVault?.name || 'the selected vault'}.</li>
+                <li>We will automatically record the disbursement in {selectedVault?.nickname || selectedVault?.name || 'the selected vault'} ledger after completing this wizard.</li>
+              </ul>
+            </div>
+
+            <div style={{
+              background: '#fff',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              padding: '24px',
+              marginBottom: '24px'
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#666' }}>Receiving Payments</h3>
+              <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.6' }}>
+                <li>You will get a ${loanData.initial_payment_amount || 0} payment from {loanData.borrower_id} every month in your {selectedVault?.nickname || selectedVault?.name || 'selected vault'}.</li>
+              </ul>
+            </div>
+
+            <div style={{
+              background: '#fff',
+              border: '1px solid #e0e0e0',
+              borderRadius: '8px',
+              padding: '24px'
+            }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#666' }}>Completion</h3>
+              <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.6' }}>
+                <li>This loan ends after 1 timely payments.</li>
+              </ul>
             </div>
           </div>
-        </div>
-        
-        <div className="loan-wizard-summary-card">
-          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Cash flow rate</h3>
-          <div className="loan-wizard-slider">
-            <div className="loan-wizard-slider-thumb" />
-            <div className="loan-wizard-slider-labels">
-              <span>slow</span>
-              <span>moderate</span>
-              <span>fast</span>
-            </div>
-          </div>
-          <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 700 }}>8.88</div>
-        </div>
-        
-        <div className="loan-wizard-summary-card">
-          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Gateway</h3>
-          <div style={{ color: '#666', marginBottom: 16 }}>Cash vault</div>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>$7,500.00</div>
-        </div>
-        
-        <div className="loan-wizard-summary-card">
-          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Downloads</h3>
-          <p style={{ color: '#666', marginBottom: 16 }}>
-            Download this promissory note, or upload an existing one after the loan is added to the app.
-          </p>
-          <div className="loan-wizard-download-card">
-            <span className="loan-wizard-download-icon">📄</span>
-            <span className="loan-wizard-download-name">Promissory.pdf</span>
-            <span className="loan-wizard-download-arrow">↗</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

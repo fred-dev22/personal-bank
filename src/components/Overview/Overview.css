@@ -5,6 +5,8 @@
   gap: 48px;
   position: relative;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .page-toolbar {
   align-items: center;
@@ -43,11 +45,16 @@
   flex-direction: column;
   gap: 32px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .upcoming {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .div-wrapper {
   padding: 8px 16px;
@@ -60,6 +67,9 @@
 .row {
   display: flex;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .overview-actions {
   flex: 1;
@@ -189,6 +199,9 @@
 .row-2 {
   display: flex;
   gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .vault-financials {
   flex: 1;
@@ -338,8 +351,10 @@
   display: flex;
   flex-direction: row;
   width: 100%;
+  max-width: 100%;
   min-height: 260px;
   margin-top: 16px;
+  box-sizing: border-box;
 }
 
 .vault-summary-list {

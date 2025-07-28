@@ -17,6 +17,7 @@ import { createHolding } from '../../../controllers/holdingController';
 import { createVault } from '../../../controllers/vaultController';
 import type { AccountType } from '../../../types/types';
 import { updateBankField } from '../../../controllers/bankController';
+import './index.css';
 
 // Définir les étapes selon le type de vault
 const stepsCashVault = [
@@ -54,6 +55,7 @@ export const VaultWizard: React.FC<{
   const [type, setType] = useState<'cash' | 'super' | undefined>(gatewayMode ? 'cash' : vaultType);
   const steps = type === 'super' ? stepsSuperVault : stepsCashVault;
   const [step, setStep] = useState(gatewayMode ? 1 : 0);
+    const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   const [vaultData, setVaultData] = useState<Vault>(vaultToEdit || {
     id: '',
     name: gatewayMode ? 'Gateway' : (type === 'super' ? 'Super Vault' : ''),
@@ -80,12 +82,104 @@ export const VaultWizard: React.FC<{
   const { user, current_pb_onboarding_state, setCurrentPbOnboardingState } = useAuth();
   const { showActivity, hideActivity } = useActivity();
 
+  // Fonction de validation pour chaque étape
+  const validateStep = (stepIndex: number): {[key: string]: string} => {
+    const errors: {[key: string]: string} = {};
+    
+    if (type === 'cash') {
+      switch (stepIndex) {
+        case 1: // Config
+          if (!vaultData.name?.trim()) {
+            errors.name = 'Vault Name is required';
+          }
+          if (!vaultData.amount || Number(vaultData.amount) <= 0) {
+            errors.amount = 'Amount is required and must be greater than 0';
+          }
+          if (!vaultData.interestRate?.trim()) {
+            errors.interestRate = 'Interest Rate is required';
+          }
+          break;
+        case 2: // Reserve
+          if (!vaultData.reserve || Number(vaultData.reserve) <= 0) {
+            errors.reserve = 'Reserve amount is required and must be greater than 0';
+          }
+          break;
+        case 3: // Hold
+          if (!vaultData.hold || Number(vaultData.hold) <= 0) {
+            errors.hold = 'Hold amount is required and must be greater than 0';
+          }
+          break;
+      }
+    } else if (type === 'super') {
+      switch (stepIndex) {
+        case 1: // Config
+          if (!vaultData.name?.trim()) {
+            errors.name = 'Vault Name is required';
+          }
+          if (!vaultData.amount || Number(vaultData.amount) <= 0) {
+            errors.amount = 'Amount is required and must be greater than 0';
+          }
+          if (!vaultData.interestRate?.trim()) {
+            errors.interestRate = 'Interest Rate is required';
+          }
+          break;
+        case 2: // Asset
+          if (!vaultData.assetName?.trim()) {
+            errors.assetName = 'Asset name is required';
+          }
+          if (!vaultData.assetType?.trim()) {
+            errors.assetType = 'Asset type is required';
+          }
+          if (!vaultData.amount || Number(vaultData.amount) <= 0) {
+            errors.amount = 'Amount is required and must be greater than 0';
+          }
+          break;
+                  case 3: // Debt
+            if (vaultData.debtBalance === undefined || vaultData.debtBalance === null || vaultData.debtBalance === '') {
+              errors.debtBalance = 'Debt balance is required';
+            } else if (Number(vaultData.debtBalance) < 0) {
+              errors.debtBalance = 'Debt balance must be 0 or greater';
+            }
+            if (!vaultData.debtCeilingRate?.trim()) {
+              errors.debtCeilingRate = 'Debt ceiling rate is required';
+            }
+            if (!vaultData.debtLtv?.trim()) {
+              errors.debtLtv = 'Debt LTV is required';
+            }
+            break;
+                  case 4: // Reserve
+            if (!vaultData.reserve || Number(vaultData.reserve) <= 0) {
+              errors.reserve = 'Reserve amount is required and must be greater than 0';
+            }
+            break;
+          case 5: // Hold
+            if (!vaultData.hold || Number(vaultData.hold) <= 0) {
+              errors.hold = 'Hold amount is required and must be greater than 0';
+            }
+            break;
+      }
+    }
+    
+    return errors;
+  };
+
   // Pour la validation du bouton Next
   const isNextDisabled = () => {
-    return false;
+    return false; // On ne désactive plus le bouton, on affiche les erreurs à la place
   };
 
   const handleNext = () => {
+    const errors = validateStep(step);
+    setValidationErrors(errors);
+    
+    // Si il y a des erreurs, on ne passe pas à l'étape suivante
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+    
+    // Nettoyer les erreurs si tout est valide
+    setValidationErrors({});
+    
     if (step < steps.length) {
       setStep(step + 1);
       return;
@@ -136,6 +230,7 @@ export const VaultWizard: React.FC<{
         // Création du vault
         const vault = await createVault(token, user.current_pb!, {
           ...vaultData,
+          nickname: vaultData.name, // S'assurer que le nickname est bien défini
           holding_id: holding.id,
           type: type === 'super' ? 'super vault' : 'cash vault',
           is_gateway: !!gatewayMode,
@@ -170,8 +265,15 @@ export const VaultWizard: React.FC<{
     })();
   };
 
+  const handlePrevious = () => {
+    if (step > 0) {
+      setStep(step - 1);
+      setValidationErrors({}); // Nettoyer les erreurs quand on revient en arrière
+    }
+  };
+
   return (
-    <div style={{ width: '100%', padding: 32, boxSizing: 'border-box', paddingBottom: 120 }}>
+    <div className="vault-wizard">
       <HeaderWizard
         title={gatewayMode ? 'Add Gateway' : (vaultToEdit ? 'Edit Vault' : 'Add Vault')}
         onExit={onClose}
@@ -181,9 +283,12 @@ export const VaultWizard: React.FC<{
             if (!gatewayMode) {
               setType(undefined);
               setStep(0);
+              setValidationErrors({});
+            } else {
+              handlePrevious();
             }
           } else {
-            setStep(Math.max(0, step - 1));
+            handlePrevious();
           }
         } : undefined}
       />
@@ -202,32 +307,20 @@ export const VaultWizard: React.FC<{
             <StepsWizard steps={steps} currentStep={step - 1} />
           </div>
           {type === 'super' ? (
-            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} /> :
-            step === 2 ? <StepAsset vaultData={vaultData} setVaultData={setVaultData} /> :
-            step === 3 ? <StepDebt vaultData={vaultData} setVaultData={setVaultData} /> :
-            step === 4 ? <StepReserve vaultData={vaultData} setVaultData={setVaultData} /> :
-            step === 5 ? <StepHold vaultData={vaultData} setVaultData={setVaultData} /> :
+            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} validationErrors={validationErrors} /> :
+            step === 2 ? <StepAsset vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
+            step === 3 ? <StepDebt vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
+            step === 4 ? <StepReserve vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
+            step === 5 ? <StepHold vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 6 ? <StepConfirm vaultData={vaultData} /> : null
           ) : (
-            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} /> :
-            step === 2 ? <StepReserve vaultData={vaultData} setVaultData={setVaultData} /> :
-            step === 3 ? <StepHold vaultData={vaultData} setVaultData={setVaultData} /> :
+            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} validationErrors={validationErrors} /> :
+            step === 2 ? <StepReserve vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
+            step === 3 ? <StepHold vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 4 ? <StepConfirm vaultData={vaultData} /> : null
           )}
           {step > 0 && (
-            <div className="wizard-footer" style={{
-              position: 'fixed',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: '#fff',
-              padding: '24px 0 24px 0',
-              boxShadow: '0 -2px 8px rgba(0,0,0,0.04)',
-              zIndex: 2000,
-              width: '100vw',
-              display: 'flex',
-              justifyContent: 'center'
-            }}>
+            <div className="vault-wizard-footer">
               <Button
                 icon="iconless"
                 iconComponent={undefined}

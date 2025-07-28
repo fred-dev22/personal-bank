@@ -25,6 +25,7 @@ interface LoansProps {
   activities?: Activity[];
   selectedLoanId?: string | null;
   onShowLoanDetails?: (loanId: string) => void;
+  onAddLoan?: () => void;
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -38,6 +39,7 @@ export const Loans: React.FC<LoansProps> = ({
   activities = [],
   selectedLoanId = null,
   onShowLoanDetails,
+  onAddLoan,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
@@ -149,7 +151,7 @@ export const Loans: React.FC<LoansProps> = ({
 
   const handleMenuAction = (item: { id: string; label: string }) => {
     if (item.id === 'add-loan') {
-      // logique pour ajouter un prêt
+      if (onAddLoan) onAddLoan();
     } else if (item.id === 'upload-loans') {
       // logique pour uploader des prêts
     } else if (item.id === 'add-request') {

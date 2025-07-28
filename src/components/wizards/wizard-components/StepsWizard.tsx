@@ -10,23 +10,40 @@ export const StepsWizard: React.FC<{
       // Trait gauche
       let leftClass = 'steps-wizard-line';
       if (idx === 0) {
-        leftClass += ' gradient'; // premier trait gauche toujours gradient (to right, #fff -> #00B5AE)
+        // Premier trait : blanc vers couleur de l'étape
+        if (currentStep === 0) {
+          leftClass += ' gradient-white-green'; // blanc -> vert (étape courante)
+        } else {
+          leftClass += ' gradient-white-blue'; // blanc -> bleu (étape traversée)
+        }
       } else if (idx < currentStep) {
-        leftClass += ' solid'; // étapes passées
+        leftClass += ' solid-blue'; // étapes passées : bleu
       } else if (idx === currentStep) {
-        leftClass += ' solid'; // étape courante
+        leftClass += ' gradient-blue-green'; // bleu -> vert (transition depuis étape précédente)
       } else {
-        leftClass += ' inactive';
+        leftClass += ' inactive'; // gris
       }
+
       // Trait droit
       let rightClass = 'steps-wizard-line';
-      if (idx === currentStep) {
-        rightClass += ' gradient right'; // trait droit de l'étape courante (to right, #00B5AE -> #fff)
+      if (idx === steps.length - 1) {
+        // Dernier trait : couleur de l'étape vers blanc
+        if (idx === currentStep) {
+          rightClass += ' gradient-green-white'; // vert -> blanc
+        } else if (idx < currentStep) {
+          rightClass += ' gradient-blue-white'; // bleu -> blanc
+        } else {
+          rightClass += ' inactive'; // gris
+        }
       } else if (idx < currentStep) {
-        rightClass += ' solid'; // étapes passées
+        // Étapes traversées : trait droit complètement bleu
+        rightClass += ' solid-blue'; // bleu uni
+      } else if (idx === currentStep) {
+        rightClass += ' gradient-green-gray'; // vert -> gris (vers étapes futures)
       } else {
-        rightClass += ' inactive';
+        rightClass += ' inactive'; // gris
       }
+
       return (
         <div className="steps-wizard-step-col" key={step.label}>
           <div className="steps-wizard-bar-row">
