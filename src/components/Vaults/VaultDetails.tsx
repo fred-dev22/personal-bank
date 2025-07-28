@@ -119,6 +119,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
     // Cash Vault (non-gateway) : Seulement VaultFinancials (même style que Gateway mais sans Transfers)
     // Élargi la condition pour inclure plus de types possibles
     if (vault.type === 'Cash Vault' || 
+        vault.type === 'cash vault' || // Type retourné par l'API
         vault.type === 'Checking' || 
         vault.type === 'Savings' || 
         vault.type === 'cash' ||

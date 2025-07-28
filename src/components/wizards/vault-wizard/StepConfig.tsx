@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input } from '@jbaluch/components';
+import { Input, PopupButton } from '@jbaluch/components';
 import type { Vault } from '../../../types/types';
 
 export const StepConfig: React.FC<{
@@ -56,20 +56,22 @@ export const StepConfig: React.FC<{
         
         <div style={{ marginBottom: 16 }}>
           <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Account Type</label>
-                     <select
-             value={vaultData.accountType || 'Checking'}
-             onChange={(e) => setVaultData({ ...vaultData, accountType: e.target.value })}
-             style={{
-               width: '100%',
-               padding: '12px',
-               border: '1px solid #ddd',
-               borderRadius: 8,
-               fontSize: 16
-             }}
-           >
-             <option value="Checking">Checking</option>
-             <option value="Savings">Savings</option>
-           </select>
+          <PopupButton
+            defaultValue={vaultData.accountType || 'Checking'}
+            items={[
+              { id: 'Checking', label: 'Checking' },
+              { id: 'Savings', label: 'Savings' }
+            ]}
+            label="Account Type"
+            menuStyle="text"
+            menuMaxHeight={200}
+            onSelect={(selectedId: string) => setVaultData({ ...vaultData, accountType: selectedId })}
+            style={{
+              width: '100%',
+              height: '48px',
+              fontSize: 16
+            }}
+          />
         </div>
       </div>
     </div>

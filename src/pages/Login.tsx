@@ -54,7 +54,15 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container"
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh',
+      backgroundColor: 'var(--surface-grey-background)',
+    }}
+    >
       <Login
         warningMessage={error}
         onSignIn={handleSignIn}
