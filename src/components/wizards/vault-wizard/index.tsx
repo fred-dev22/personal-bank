@@ -59,6 +59,7 @@ export const VaultWizard: React.FC<{
   const [vaultData, setVaultData] = useState<Vault>(vaultToEdit || {
     id: '',
     name: gatewayMode ? 'Gateway' : (type === 'super' ? 'Super Vault' : ''),
+    nickname: gatewayMode ? 'Gateway' : (type === 'super' ? 'Super Vault' : ''),
     issues: 0,
     balance: 10000,
     financials: { paidIn: 0, paidOut: 0 },
@@ -66,6 +67,10 @@ export const VaultWizard: React.FC<{
     hold: 0,
     reserve: 0,
     type: gatewayMode ? 'cash' : type,
+    // Champs requis pour Gateway
+    amount: gatewayMode ? 10000 : undefined,
+    interestRate: gatewayMode ? '0' : undefined,
+    accountType: gatewayMode ? 'Checking' : undefined,
     // Champs Super Vault
     assetType: '',
     assetName: '',
@@ -194,15 +199,19 @@ export const VaultWizard: React.FC<{
       const token = localStorage.getItem('authToken');
       if (!user || !token) return;
       try {
+        console.log('Creating vault with data:', vaultData);
         let accountIds: string[] = [];
         if (type === 'cash') {
-          const account = await createAccount(token, {
+          const accountData = {
             nickname: vaultData.name ?? '',
             type: (vaultData.accountType as AccountType) ?? 'Checking',
             balance: Number(vaultData.amount),
             pb: user.current_pb,
             annual_interest_rate: parsePercentToDecimal(vaultData.interestRate),
-          });
+          };
+          console.log('Creating account with data:', accountData);
+          const account = await createAccount(token, accountData);
+          console.log('Account created:', account);
           accountIds = [account.id];
         } else if (type === 'super') {
           const assetAccount = await createAccount(token, {
@@ -220,22 +229,28 @@ export const VaultWizard: React.FC<{
           });
           accountIds = [assetAccount.id, debtAccount.id];
         }
-        const holding = await createHolding(token, {
+        const holdingData = {
           nickname: vaultData.name || 'Default holding name',
           accounts: accountIds,
-        });
+        };
+        console.log('Creating holding with data:', holdingData);
+        const holding = await createHolding(token, holdingData);
+        console.log('Holding created:', holding);
         // Calcul du available_for_lending_amount
         const availableForLending =
           Number(vaultData.amount ?? 0) - (Number(vaultData.reserve) || 0) - (Number(vaultData.hold) || 0);
         // Création du vault
-        const vault = await createVault(token, user.current_pb!, {
+        const vaultCreateData = {
           ...vaultData,
           nickname: vaultData.name, // S'assurer que le nickname est bien défini
           holding_id: holding.id,
           type: type === 'super' ? 'super vault' : 'cash vault',
           is_gateway: !!gatewayMode,
           available_for_lending_amount: availableForLending,
-        });
+        };
+        console.log('Creating vault with data:', vaultCreateData);
+        const vault = await createVault(token, user.current_pb!, vaultCreateData);
+        console.log('Vault created:', vault);
         // Mise à jour de l'onboarding_state selon le mode (uniquement pendant l'onboarding)
         if (user?.current_pb && current_pb_onboarding_state && current_pb_onboarding_state !== 'done') {
           try {
