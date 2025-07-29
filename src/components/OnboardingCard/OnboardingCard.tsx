@@ -87,6 +87,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
       const borrowerData = {
         first_name: user.firstName || '',
         last_name: user.lastName || '',
+        fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
         email: user.email || '',
         phone_number: '', // Pas disponible sur User, laisser vide
         annual_income: 0, // Pas disponible sur User, laisser à 0

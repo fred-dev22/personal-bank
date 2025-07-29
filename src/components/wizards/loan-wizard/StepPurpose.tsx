@@ -26,7 +26,7 @@ export const StepPurpose: React.FC<{
           />
         </div>
         
-        <div className="loan-wizard-form-group">
+        <div >
           <Input
             label="Purpose"
             placeholder="Type here..."
@@ -34,9 +34,8 @@ export const StepPurpose: React.FC<{
             onChange={(value: string) => setLoanData({ ...loanData, comments: value })}
             type="multiline"
             multiline={{
-              maxHeight: 200,
+              maxHeight: 300,
               maxLength: 500,
-              resizable: true,
             }}
           />
         </div>
