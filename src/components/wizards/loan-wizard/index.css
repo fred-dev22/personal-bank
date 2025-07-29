@@ -1,0 +1,354 @@
+.loan-wizard {
+  width: 100%;
+  height: 100vh;
+  padding: 32px;
+  box-sizing: border-box;
+  padding-bottom: 120px;
+  background: #F7F7F9;
+  overflow-y: auto;
+}
+
+.loan-wizard-step {
+  text-align: center;
+}
+
+.loan-wizard-step h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.loan-wizard-step p {
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.loan-wizard-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.loan-wizard-form-grid {
+  max-width: 600px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+}
+
+.loan-wizard-form-group {
+  margin-bottom: 16px;
+}
+
+.loan-wizard-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* Styles pour les inputs natifs seulement (pas les composants Input de la bibliothèque) */
+.loan-wizard-form-group input[type="date"],
+.loan-wizard-form-group textarea,
+.loan-wizard-form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* Ne pas appliquer de styles aux composants Input de @jbaluch/components */
+.loan-wizard-form-group .jb-input {
+  /* Les composants Input gèrent leurs propres styles */
+}
+
+.loan-wizard-form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.loan-wizard-form-group .required {
+  color: red;
+}
+
+.loan-wizard-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.loan-wizard-button {
+  padding: 16px 32px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  min-width: 120px;
+  transition: all 0.2s ease;
+}
+
+.loan-wizard-button:hover {
+  background: #f5f5f5;
+}
+
+.loan-wizard-button.selected {
+  background: #1AC9A0;
+  color: #fff;
+  border-color: #1AC9A0;
+}
+
+.loan-wizard-funding-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.loan-wizard-funding-card:hover {
+  background-color: #EEEEF2;
+}
+
+.loan-wizard-funding-card.selected {
+  background-color: #EEEEF2;
+}
+
+.loan-wizard-funding-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loan-wizard-funding-card-title {
+  font-weight: 600;
+}
+
+.loan-wizard-funding-card-subtitle {
+  color: #666;
+  font-size: 14px;
+}
+
+.loan-wizard-funding-card-amount {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+.loan-wizard-summary-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 24px;
+  background: #fff;
+  margin-bottom: 24px;
+}
+
+.loan-wizard-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+
+.loan-wizard-summary-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.loan-wizard-summary-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.loan-wizard-slider {
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.loan-wizard-slider-thumb {
+  position: absolute;
+  left: 70%;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  background: #1AC9A0;
+  border-radius: 50%;
+}
+
+.loan-wizard-slider-labels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.loan-wizard-download-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.loan-wizard-download-icon {
+  color: red;
+  font-size: 20px;
+}
+
+.loan-wizard-download-name {
+  font-weight: 600;
+}
+
+.loan-wizard-download-arrow {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.loan-wizard-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #F7F7F9;
+  padding: 24px 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  z-index: 2000;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.loan-wizard-footer button {
+  max-height: 36px;
+  font-size: 16px;
+}
+
+.loan-wizard-form-group > .jb-input:not([data-multiline]) {
+  height: 40px;
+  max-width: 320px;
+}
+
+.loan-wizard-form-group > .jb-input[data-multiline] {
+  max-width: 320px;
+} 
+/* Styles pour le tableau d'historique des paiements */
+.payment-history-table {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 2.5fr 1.5fr 1.5fr 60px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  width: 100%;
+}
+
+.header-cell {
+  padding: 12px 8px;
+  font-weight: 600;
+  color: #666;
+  font-size: 14px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 2.5fr 1.5fr 1.5fr 60px;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+  width: 100%;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-cell {
+  padding: 12px 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.table-input {
+  width: calc(100% - 8px);
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.table-input:focus {
+  outline: none;
+  border-color: #00B5AE;
+}
+
+.table-select {
+  width: calc(100% - 8px);
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.table-select:focus {
+  outline: none;
+  border-color: #00B5AE;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e8f5e8;
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  font-size: 16px;
+}
+
+.delete-button:hover {
+  background: #f5f5f5;
+}
+
+.text-wrapper{
+  font-size: 16px;
+}

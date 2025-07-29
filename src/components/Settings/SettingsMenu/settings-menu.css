@@ -1,0 +1,153 @@
+.settings-menu {
+    align-items: flex-start;
+    background-color: #ffffffa6;
+    border-radius: 8px;
+    box-shadow: var(--grey-shadows-tertiary-grey-shadow);
+    display: inline-flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 32px 16px;
+    position: relative;
+    min-width: 196px;
+    max-width: 196px;
+    width: 196px;
+  }
+  
+  .settings-menu .div {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .settings-menu .frame {
+    display: flex;
+    padding-left: var(--Spacing-sm, 16px);
+    justify-content: center;
+    align-items: left;
+    gap: 10px;
+    position: relative;
+  }
+  
+  .settings-menu .text-wrapper {
+    color: var(--text-primary, #0D1728);
+    font-family: "DM Sans";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 21px;
+    margin-top: -1.00px;
+    position: relative;
+    white-space: nowrap;
+    width: fit-content;
+  }
+  
+  .settings-menu .navigation-button-instance {
+    flex: 0 0 auto !important;
+  }
+  
+  .settings-menu .icon-instance-node {
+    height: 16px !important;
+    position: relative !important;
+    width: 16px !important;
+  }
+  
+  .settings-menu .design-component-instance-node {
+    align-self: stretch !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+  }
+  
+  .settings-menu .leverage-loans-instance {
+    background-image: url(./coins-rotate.svg) !important;
+    height: 16px !important;
+    width: 16px !important;
+  }
+  
+  .settings-menu .accounts-vaults-instance {
+    background-image: url(./wallet-02-2.svg) !important;
+    height: 16px !important;
+    width: 16px !important;
+  }
+  
+  .settings-menu .activity-instance {
+    background-image: url(./coin-broken-2.svg) !important;
+    height: 16px !important;
+    width: 16px !important;
+  }
+  
+  .settings-menu .navigation-button-instance,
+  .settings-menu .design-component-instance-node {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+  
+  .settings-menu .navigation-button-instance .navbutton-left,
+  .settings-menu .design-component-instance-node .navbutton-left {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+  
+  .settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .settings-navbutton, 
+  .settings-menu .navigation-button-instance, 
+  .settings-menu .design-component-instance-node {
+    display: flex;
+    align-items: left !important;
+    gap: 12px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    width: 164px;
+    justify-content: flex-start;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6B6B70;
+    outline: none;
+    margin: 0;
+    padding-left: 16px;
+  }
+
+  
+  .settings-menu .navigation-button-instance .navbutton-left,
+  .settings-menu .design-component-instance-node .navbutton-left {
+    justify-content: flex-start !important;
+    text-align: left !important;
+    width: 100%;
+  }
+  
+  .settings-group-title{
+    color: var(--text-primary, #0D1728);
+
+/* Subtitle 2 */
+font-family: "DM Sans";
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: 21px; /* 131.25% */
+padding-left: 16px;
+  }
+  .nav-button-text{
+    width: 100%;
+  }
+
+.settings-layout {
+  display: flex;
+  gap: 32px;
+  width: 100%;
+}
+
+.settings-content {
+  flex: 1;
+  min-width: 0;
+}

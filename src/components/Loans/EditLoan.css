@@ -1,0 +1,520 @@
+.edit-loan {
+  align-items: flex-start;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 981px;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  min-width: unset;
+  max-width: unset;
+}
+
+.edit-loan .top {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 32px;
+  padding: 48px 24px;
+  position: relative;
+  width: 100%;
+}
+
+.edit-loan .frame-2 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.edit-loan .text-wrapper-7 {
+  color: #0d1728;
+  font-family: var(--subtitles-subtitle-1-font-family);
+  font-size: var(--subtitles-subtitle-1-font-size);
+  font-style: var(--subtitles-subtitle-1-font-style);
+  font-weight: var(--subtitles-subtitle-1-font-weight);
+  letter-spacing: var(--subtitles-subtitle-1-letter-spacing);
+  line-height: var(--subtitles-subtitle-1-line-height);
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.edit-loan .button-wrapper {
+  align-items: center;
+  background-color: #ffffff0a;
+  border-radius: 20px;
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  position: relative;
+  width: 36px;
+}
+
+.edit-loan .close-wrapper {
+  align-items: flex-start;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  padding: 8px;
+  position: relative;
+}
+
+.edit-loan .close-instance {
+  height: 20px !important;
+  position: relative !important;
+  width: 20px !important;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.edit-loan .form-wrapper {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  position: relative;
+  width: 100%;
+}
+
+.edit-loan .form {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 16px;
+  justify-content: center;
+  position: relative;
+}
+
+.edit-loan .input-molecule {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  width: 100%;
+}
+
+.edit-loan .label {
+  align-items: center;
+  align-self: stretch;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  position: relative;
+}
+
+.edit-loan .labels {
+  align-items: flex-start;
+  display: flex;
+  gap: 3px;
+  position: relative;
+  width: 334px;
+}
+
+.edit-loan .label-asterisk {
+  align-items: flex-start;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 3px;
+  position: relative;
+}
+
+.edit-loan .asterisk {
+  height: 22px;
+  position: relative;
+  width: 9px;
+}
+
+.edit-loan .text-wrapper-8 {
+  color: #b50007;
+  font-family: var(--body-text-body-bold-font-family);
+  font-size: var(--body-text-body-bold-font-size);
+  font-style: var(--body-text-body-bold-font-style);
+  font-weight: var(--body-text-body-bold-font-weight);
+  height: 22px;
+  left: 0;
+  letter-spacing: var(--body-text-body-bold-letter-spacing);
+  line-height: var(--body-text-body-bold-line-height);
+  position: absolute;
+  top: -1px;
+  white-space: nowrap;
+}
+
+.edit-loan .text-wrapper-9 {
+  color: #595959;
+  font-family: var(--body-text-body-2-bold-font-family);
+  font-size: var(--body-text-body-2-bold-font-size);
+  font-style: var(--body-text-body-2-bold-font-style);
+  font-weight: var(--body-text-body-2-bold-font-weight);
+  letter-spacing: var(--body-text-body-2-bold-letter-spacing);
+  line-height: var(--body-text-body-2-bold-line-height);
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.edit-loan .input {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.edit-loan .instance-node-3 {
+  flex: 1 !important;
+  flex-grow: 1 !important;
+  min-width: 120px !important;
+  width: unset !important;
+}
+
+.edit-loan .labels-wrapper {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  position: relative;
+}
+
+.edit-loan .label-asterisk-2 {
+  align-items: flex-start;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 3px;
+  padding: 0px 4px 0px 0px;
+  position: relative;
+}
+
+.edit-loan .label-asterisk-wrapper {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.edit-loan .label-asterisk-3 {
+  align-items: flex-start;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 3px;
+  min-width: 120px;
+  position: relative;
+}
+
+.edit-loan .inputs {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 12px;
+  position: relative;
+  width: 100%;
+  z-index: 0;
+}
+
+.edit-loan .date-input-wrapper {
+  align-items: flex-start;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  position: relative;
+}
+
+.edit-loan .input-date-picker-instance {
+  flex: 1 !important;
+  flex-grow: 1 !important;
+  width: unset !important;
+}
+
+.edit-loan .modal-buttons {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 24px;
+  justify-content: flex-end;
+  padding: 24px 32px;
+  position: relative;
+  width: 100%;
+}
+
+.edit-loan .frame-4 {
+  align-items: flex-start;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.edit-loan .button-4 {
+  flex: 0 0 auto !important;
+}
+
+.edit-loan .button-modal-primary-default-iconless-right {
+  background-color: #00b5ae !important;
+  flex: 0 0 auto !important;
+}
+
+.edit-loan-modal {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  width: 413px;
+  max-width: 100vw;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  min-width: 413px;
+}
+.edit-loan__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.edit-loan__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0d1728;
+  font-family: "Poppins", Arial, sans-serif;
+}
+.edit-loan__scrollable {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 48px 24px 48px 24px;
+  min-height: 0;
+  gap: 32px;
+}
+.edit-loan__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.edit-loan__footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 24px;
+  background: #fff;
+  border-top: 1px solid #f0f0f1;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+  z-index: 2;
+}
+
+.edit-loan__fake-input {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0 12px 0 40px;
+  font-size: 16px;
+  background: #fff;
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.edit-loan__fake-input img {
+  position: absolute;
+  left: 12px;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.edit-loan__label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #595959;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.edit-loan__form > div {
+}
+
+/* Change Terms styles */
+.edit-loan__change-terms,
+.edit-loan__delete-loan {
+  background: #fafbfc;
+  border-radius: 8px;
+  box-shadow: var(--grey-shadows-tertiary-grey-shadow, 0 1px 4px #00000010);
+  border: 1px solid #f0f0f1;
+  padding: 16px 20px 12px 20px;
+}
+.change-terms {
+  background-color: #fafbfc;
+  border-radius: 8px;
+  box-shadow: var(--grey-shadows-tertiary-grey-shadow, 0 1px 4px #00000010);
+  padding: 16px 20px 12px 20px;
+}
+.change-terms__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.change-terms__col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.change-terms__title {
+  color: #0d1728;
+  font-family: var(--body-text-body-bold-font-family, sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+}
+.change-terms__button {
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 18px;
+  color: #0d1728;
+  font-family: var(--buttons-nav-button-secondary-font-family, sans-serif);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 6px 24px;
+  cursor: pointer;
+  box-shadow: var(--grey-shadows-disabled-shadow, 0 1px 2px #00000008);
+  transition: background 0.2s;
+}
+.change-terms__button:hover {
+  background: #f0f0f1;
+}
+.change-terms__message {
+  color: #595959;
+  font-family: var(--body-text-body-2-regular-font-family, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+/* Delete Loan styles */
+.delete-loan {
+  background-color: #fafbfc;
+  border-radius: 8px;
+  box-shadow: var(--grey-shadows-tertiary-grey-shadow, 0 1px 4px #00000010);
+  padding: 16px 20px 12px 20px;
+}
+.delete-loan__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.delete-loan__col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.delete-loan__title {
+  color: #0d1728;
+  font-family: var(--body-text-body-bold-font-family, sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+}
+.delete-loan__button {
+  background: #fff;
+  border: 1.5px solid #b50007;
+  border-radius: 18px;
+  color: #b50007;
+  font-family: var(--buttons-nav-button-secondary-font-family, sans-serif);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 6px 32px;
+  cursor: pointer;
+  box-shadow: var(--grey-shadows-disabled-shadow, 0 1px 2px #00000008);
+  transition: background 0.2s;
+}
+.delete-loan__button:hover {
+  background: #ffeaea;
+}
+.delete-loan__message {
+  color: #595959;
+  font-family: var(--body-text-body-2-regular-font-family, sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+.edit-loan__form-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.edit-loan__input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.edit-loan__input-group-row {
+  display: flex;
+  gap: 16px;
+}
+.edit-loan__input-group {
+  flex: 1;
+}
+.edit-loan__input-group input,
+.edit-loan__input-group input[type="text"],
+.edit-loan__input-group input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+.edit-loan__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #595959;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.edit-loan__asterisk {
+  color: #b50007;
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.edit-loan__form-block,
+.edit-loan__change-terms,
+.edit-loan__delete-loan,
+.change-terms,
+.delete-loan {
+  margin: 0;
+} 

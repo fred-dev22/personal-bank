@@ -1,0 +1,132 @@
+.steps-wizard-root {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  margin: 32px 0 0 0;
+}
+
+.steps-wizard-step-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 30px;
+}
+
+.steps-wizard-bar-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.steps-wizard-line {
+  width: 50px;
+  height: 2px;
+  background: #DFDFE6;
+  border: none;
+  margin: 0;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Dégradés avec blanc */
+.steps-wizard-line.gradient-white-green {
+  background: linear-gradient(to right, #fff, #00B5AE);
+}
+.steps-wizard-line.gradient-white-blue {
+  background: linear-gradient(to right, #fff, #297598);
+}
+.steps-wizard-line.gradient-green-white {
+  background: linear-gradient(to right, #00B5AE, #fff);
+}
+.steps-wizard-line.gradient-blue-white {
+  background: linear-gradient(to right, #297598, #fff);
+}
+
+/* Transitions entre étapes */
+.steps-wizard-line.gradient-blue-green {
+  background: linear-gradient(to right, #297598, #00B5AE);
+}
+.steps-wizard-line.gradient-green-gray {
+  background: linear-gradient(to right, #00B5AE, #DFDFE6);
+}
+
+/* Couleurs solides */
+.steps-wizard-line.solid-blue {
+  background: #297598;
+}
+.steps-wizard-line.inactive {
+  background: #DFDFE6;
+}
+
+.steps-wizard-circle {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  padding: 4px 6px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  border-radius: 20px;
+  border: 1px solid #DFDFE6;
+  background: #ececec;
+  font-weight: 700;
+  font-size: 16px;
+  color: #b5b5b5;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  z-index: 1;
+  flex-shrink: 0;
+}
+.steps-wizard-circle.active {
+  background: #00B5AE;
+  color: #fff;
+  border: 1px solid #00B5AE;
+}
+.steps-wizard-circle.done {
+  background: #297598;
+  color: #fff;
+  border: 1px solid #297598;
+}
+
+.steps-wizard-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.steps-wizard-label {
+  margin-top: 8px;
+  text-align: center;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #6B6B70;
+  line-height: 18px;
+  min-width: 50px;
+}
+.steps-wizard-label.active {
+  font-weight: 700;
+  color: #00B5AE;
+}
+
+@media (max-width: 600px) {
+  .steps-wizard-root {
+    gap: 16px;
+  }
+  .steps-wizard-step {
+    min-width: 60px;
+  }
+  .steps-wizard-label {
+    font-size: 12px;
+    min-width: 60px;
+  }
+  .steps-wizard-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+} 

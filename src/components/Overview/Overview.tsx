@@ -1,28 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { OnboardingCard } from '../OnboardingCard/OnboardingCard';
-import { Button } from '@jbaluch/components';
+import { Button} from '@jbaluch/components';
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import "./Overview.css";
 import type { Vault } from '../../types/types';
+import type { OnboardingStep } from '../../types/types';
 import { useAuth } from '../../contexts/AuthContext';
 
-type OnboardingStep = 'one' | 'two' | 'three' | 'four' | 'done';
+interface OverviewProps {
+  vaults: Vault[];
+  onAddVault?: () => void;
+  onShowGatewayWizard?: () => void;
+  onAddLoan?: () => void;
+}
 
-const vaults: Vault[] = [
-  { id: 'vault-abc', name: 'Vault ABC', issues: 2, balance: 15000, financials: { paidIn: 600, paidOut: 10000 }, health: { reserves: 10000, loanToValue: 56, incomeDSCR: 1.4, growthDSCR: 1.43 } },
-  { id: 'vault-123', name: 'Vault 123', issues: 1, balance: 12000, financials: { paidIn: 400, paidOut: 8000 }, health: { reserves: 8000, loanToValue: 48, incomeDSCR: 1.2, growthDSCR: 1.3 } },
-  { id: 'vault-xyz', name: 'Vault XYZ', issues: 0, balance: 18000, financials: { paidIn: 800, paidOut: 12000 }, health: { reserves: 12000, loanToValue: 64, incomeDSCR: 1.6, growthDSCR: 1.5 } },
-  { id: 'gateway', name: 'Gateway', issues: 3, balance: 9000, financials: { paidIn: 300, paidOut: 6000 }, health: { reserves: 6000, loanToValue: 32, incomeDSCR: 1.0, growthDSCR: 1.1 } },
-  { id: 'safebox', name: 'SafeBox', issues: 0, balance: 22000, financials: { paidIn: 1000, paidOut: 16000 }, health: { reserves: 16000, loanToValue: 72, incomeDSCR: 2.0, growthDSCR: 1.8 } },
-];
+export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGatewayWizard, onAddLoan }) => {
+  const [selectedVaultId, setSelectedVaultId] = useState<string>(vaults[0]?.id || '');
+  const { user, current_pb_onboarding_state, setCurrentPbOnboardingState } = useAuth();
 
-export const Overview: React.FC = () => {
-  const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>('one');
-  const [selectedVaultId, setSelectedVaultId] = useState<string>(vaults[0].id);
-  const { user } = useAuth();
+  // Synchronise selectedVaultId avec le premier vault dès que vaults change
+  useEffect(() => {
+    if (vaults.length > 0) {
+      setSelectedVaultId(vaults[0].id);
+    }
+  }, [vaults]);
 
-  const selectedVault = vaults.find(v => v.id === selectedVaultId) ?? vaults[0];
+  const selectedVault = vaults.length > 0 ? (vaults.find(v => v.id === selectedVaultId) ?? vaults[0]) : null;
 
   // Format current date
   const currentDate = new Date();
@@ -32,128 +36,301 @@ export const Overview: React.FC = () => {
     day: 'numeric'
   });
 
-  // Callback pour passer à l'étape suivante de l'onboarding
-  const handleOnboardingStepChange = (step: string) => {
-    if (
-      step === 'one' ||
-      step === 'two' ||
-      step === 'three' ||
-      step === 'four' ||
-      step === 'done'
-    ) {
-      setOnboardingStep(step);
-    }
-  };
+  // DEBUG: Affiche le contenu des vaults
+  console.log('[DEBUG VAULTS]', vaults);
+
+  // Affichage : si current_pb_onboarding_state n'est pas défini ou n'est pas dans la liste, on affiche l'overview direct
+  const showOnboarding = current_pb_onboarding_state && [
+    'bank-name',
+    'setup-gateway',
+    'add-vault',
+    'add-loan',
+  ].includes(current_pb_onboarding_state);
 
   return (
     <div className="frame-overview">
-      <div className="page-toolbar">
-        <div className="title-parent">
-          <div className="title">Hello, {user?.firstName || 'User'}</div>
-          <div className="subtitle">{formattedDate}</div>
+      <header className="page-toolbar">
+        <div className="page-header">
+          <div className="page-header__title">Hello, {user?.firstName || 'User'}</div>
+          <div className="page-header__subtitle">{formattedDate}</div>
         </div>
-      </div>
-      {onboardingStep !== 'done' ? (
-        <OnboardingCard step={onboardingStep} onStepChange={handleOnboardingStepChange} />
+      </header>
+      {showOnboarding ? (
+        <OnboardingCard
+          step={current_pb_onboarding_state as OnboardingStep}
+          onStepChange={(step: string) => setCurrentPbOnboardingState(step)}
+          onAddVault={onAddVault}
+          onShowGatewayWizard={onShowGatewayWizard}
+          onAddLoan={onAddLoan}
+        />
       ) : (
         <div className="div">
-          <div className="upcoming">
-            <div className="div-wrapper">
-              <div className="text-wrapper">To Do</div>
+          <div className="to-do-section" style={{width: '100%'}}>
+            {/* Header */}
+            <div style={{marginBottom: 24}}>
+              <h2 style={{fontWeight: 700, fontSize: 18, color: '#0d1728', margin: 0}}>To Do</h2>
             </div>
-            <div className="row">
-              <div className="overview-actions">
-                <div className="text-wrapper-2">Actions</div>
-                <div className="div-2">
-                  <div className="overview-actions-row">
-                    <div className="div-3">
-                      <div className="notification-badge"><div className="element">2</div></div>
-                      <div className="text-wrapper-3">payments to receive</div>
-                      <div className="tag"><div className="label">1 late</div></div>
-                    </div>
-                    {/* @ts-expect-error: Button type from external library may not match expected props */}
-                    <Button className="button fit-content-btn action-btn" type="secondary" onClick={() => {}}><div className="action-button">Receive</div></Button>
+            
+            {/* Cards Container */}
+            <div style={{display: 'flex', gap: 24, width: '100%'}}>
+              {/* Actions Card */}
+              <div style={{
+                background: '#fff', 
+                borderRadius: 16, 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+                padding: 24,
+                flex: 1,
+                width: '50%'
+              }}>
+                <h3 style={{fontWeight: 600, fontSize: 16, color: '#0d1728', margin: '0 0 20px 0'}}>Actions</h3>
+                
+                <div style={{display: 'flex', flexDirection: 'column', gap: 16}}>
+                  {/* payments to receive */}
+                  <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+                    <span style={{
+                      background: '#DFDFE6', 
+                      color: '#7B7B93', 
+                      fontWeight: 700, 
+                      borderRadius: '50%', 
+                      width: 20, 
+                      height: 20, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: 12,
+                      flexShrink: 0
+                    }}>0</span>
+                    <span style={{fontWeight: 400, fontSize: 16, color: '#0d1728', flex: 1}}>payments to receive</span>
+                    <Button style={{width: 100, height: 32, fontSize: 14}} type="secondary" iconComponent={undefined} onClick={() => {}} onMouseEnter={() => {}} onMouseLeave={() => {}} name="receive" form="" ariaLabel={undefined}>Receive</Button>
                   </div>
-                  <div className="overview-actions-row">
-                    <div className="div-3">
-                      <div className="notification-badge"><div className="element">1</div></div>
-                      <div className="text-wrapper-3">loan to fund</div>
-                    </div>
-                    {/* @ts-expect-error: Button type from external library may not match expected props */}
-                    <Button className="button fit-content-btn action-btn" type="secondary" onClick={() => {}}><div className="action-button">Fund</div></Button>
+
+                  {/* loan to fund */}
+                  <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+                    <span style={{
+                      background: '#1AC9A0', 
+                      color: '#fff', 
+                      fontWeight: 700, 
+                      borderRadius: '50%', 
+                      width: 20, 
+                      height: 20, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: 12,
+                      flexShrink: 0
+                    }}>1</span>
+                    <span style={{fontWeight: 400, fontSize: 16, color: '#0d1728', flex: 1}}>loan to fund</span>
+                    <Button style={{width: 100, height: 32, fontSize: 14}} type="secondary" iconComponent={undefined} onClick={() => {}} onMouseEnter={() => {}} onMouseLeave={() => {}} name="fund" form="" ariaLabel={undefined}>Fund</Button>
                   </div>
-                  <div className="overview-actions-row">
-                    <div className="div-3">
-                      <div className="notification-badge review"><div className="text-wrapper-4">0</div></div>
-                      <div className="text-wrapper-3">requests to review</div>
-                    </div>
-                    {/* @ts-expect-error: Button type from external library may not match expected props */}
-                    <Button className="button fit-content-btn action-btn" type="secondary" disabled onClick={() => {}}><div className="action-button-2">Review</div></Button>
+
+                  {/* requests to review */}
+                  <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+                    <span style={{
+                      background: '#DFDFE6', 
+                      color: '#7B7B93', 
+                      fontWeight: 700, 
+                      borderRadius: '50%', 
+                      width: 20, 
+                      height: 20, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: 12,
+                      flexShrink: 0
+                    }}>0</span>
+                    <span style={{fontWeight: 400, fontSize: 16, color: '#7B7B93', flex: 1}}>requests to review</span>
+                    <Button style={{width: 100, height: 32, fontSize: 14}} type="secondary" iconComponent={undefined} onClick={() => {}} onMouseEnter={() => {}} onMouseLeave={() => {}} name="review" form="" ariaLabel={undefined} disabled>Review</Button>
                   </div>
-                  <div className="overview-actions-row">
-                    <div className="div-3">
-                      <div className="notification-badge"><div className="element">2</div></div>
-                      <div className="text-wrapper-3">amounts to transfer</div>
-                    </div>
-                    {/* @ts-expect-error: Button type from external library may not match expected props */}
-                    <Button className="button fit-content-btn action-btn" type="secondary" onClick={() => {}}><div className="action-button-3">Transfer</div></Button>
+
+                  {/* amounts to transfer */}
+                  <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+                    <span style={{
+                      background: '#DFDFE6', 
+                      color: '#7B7B93', 
+                      fontWeight: 700, 
+                      borderRadius: '50%', 
+                      width: 20, 
+                      height: 20, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      fontSize: 12,
+                      flexShrink: 0
+                    }}>0</span>
+                    <span style={{fontWeight: 400, fontSize: 16, color: '#7B7B93', flex: 1}}>amounts to transfer</span>
+                    <Button style={{width: 100, height: 32, fontSize: 14}} type="secondary" iconComponent={undefined} onClick={() => {}} onMouseEnter={() => {}} onMouseLeave={() => {}} name="transfer" form="" ariaLabel={undefined} disabled>Transfer</Button>
                   </div>
                 </div>
               </div>
-              <div className="upcoming-tasks">
-                <div className="top">
-                  <div className="title-2">Tasks</div>
-                  <div className="icon-button"><div className="add-wrapper"><div className="add" /></div></div>
+
+              {/* Tasks Card */}
+              <div style={{
+                background: '#fff', 
+                borderRadius: 16, 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+                padding: 24,
+                flex: 1,
+                width: '50%'
+              }}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20}}>
+                  <h3 style={{fontWeight: 600, fontSize: 16, color: '#0d1728', margin: 0}}>Tasks</h3>
+                  <div style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    border: '1px solid #ddd',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 16,
+                    color: '#666'
+                  }}>+</div>
                 </div>
-                <div className="text-wrapper-5">Coming soon.</div>
+                <div style={{color: '#999', fontSize: 14, textAlign: 'center'}}>Coming soon.</div>
               </div>
             </div>
           </div>
           <div className="vault-summary">
-            <div className="title">
-              <div className="div">Vaults</div>
+            <div className="div-wrapper">
+              <div className="text-wrapper" style={{fontWeight: 700, fontSize: 18, color: '#0d1728'}}>Vaults</div>
             </div>
-            <div className="row">
-              <div className="vault-financials">
-                <div className="table">
-                  {vaults.map((vault, idx) => (
-                    <div className="vault-card-row-wrapper" key={vault.id}>
+            {vaults.length > 0 ? (
+              <div className="vault-summary-block">
+                {/* Liste des vaults */}
+                <div style={{width:500, background: '#fff', borderRadius: 12, padding: '16px 0', display: 'flex', flexDirection: 'column'}}>
+                  {vaults.map(vault => {
+                    const selected = vault.id === selectedVaultId;
+                    return (
                       <div
-                        className={
-                          (idx === 0 ? "vault-card-row" : "vault-card-row-2") +
-                          (selectedVaultId === vault.id ? " selected" : "")
-                        }
-                        style={{ cursor: 'pointer' }}
+                        key={vault.id}
+                        className="vault-list-row"
                         onClick={() => setSelectedVaultId(vault.id)}
+                        style={{
+                          background: selected ? '#e8edf7' : 'transparent',
+                          color: selected ? '#23305e' : '#232b3a',
+                          fontWeight: selected ? 700 : 500,
+                          borderRadius: 12,
+                          padding: '16px 24px',
+                          margin: '0 12px 8px 12px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'all 0.2s ease'
+                        }}
                       >
-                        <div className={idx === 0 ? "label-wrapper" : "table-cell-2"}>
-                          <div className="label-2">{vault.name}</div>
+                        <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+                          <span style={{fontSize: 16}}>{vault.nickname || vault.name || 'Unnamed Vault'}</span>
+                          {vault.issues > 0 && (
+                            <span style={{color: '#b50007', fontWeight: 700, fontSize: 14}}>
+                              {vault.issues}
+                            </span>
+                          )}
                         </div>
-                        <div className={idx === 0 ? undefined : "table-cell-3"}>
-                          <span className={idx === 0 ? "table-cell-instance design-component-instance-node" : "label-4"}>{vault.issues && vault.issues > 0 ? `${vault.issues} issues` : ''}</span>
+                        <div style={{fontSize: 16, fontWeight: 600}}>
+                          ${vault.balance?.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) || '0.00'}
                         </div>
-                        <div className={idx === 0 ? "div-wrapper" : "table-cell-4"}>
-                          <div className="label-3">${vault.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Détail du vault sélectionné */}
+                {selectedVault ? (
+                  <div className="vault-summary-details">
+                    <div style={{width: '100%'}}>
+                      {/* Header vault name */}
+                      <div style={{display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32}}>
+                        <span style={{
+                          display: 'inline-block',
+                          padding: '6px 24px',
+                          borderRadius: 20,
+                          border: '1.5px solid #b5b5b5',
+                          background: '#fff',
+                          color: '#23305e',
+                          fontWeight: 600,
+                          fontSize: 17,
+                          minWidth: 0,
+                          width: 'fit-content',
+                        }}>{selectedVault.nickname || selectedVault.name || '-'}</span>
+                      </div>
+                      {/* Financials */}
+                      <div style={{marginBottom: 40}}>
+                        <div style={{fontWeight: 600, color: '#0d1728', marginBottom: 12, fontSize: 17}}>Financials</div>
+                        <div style={{display: 'flex', gap: 48}}>
+                          <div>
+                            <div style={{fontWeight: 600, color: '#23305e', fontSize: 16}}>
+                              {selectedVault.financials?.paidIn !== undefined ? `$${selectedVault.financials.paidIn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : '-'}
+                            </div>
+                            <div style={{color: '#b5b5b5', fontSize: 14}}>June paid in</div>
+                          </div>
+                          <div>
+                            <div style={{fontWeight: 600, color: '#23305e', fontSize: 16}}>
+                              {selectedVault.financials?.paidOut !== undefined ? `$${selectedVault.financials.paidOut.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : '-'}
+                            </div>
+                            <div style={{color: '#b5b5b5', fontSize: 14}}>June paid out</div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Health */}
+                      <div>
+                        <div style={{fontWeight: 600, color: '#0d1728', marginBottom: 12, fontSize: 17}}>Health</div>
+                        <div style={{display: 'flex', gap: 48}}>
+                          <div>
+                            <div style={{fontWeight: 600, color: '#00b894', fontSize: 16}}>
+                              {selectedVault.health?.reserves !== undefined ? `${selectedVault.health.reserves}%` : '-'}
+                            </div>
+                            <div style={{color: '#b5b5b5', fontSize: 14}}>Reserves</div>
+                          </div>
+                          <div>
+                            <div style={{fontWeight: 600, color: '#00baff', fontSize: 16}}>
+                              {selectedVault.health?.loanToValue !== undefined ? `${selectedVault.health.loanToValue}%` : '-'}
+                            </div>
+                            <div style={{color: '#b5b5b5', fontSize: 14}}>Loan to value</div>
+                          </div>
+                          <div>
+                            <div style={{fontWeight: 600, color: '#b50007', fontSize: 16}}>
+                              {selectedVault.health?.incomeDSCR !== undefined ? selectedVault.health.incomeDSCR : '-'}
+                            </div>
+                            <div style={{color: '#b5b5b5', fontSize: 14}}>Income DSCR</div>
+                          </div>
+                          <div>
+                            <div style={{fontWeight: 600, color: '#b50007', fontSize: 16}}>
+                              {selectedVault.health?.growthDSCR !== undefined ? selectedVault.health.growthDSCR : '-'}
+                            </div>
+                            <div style={{color: '#b5b5b5', fontSize: 14}}>Growth DSCR</div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div className="vault-summary-details" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 40,
+                    color: '#666'
+                  }}>
+                    <div style={{textAlign: 'center'}}>
+                      <div style={{fontSize: 16, marginBottom: 8}}>No vault selected</div>
+                      <div style={{fontSize: 14}}>Select a vault to view details</div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <div style={{background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.03)', padding: 32, minWidth: 320}}>
-                  <div style={{fontWeight: 700, fontSize: 18, marginBottom: 16}}>{selectedVault.name}</div>
-                  <div style={{marginBottom: 8}}><b>Issues:</b> {selectedVault.issues}</div>
-                  <div style={{marginBottom: 8}}><b>Balance:</b> ${selectedVault.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                  <div style={{marginBottom: 8}}><b>Paid In:</b> ${selectedVault.financials.paidIn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                  <div style={{marginBottom: 8}}><b>Paid Out:</b> ${selectedVault.financials.paidOut.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                  <div style={{marginBottom: 8}}><b>Reserves:</b> ${selectedVault.health.reserves.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                  <div style={{marginBottom: 8}}><b>Loan to Value:</b> {selectedVault.health.loanToValue}%</div>
-                  <div style={{marginBottom: 8}}><b>Income DSCR:</b> {selectedVault.health.incomeDSCR.toFixed(2)}</div>
-                  <div><b>Growth DSCR:</b> {selectedVault.health.growthDSCR.toFixed(2)}</div>
-                </div>
+            ) : (
+              <div style={{
+                background: '#fff', 
+                borderRadius: 12, 
+                padding: 40, 
+                textAlign: 'center',
+                color: '#666'
+              }}>
+                <div style={{fontSize: 16, marginBottom: 8}}>No vaults available</div>
+                <div style={{fontSize: 14}}>Create your first vault to get started</div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}

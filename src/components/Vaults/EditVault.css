@@ -1,0 +1,194 @@
+.edit-vault-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.edit-vault__container {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.edit-vault__scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  padding-bottom: 0;
+  margin-bottom: 90px;
+}
+
+.edit-vault__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.edit-vault__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #23272E;
+  margin: 0;
+}
+
+.edit-vault__close-button {
+  width: 36px;
+  height: 36px;
+}
+
+.edit-vault__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.edit-vault__input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-vault__label {
+  font-weight: 600;
+  color: #23272E;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.edit-vault__label-required {
+  color: #FF0000;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.edit-vault__input {
+  margin-top: 6px;
+}
+
+.edit-vault__currency-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.edit-vault__currency-select {
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #E0E0E0;
+  background: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 0 8px;
+}
+
+.edit-vault__currency-input {
+  flex: 1;
+}
+
+.edit-vault__currency-group--highlighted {
+  border: 1.5px solid #00B5AE;
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.edit-vault__currency-select--borderless {
+  height: 36px;
+  border: none;
+  background: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 0 8px;
+}
+
+.edit-vault__currency-input--transparent {
+  flex: 1;
+  border: none;
+  background: transparent;
+}
+
+.edit-vault__section {
+  margin-top: 32px;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 20px;
+  background: #F8F8F8;
+}
+
+.edit-vault__section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edit-vault__section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.edit-vault__section-title {
+  font-weight: 600;
+  color: #23272E;
+  font-size: 15px;
+}
+
+.edit-vault__section-message {
+  color: #6B6B70;
+  font-size: 14px;
+}
+
+.edit-vault__button {
+  width: 90px;
+  font-weight: 500;
+}
+
+.edit-vault__button--close {
+  width: 90px;
+  font-weight: 500;
+  color: #fff;
+  background: #FF5A5F;
+}
+
+.edit-vault__footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 24px;
+  background: #fff;
+  border-top: 1px solid #f0f0f1;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+  z-index: 2;
+  max-height: 90px;
+}
+
+.edit-vault__footer-button {
+  width: 110px;
+  font-weight: 500;
+}
+
+.edit-vault__footer-button--save {
+  width: 90px;
+  font-weight: 500;
+  background: #00B5AE;
+} 

@@ -21,4 +21,24 @@ export const fetchBorrowers = async (token: string, bankId: string): Promise<Bor
     console.error('Error fetching borrowers:', error);
     throw error;
   }
+};
+
+export const addBorrower = async (token: string, bankId: string, borrowerData: Partial<Borrower>) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/banks/${bankId}/borrowers`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(borrowerData)
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add borrower');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error adding borrower:', error);
+    throw error;
+  }
 }; 

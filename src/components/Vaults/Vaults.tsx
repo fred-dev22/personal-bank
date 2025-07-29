@@ -1,10 +1,20 @@
-import React from "react";
+// import React from "react";
 import { Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
+import { VaultDetails } from "./VaultDetails";
 import "./style.css";
-import type { Vault } from '../../types/types';
+import type { Vault, Loan, Borrower, Activity } from '../../types/types';
 
 interface VaultsProps {
   vaults: Vault[];
+  loans: Loan[];
+  borrowers: Borrower[];
+  activities?: Activity[];
+  selectedVaultId?: string | null;
+  onBackToList?: () => void;
+  onSelectVault?: (vaultId: string) => void;
+  onShowLoanDetails?: (loanId: string) => void;
+  onAddVault?: () => void;
+  onAddLoan?: () => void;
 }
 
 function getIssues(vault: Vault) {
@@ -44,7 +54,7 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault, onShowLoanDetails, onAddVault, onAddLoan }) => {
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -53,6 +63,13 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
   // Séparation des vaults par type (mock pour l'instant)
   const gateways = vaults.filter(v => v.is_gateway);
   const otherVaults = vaults.filter(v => !v.is_gateway);
+
+  if (selectedVaultId) {
+    const vault = vaults.find(v => v.id === selectedVaultId);
+    if (vault) {
+      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} activities={activities} onBack={onBackToList || (() => {})} onShowLoanDetails={onShowLoanDetails} onAddLoan={onAddLoan} />;
+    }
+  }
 
   return (
     <section className="loans">
@@ -67,7 +84,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
             iconComponent={undefined}
             interaction="default"
             justified="right"
-            onClick={() => {}}
+            onClick={onAddVault}
             onMouseEnter={() => {}}
             onMouseLeave={() => {}}
             type="primary"
@@ -92,20 +109,19 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
               cellComponent: TextCell,
               width: '100%',
               alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname, alignment: 'left' }),
+              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname}),
             },
             {
               key: 'issues',
               label: 'Issues',
               cellComponent: MetricCell,
               width: '100%',
-              alignment: 'left',
+              alignment: 'center',
               getCellProps: (row: Vault) => {
                 const issues = getIssues(row);
                 return {
                   value: issues,
                   status: issues > 0 ? 'bad' : 'good',
-                  alignment: 'left',
                   style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
                 };
               },
@@ -115,27 +131,29 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
               label: 'Total Spread',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getTotalSpread(row), alignment: 'left' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ text: getTotalSpread(row) }),
             },
             {
               key: 'equity_trend',
               label: 'Equity Trend',
               cellComponent: TagCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), alignment: 'left', size: 'small' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), size: 'small' }),
             },
             {
               key: 'available',
               label: 'Available',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getAvailable(row), alignment: 'left' }),
+              alignment: 'right',
+              getCellProps: (row: Vault) => ({ text: getAvailable(row) }),
             },
           ]}
           data={gateways}
+          clickableRows
+          onRowClick={(row: Vault) => onSelectVault && onSelectVault(row.id)}
         />
       </section>
       {/* Vaults Block */}
@@ -149,20 +167,19 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
               cellComponent: TextCell,
               width: '100%',
               alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname, alignment: 'left' }),
+              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname }),
             },
             {
               key: 'issues',
               label: 'Issues',
               cellComponent: MetricCell,
               width: '100%',
-              alignment: 'left',
+              alignment: 'center',
               getCellProps: (row: Vault) => {
                 const issues = getIssues(row);
                 return {
                   value: issues,
                   status: issues > 0 ? 'bad' : 'good',
-                  alignment: 'left',
                   style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
                 };
               },
@@ -172,27 +189,29 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults }) => {
               label: 'Total Spread',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getTotalSpread(row), alignment: 'left' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ text: getTotalSpread(row) }),
             },
             {
               key: 'equity_trend',
               label: 'Equity Trend',
               cellComponent: TagCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), alignment: 'left', size: 'small' }),
+              alignment: 'center',
+              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), size: 'small' }),
             },
             {
               key: 'available',
               label: 'Available',
               cellComponent: TextCell,
               width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: getAvailable(row), alignment: 'left' }),
+              alignment: 'right',
+              getCellProps: (row: Vault) => ({ text: getAvailable(row) }),
             },
           ]}
           data={otherVaults}
+          clickableRows
+          onRowClick={(row: Vault) => onSelectVault && onSelectVault(row.id)}
         />
       </section>
     </section>
