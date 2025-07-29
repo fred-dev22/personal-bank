@@ -117,16 +117,11 @@ export const VaultWizard: React.FC<{
       }
     } else if (type === 'super') {
       switch (stepIndex) {
-        case 1: // Config
+        case 1: // Config - Pour Super Vault, seul le nom est requis à l'étape 1
           if (!vaultData.name?.trim()) {
             errors.name = 'Vault Name is required';
           }
-          if (!vaultData.amount || Number(vaultData.amount) <= 0) {
-            errors.amount = 'Amount is required and must be greater than 0';
-          }
-          if (!vaultData.interestRate?.trim()) {
-            errors.interestRate = 'Interest Rate is required';
-          }
+          // Amount et Interest Rate ne sont pas requis à l'étape 1 pour Super Vault
           break;
         case 2: // Asset
           if (!vaultData.assetName?.trim()) {
@@ -322,14 +317,14 @@ export const VaultWizard: React.FC<{
             <StepsWizard steps={steps} currentStep={step - 1} />
           </div>
           {type === 'super' ? (
-            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} validationErrors={validationErrors} /> :
+            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} vaultType={type} validationErrors={validationErrors} /> :
             step === 2 ? <StepAsset vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 3 ? <StepDebt vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 4 ? <StepReserve vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 5 ? <StepHold vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 6 ? <StepConfirm vaultData={vaultData} /> : null
           ) : (
-            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} validationErrors={validationErrors} /> :
+            step === 1 ? <StepConfig vaultData={vaultData} setVaultData={setVaultData} gatewayMode={gatewayMode} vaultType={type} validationErrors={validationErrors} /> :
             step === 2 ? <StepReserve vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 3 ? <StepHold vaultData={vaultData} setVaultData={setVaultData} validationErrors={validationErrors} /> :
             step === 4 ? <StepConfirm vaultData={vaultData} /> : null

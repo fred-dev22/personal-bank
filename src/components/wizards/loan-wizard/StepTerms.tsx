@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import type { Loan, Borrower } from '../../../types/types';
-import { Input } from '@jbaluch/components';
+import { Input, PopupButton } from '@jbaluch/components';
 import { BorrowerSelector } from './BorrowerSelector';
+import { SelectDate } from '../../SelectDate';
 import { calculateMonthlyPayment, formatCurrency } from './utils';
 
 export const StepTerms: React.FC<{
@@ -17,15 +18,13 @@ export const StepTerms: React.FC<{
 
   // Calculer le paiement mensuel quand les 3 champs sont remplis
   const monthlyPayment = useMemo(() => {
-    const { initial_balance, initial_annual_rate, initial_number_of_payments } = loanData;
+    const { initial_balance, initial_annual_rate, initial_number_of_payments, loan_type } = loanData;
     
     if (initial_balance && initial_annual_rate && initial_number_of_payments) {
-      return calculateMonthlyPayment(initial_balance, initial_annual_rate, initial_number_of_payments);
+      return calculateMonthlyPayment(initial_balance, initial_annual_rate, initial_number_of_payments, loan_type || 'Amortized: Due-Date');
     }
     return 0;
-  }, [loanData.initial_balance, loanData.initial_annual_rate, loanData.initial_number_of_payments]);
-
-
+  }, [loanData.initial_balance, loanData.initial_annual_rate, loanData.initial_number_of_payments, loanData.loan_type]);
 
   return (
     <div className="loan-wizard-step">
@@ -54,35 +53,18 @@ export const StepTerms: React.FC<{
           />
         </div>
         
-                                   <div className="loan-wizard-form-group">
-           <label style={{ display: 'block', marginBottom: 8, fontSize: '16px', color: '#000', fontWeight: 600, textAlign: 'left' }}>
-             First payment date <span style={{ color: '#d32f2f' }}>*</span>
-           </label>
-           <input
-             type="date"
+                 <div className="loan-wizard-form-group">
+           <SelectDate
+             label="First payment date"
+             placeholder="Select first payment date"
              value={loanData.start_date || ''}
-             onChange={(e) => setLoanData({ ...loanData, start_date: e.target.value })}
-             style={{
-               width: '100%',
-               height: '55px',
-               maxWidth: '320px',
-               padding: '0 12px',
-               border: validationErrors.start_date ? '1px solid #d32f2f' : '1px solid #ddd',
-               borderRadius: '8px',
-               fontSize: '16px',
-               outline: 'none',
-               boxSizing: 'border-box'
-             }}
+             onChange={(value: string) => setLoanData({ ...loanData, start_date: value })}
+             required
+             error={validationErrors.start_date}
            />
-           {validationErrors.start_date && (
-             <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-               <span style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#d32f2f', color: 'white', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>!</span>
-               {validationErrors.start_date}
-             </div>
-           )}
          </div>
         
-                 <div className="loan-wizard-form-group">
+        <div className="loan-wizard-form-group">
            <Input
              label="Annual interest rate"
              placeholder="Enter rate"
@@ -107,29 +89,37 @@ export const StepTerms: React.FC<{
          </div>
         
         <div className="loan-wizard-form-group">
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Type</label>
-          <select
-            value={loanData.loan_type || 'Amortized: Due-Date'}
-            onChange={(e) => setLoanData({ ...loanData, loan_type: e.target.value })}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #ddd',
-              borderRadius: 8,
-              fontSize: 16
+          <PopupButton
+            defaultValue={loanData.loan_type || 'Amortized: Due-Date'}
+            items={[
+              {
+                id: 'Amortized: Due-Date',
+                label: 'Amortized: Due-Date'
+              },
+              {
+                id: 'Interest-only',
+                label: 'Interest-only'
+              },
+              {
+                id: 'Revolving',
+                label: 'Revolving'
+              }
+            ]}
+            label="Type"
+            menuStyle="text"
+            onSelect={(selectedId: string) => {
+              setLoanData({ ...loanData, loan_type: selectedId });
             }}
-          >
-            <option value="Amortized: Due-Date">Amortized: Due-Date</option>
-            <option value="Interest-only">Interest-only</option>
-            <option value="Revolving">Revolving</option>
-          </select>
-                     <small style={{ color: '#666', fontSize: 12, marginTop: 4, display: 'block', textAlign: 'left' }}>
+            width="100%"
+            menuMaxHeight="200px"
+          />
+          <small style={{ color: '#666', fontSize: 12, marginTop: 4, display: 'block', textAlign: 'left' }}>
              Interest accrues daily based on the current loan balance. It accrues through the due date, regardless of when the payment is made.
            </small>
         </div>
       </div>
       
-                                                              <div style={{ maxWidth: 600, margin: '32px auto 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ maxWidth: 600, margin: '32px auto 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
          <div style={{ 
            background: '#fff', 
            border: '1px solid #e0e0e0', 
@@ -139,7 +129,7 @@ export const StepTerms: React.FC<{
            textAlign: 'left'
          }}>
            <div style={{ fontSize: 16, color: '#000', fontWeight: 600, marginBottom: 8 }}>Payment</div>
-                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ fontSize: 14, color: '#666' }}>
                 The payment is the amount of money that will be paid back.
               </div>
@@ -162,7 +152,7 @@ export const StepTerms: React.FC<{
            width: '100%',
            textAlign: 'left'
          }}>
-                       <div style={{ fontSize: 16, color: '#000', fontWeight: 600, marginBottom: 8 }}>Cash flow rate</div>
+           <div style={{ fontSize: 16, color: '#000', fontWeight: 600, marginBottom: 8 }}>Cash flow rate</div>
             <div style={{ fontSize: 14, color: '#666', marginBottom: 0, lineHeight: 1.4 }}>
               This shows how quickly cash returns to you. It is a monthly metric, and is relative to the loan amount. Adjust it with the term and rate.
             </div>

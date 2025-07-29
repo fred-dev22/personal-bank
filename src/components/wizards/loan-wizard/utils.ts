@@ -1,14 +1,16 @@
 /**
- * Calcule le paiement mensuel pour un prêt amortisé
+ * Calcule le paiement mensuel selon le type de prêt
  * @param principal - Montant principal du prêt
  * @param annualRate - Taux d'intérêt annuel (en pourcentage, ex: 5 pour 5%)
  * @param numberOfPayments - Nombre total de paiements
+ * @param loanType - Type de prêt ('Amortized: Due-Date', 'Interest-only', 'Revolving')
  * @returns Le paiement mensuel
  */
 export const calculateMonthlyPayment = (
   principal: number,
   annualRate: number,
-  numberOfPayments: number
+  numberOfPayments: number,
+  loanType: string = 'Amortized: Due-Date'
 ): number => {
   if (!principal || !annualRate || !numberOfPayments || principal <= 0 || annualRate <= 0 || numberOfPayments <= 0) {
     return 0;
@@ -17,12 +19,32 @@ export const calculateMonthlyPayment = (
   // Convertir le taux annuel en taux mensuel
   const monthlyRate = (annualRate / 100) / 12;
   
-  // Formule du paiement mensuel pour un prêt amortisé
-  // M = P * [r(1+r)^n] / [(1+r)^n - 1]
-  const numerator = monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments);
-  const denominator = Math.pow(1 + monthlyRate, numberOfPayments) - 1;
-  
-  return principal * (numerator / denominator);
+  switch (loanType) {
+    case 'Amortized: Due-Date':
+      // Formule du paiement mensuel pour un prêt amortisé
+      // M = P * [r(1+r)^n] / [(1+r)^n - 1]
+      const numerator = monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments);
+      const denominator = Math.pow(1 + monthlyRate, numberOfPayments) - 1;
+      return principal * (numerator / denominator);
+      
+    case 'Interest-only':
+      // Pour un prêt à intérêts seulement, le paiement mensuel = intérêts mensuels
+      // Le principal est remboursé à la fin
+      return principal * monthlyRate;
+      
+    case 'Revolving':
+      // Pour un crédit revolving, on utilise généralement un paiement minimum
+      // Exemple: 2% du solde ou minimum $25
+      const percentagePayment = principal * 0.02; // 2% du solde
+      const minimumPayment = 25; // Paiement minimum
+      return Math.max(percentagePayment, minimumPayment);
+      
+    default:
+      // Par défaut, utiliser la formule amortisée
+      const defaultNumerator = monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments);
+      const defaultDenominator = Math.pow(1 + monthlyRate, numberOfPayments) - 1;
+      return principal * (defaultNumerator / defaultDenominator);
+  }
 };
 
 /**

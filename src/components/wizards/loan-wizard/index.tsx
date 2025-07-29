@@ -100,8 +100,16 @@ export const LoanWizard: React.FC<{
     if (!user || !token || !user.current_pb) return;
 
     try {
+      // Afficher le snackbar pendant que le popup reste ouvert
       showActivity('Creating borrower...');
-      const newBorrower = await addBorrower(token, user.current_pb, borrowerData);
+      
+      // S'assurer que fullName est défini
+      const borrowerDataWithFullName = {
+        ...borrowerData,
+        fullName: borrowerData.fullName || `${borrowerData.firstName || ''} ${borrowerData.lastName || ''}`.trim()
+      };
+      
+      const newBorrower = await addBorrower(token, user.current_pb, borrowerDataWithFullName);
       
       // Update the borrowers list
       const updatedBorrowers = [...borrowers, newBorrower];
@@ -110,7 +118,28 @@ export const LoanWizard: React.FC<{
       // Auto-select the new borrower
       setLoanData({ ...loanData, borrower_id: newBorrower.id });
       
-      hideActivity();
+      // Clear any validation errors
+      setValidationErrors({});
+      
+      console.log('✅ Borrower created successfully');
+      
+      // Fermer le popup via la fonction globale
+      const closeBorrowerPopup = (window as unknown as { closeBorrowerPopup?: () => void }).closeBorrowerPopup;
+      if (closeBorrowerPopup) {
+        closeBorrowerPopup();
+      }
+      
+      // Petit délai pour montrer que l'opération est terminée avant de cacher le snackbar
+      setTimeout(() => {
+        // Cacher le snackbar
+        hideActivity();
+        
+        // Avancer automatiquement à l'étape suivante
+        if (step < steps.length - 1) {
+          setStep(step + 1);
+        }
+      }, 300); // 300ms pour laisser l'utilisateur voir que c'est terminé
+      
     } catch (error) {
       console.error('Error creating borrower:', error);
       hideActivity();
@@ -129,15 +158,17 @@ export const LoanWizard: React.FC<{
         }
         break;
       case 'Terms': {
-        // Vérifier si le borrower_id est un ID valide (UUID format) ou si c'est juste du texte
-        const isValidBorrowerId = loanData.borrower_id && 
-          (loanData.borrower_id.length > 10 || borrowers.some(b => b.id === loanData.borrower_id));
-        
         if (!loanData.borrower_id?.trim()) {
+          // À l'étape Terms, ouvrir le popup si aucun borrower n'est sélectionné
+          setTimeout(() => {
+            const forceOpenBorrowerPopup = (window as unknown as { forceOpenBorrowerPopup?: () => boolean }).forceOpenBorrowerPopup;
+            if (forceOpenBorrowerPopup) {
+              console.log('🔍 Opening borrower popup from Terms validation...');
+              const result = forceOpenBorrowerPopup();
+              console.log('🔍 Popup opened:', result);
+            }
+          }, 50);
           errors.borrower_id = 'Borrower is required';
-        } else if (!isValidBorrowerId) {
-          // Si ce n'est pas un ID valide, on va déclencher le popup
-          // Pas d'erreur ici, on laisse le popup se gérer
         }
         
         if (!loanData.start_date?.trim()) {
@@ -175,28 +206,27 @@ export const LoanWizard: React.FC<{
   };
 
      const handleNext = () => {
-     const errors = validateStep(step);
-     const currentStepLabel = steps[step]?.label;
-     
-     // Pour l'étape Terms, vérifier d'abord si on doit ouvrir le popup borrower
-     if (currentStepLabel === 'Terms') {
-       const checkBorrowerPopup = (window as unknown as { checkBorrowerPopup?: () => boolean }).checkBorrowerPopup;
-       if (checkBorrowerPopup && checkBorrowerPopup()) {
-         // Effacer les erreurs de validation pour le borrower_id puisqu'on va créer le borrower
-         const otherErrors = { ...errors };
-         delete otherErrors.borrower_id;
-         setValidationErrors(otherErrors);
-         return; // Arrêter ici pour laisser le popup s'ouvrir
-       }
+     // Vérification globale : si on est après l'étape Terms et qu'aucun borrower n'est sélectionné
+     if (step > 1 && !loanData.borrower_id?.trim()) {
+       console.log('🔍 No borrower selected, redirecting to Terms step...');
+       setStep(1); // Retourner à l'étape Terms (index 1)
+       setValidationErrors({ borrower_id: 'Please select or create a borrower' });
        
-       // Vérifier si le borrower_id est maintenant valide après la création potentielle
-       const isValidBorrowerId = loanData.borrower_id && 
-         (loanData.borrower_id.length > 10 || borrowers.some(b => b.id === loanData.borrower_id));
-       
-       if (loanData.borrower_id && !isValidBorrowerId) {
-         errors.borrower_id = 'Please select a valid borrower or create a new one';
-       }
+       // Ouvrir le popup après un petit délai pour laisser le temps au composant de se rendre
+       setTimeout(() => {
+         const forceOpenBorrowerPopup = (window as unknown as { forceOpenBorrowerPopup?: () => boolean }).forceOpenBorrowerPopup;
+         if (forceOpenBorrowerPopup) {
+           console.log('🔍 Calling forceOpenBorrowerPopup...');
+           const result = forceOpenBorrowerPopup();
+           console.log('🔍 forceOpenBorrowerPopup result:', result);
+         } else {
+           console.log('❌ forceOpenBorrowerPopup function not found');
+         }
+       }, 100);
+       return;
      }
+     
+     const errors = validateStep(step);
      
      setValidationErrors(errors);
      

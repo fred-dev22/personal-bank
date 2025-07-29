@@ -1,5 +1,6 @@
 import React from 'react';
-import { Input } from '@jbaluch/components';
+import { Input, PopupButton } from '@jbaluch/components';
+import { SelectDate } from '../../SelectDate';
 import type { Vault } from '../../../types/types';
 
 export const StepAsset: React.FC<{
@@ -24,33 +25,44 @@ export const StepAsset: React.FC<{
            />
          </div>
         
-        <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>
-            Asset Type <span style={{ color: 'red' }}>*</span>
-          </label>
-          <select
-            value={vaultData.assetType || ''}
-            onChange={(e) => setVaultData({ ...vaultData, assetType: e.target.value })}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: validationErrors.assetType ? '1px solid #d32f2f' : '1px solid #ddd',
-              borderRadius: 8,
-              fontSize: 16
-            }}
-          >
-            <option value="">Select asset type</option>
-            <option value="Real Estate">Real Estate</option>
-            <option value="Stocks">Stocks</option>
-            <option value="Bonds">Bonds</option>
-            <option value="Other">Other</option>
-          </select>
-          {validationErrors.assetType && (
-            <div style={{ color: '#d32f2f', fontSize: 14, marginTop: 4 }}>
-              {validationErrors.assetType}
-            </div>
-          )}
-        </div>
+                                   <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
+              Asset Type <span style={{ color: 'red' }}>*</span>
+            </label>
+            <PopupButton
+              defaultValue="Select asset type..."
+              items={[
+                {
+                  id: 'Real Estate',
+                  label: 'Real Estate'
+                },
+                {
+                  id: 'Stocks',
+                  label: 'Stocks'
+                },
+                {
+                  id: 'Bonds',
+                  label: 'Bonds'
+                },
+                {
+                  id: 'Other',
+                  label: 'Other'
+                }
+              ]}
+              label="Asset Type"
+              menuStyle="text"
+                             onSelect={(selectedId: string) => {
+                 setVaultData({ ...vaultData, assetType: selectedId });
+               }}
+              width="100%"
+              menuMaxHeight="200px"
+            />
+            {validationErrors.assetType && (
+              <div style={{ color: '#d32f2f', fontSize: 14, marginTop: 4 }}>
+                {validationErrors.assetType}
+              </div>
+            )}
+          </div>
         
                  <div className="vault-wizard-form-group" style={{ marginBottom: 16 }}>
            <Input
@@ -65,9 +77,9 @@ export const StepAsset: React.FC<{
          </div>
          
          <div className="vault-wizard-form-group" style={{ marginBottom: 16 }}>
-           <Input
+           <SelectDate
              label="Asset Start Date"
-             type="date"
+             placeholder="Select asset start date"
              value={vaultData.assetStartDate || ''}
              onChange={(value: string) => setVaultData({ ...vaultData, assetStartDate: value })}
            />

@@ -31,10 +31,13 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
 
   // Initialize input value from selected borrower
   useEffect(() => {
+    console.log('🔍 BorrowerSelector - borrowers:', borrowers);
     if (value && borrowers.length > 0) {
       const borrower = borrowers.find(b => b.id === value);
       if (borrower) {
-        const fullName = `${borrower.firstName || ''} ${borrower.lastName || ''}`.trim();
+        console.log('🔍 Found borrower:', borrower);
+        // L'API utilise first_name et last_name (avec underscore)
+        const fullName = `${borrower.firstName || borrower.first_name || ''} ${borrower.lastName || borrower.last_name || ''}`.trim();
         setInputValue(fullName);
         setSelectedBorrower(borrower);
         setShowNewBorrowerPopup(false); // Fermer le popup si ouvert
@@ -56,7 +59,8 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
   useEffect(() => {
     if (inputValue.trim()) {
       const filtered = borrowers.filter(borrower => {
-        const fullName = `${borrower.firstName || ''} ${borrower.lastName || ''}`.toLowerCase();
+        // L'API utilise first_name et last_name (avec underscore)
+        const fullName = `${borrower.firstName || borrower.first_name || ''} ${borrower.lastName || borrower.last_name || ''}`.toLowerCase();
         return fullName.includes(inputValue.toLowerCase());
       });
       setFilteredBorrowers(filtered);
@@ -78,7 +82,8 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
   };
 
   const handleBorrowerSelect = (borrower: Borrower) => {
-    const fullName = `${borrower.firstName || ''} ${borrower.lastName || ''}`.trim();
+    // L'API utilise first_name et last_name (avec underscore)
+    const fullName = `${borrower.firstName || borrower.first_name || ''} ${borrower.lastName || borrower.last_name || ''}`.trim();
     console.log('Selecting borrower:', borrower, 'Full name:', fullName);
     setInputValue(fullName);
     setSelectedBorrower(borrower);
@@ -110,13 +115,64 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
     return false;
   };
 
-  // Exposer la fonction globalement pour que le parent puisse l'appeler
+  // Fonction pour ouvrir le popup si aucun borrower n'est sélectionné
+  const openPopupIfNoBorrower = () => {
+    console.log('🔍 openPopupIfNoBorrower called - value:', value, 'selectedBorrower:', selectedBorrower);
+    // Forcer l'ouverture du popup si aucun borrower valide n'est sélectionné
+    if (!selectedBorrower) {
+      console.log('✅ Opening new borrower popup (no valid borrower selected)');
+      setShowNewBorrowerPopup(true);
+      return true;
+    }
+    console.log('❌ Not opening popup - borrower already selected');
+    return false;
+  };
+
+  // Fonction pour forcer l'ouverture du popup (utilisée lors de la redirection)
+  const forceOpenPopup = () => {
+    console.log('🔍 forceOpenPopup called - forcing popup to open');
+    setShowNewBorrowerPopup(true);
+    return true;
+  };
+
+  // Exposer les fonctions globalement pour que le parent puisse les appeler
   useEffect(() => {
-    (window as unknown as { checkBorrowerPopup: () => boolean }).checkBorrowerPopup = checkAndOpenPopup;
-  }, [inputValue, selectedBorrower, filteredBorrowers]);
+    console.log('🔍 Exposing functions to window - value:', value, 'selectedBorrower:', selectedBorrower);
+    (window as unknown as { 
+      checkBorrowerPopup: () => boolean;
+      openBorrowerPopupIfEmpty: () => boolean;
+      forceOpenBorrowerPopup: () => boolean;
+      closeBorrowerPopup: () => void;
+    }).checkBorrowerPopup = checkAndOpenPopup;
+    (window as unknown as { 
+      checkBorrowerPopup: () => boolean;
+      openBorrowerPopupIfEmpty: () => boolean;
+      forceOpenBorrowerPopup: () => boolean;
+      closeBorrowerPopup: () => void;
+    }).openBorrowerPopupIfEmpty = openPopupIfNoBorrower;
+    (window as unknown as { 
+      checkBorrowerPopup: () => boolean;
+      openBorrowerPopupIfEmpty: () => boolean;
+      forceOpenBorrowerPopup: () => boolean;
+      closeBorrowerPopup: () => void;
+    }).forceOpenBorrowerPopup = forceOpenPopup;
+    (window as unknown as { 
+      checkBorrowerPopup: () => boolean;
+      openBorrowerPopupIfEmpty: () => boolean;
+      forceOpenBorrowerPopup: () => boolean;
+      closeBorrowerPopup: () => void;
+    }).closeBorrowerPopup = closeBorrowerPopup;
+    console.log('✅ Functions exposed to window');
+  }, [inputValue, selectedBorrower, filteredBorrowers, value]);
 
   const handleCreateNewBorrower = (borrowerData: Partial<Borrower>) => {
+    // Ne pas fermer le popup ici - il sera fermé par le parent après l'API call
     onCreateBorrower(borrowerData);
+  };
+
+  // Fonction pour fermer le popup depuis l'extérieur
+  const closeBorrowerPopup = () => {
+    console.log('🔍 Closing borrower popup from external call');
     setShowNewBorrowerPopup(false);
   };
 
@@ -171,14 +227,27 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
                  e.preventDefault(); // Prevent input blur
                  handleBorrowerSelect(borrower);
                }}
-               style={{ cursor: 'pointer', padding: '8px', border: '1px solid #ccc' }}
+               style={{ 
+                 cursor: 'pointer', 
+                 padding: '5px', 
+                 border: 'none',
+                 borderBottom: '1px solid #f0f0f0',
+                 fontSize: '12px',
+                 color: '#666',
+                 textAlign: 'left',
+                 transition: 'background-color 0.2s ease',
+                 backgroundColor: 'transparent',
+                 width: '100%'
+               }}
+               onMouseEnter={(e) => {
+                 e.currentTarget.style.backgroundColor = '#f5f5f5';
+               }}
+               onMouseLeave={(e) => {
+                 e.currentTarget.style.backgroundColor = 'transparent';
+               }}
              >
                <div className="borrower-name">
-                 {borrower.firstName || ''} {borrower.lastName || ''}
-               </div>
-               <div className="borrower-details">
-                 {borrower.email && <span>{borrower.email}</span>}
-                 {borrower.phone && <span>{borrower.phone}</span>}
+                 {borrower.firstName || borrower.first_name || ''} {borrower.lastName || borrower.last_name || ''}
                </div>
              </div>
            ))}

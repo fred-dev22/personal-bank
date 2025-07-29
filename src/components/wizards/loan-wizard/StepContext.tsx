@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@jbaluch/components';
+import { SelectDate } from '../../SelectDate';
 import type { Loan } from '../../../types/types';
 
 interface StepContextProps {
@@ -48,10 +49,7 @@ export const StepContext: React.FC<StepContextProps> = ({
     setLoanData({ ...loanData, is_funded: undefined });
   };
 
-  // Fonction pour obtenir la date max (aujourd'hui)
-  const getTodayDate = () => {
-    return new Date().toISOString().split('T')[0];
-  };
+
 
   return (
     <div className="loan-wizard-step">
@@ -187,25 +185,14 @@ export const StepContext: React.FC<StepContextProps> = ({
                Select the date in which this loan was funded and confirm.
              </p>
              
-             <div style={{ marginBottom: '32px' }}>
-               <input
-                 type="date"
-                 value={fundingDate}
-                 onChange={(e) => setFundingDate(e.target.value)}
-                 max={getTodayDate()}
-                 style={{
-                   width: '100%',
-                   height: '48px',
-                   padding: '0 16px',
-                   border: '1px solid #ddd',
-                   borderRadius: '8px',
-                   fontSize: '16px',
-                   outline: 'none',
-                   boxSizing: 'border-box'
-                 }}
-                 placeholder="DD/MM/YYYY"
-               />
-             </div>
+                         <div style={{ marginBottom: '32px' }}>
+              <SelectDate
+                placeholder="Select funding date"
+                value={fundingDate}
+                onChange={(value: string) => setFundingDate(value)}
+                style={{ width: '100%' }}
+              />
+            </div>
              
              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
                <Button

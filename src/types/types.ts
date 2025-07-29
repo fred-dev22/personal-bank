@@ -212,6 +212,9 @@ export interface Borrower {
     unpaidBalance?: number;
     firstName?: string;
     lastName?: string;
+    // API properties (with underscore)
+    first_name?: string;
+    last_name?: string;
     grossIncome?: string;
     netIncome?: string;
     email?: string;
@@ -249,7 +252,7 @@ export interface Loan {
     activities: string[];
     id: string;
     sub_state?: string;
-    actual_payments_scheduled?: any[];
+    actual_payments_scheduled?: unknown[];
     is_funded?: boolean;
 }
 

@@ -46,7 +46,8 @@
   font-weight: 600;
 }
 
-.loan-wizard-form-group input,
+/* Styles pour les inputs natifs seulement (pas les composants Input de la bibliothèque) */
+.loan-wizard-form-group input[type="date"],
 .loan-wizard-form-group textarea,
 .loan-wizard-form-group select {
   width: 100%;
@@ -54,6 +55,11 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
+}
+
+/* Ne pas appliquer de styles aux composants Input de @jbaluch/components */
+.loan-wizard-form-group .jb-input {
+  /* Les composants Input gèrent leurs propres styles */
 }
 
 .loan-wizard-form-group textarea {
