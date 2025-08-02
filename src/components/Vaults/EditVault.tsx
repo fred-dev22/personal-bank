@@ -22,7 +22,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
 
   useEffect(() => {
     if (vault) {
-      const isCashVault = vault.type === 'Cash Vault';
+      const isCashVault = vault.type === 'cash vault';
       const isGateway = vault.is_gateway;
       
       // For Cash Vault and Gateway, force amount type ($)
@@ -99,7 +99,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
                   value={reserveType === 'amount' ? '$' : '%'} 
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setReserveType(e.target.value === '$' ? 'amount' : 'percentage')} 
                   className="edit-vault__currency-select"
-                  disabled={vault.type === 'Cash Vault' || vault.is_gateway}
+                  disabled={vault.type === 'cash vault' || vault.is_gateway}
                 >
                   <option value="$">$</option>
                   <option value="%">%</option>
@@ -121,7 +121,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
                   value={holdType === 'amount' ? '$' : '%'} 
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setHoldType(e.target.value === '$' ? 'amount' : 'percentage')} 
                   className="edit-vault__currency-select"
-                  disabled={vault.type === 'Cash Vault' || vault.is_gateway}
+                  disabled={vault.type === 'cash vault' || vault.is_gateway}
                 >
                   <option value="$">$</option>
                   <option value="%">%</option>

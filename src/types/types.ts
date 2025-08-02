@@ -9,6 +9,8 @@ export interface Transaction {
     description: string;
     date: Date;
     accountId: string;
+    created_date: string;
+    modified_date: string;
 }
 
 // Types pour Account
@@ -132,6 +134,8 @@ export interface Account {
   interest_rate_type?: InterestRateType;
   denomination?: string;
   state?: AccountState;
+  created_date?: string;
+  modified_date?: string;
   // Ajoute d'autres champs si besoin
 }
 
@@ -141,6 +145,8 @@ export interface Category {
     type: TransactionType;
     color: string;
     icon?: string;
+    created_date: string;
+    modified_date: string;
 }
 
 export interface User {
@@ -167,6 +173,8 @@ export interface Budget {
     period: 'monthly' | 'yearly';
     startDate: Date;
     endDate?: Date;
+    created_date: string;
+    modified_date: string;
 }
 
 export interface SavingsGoal {
@@ -176,6 +184,8 @@ export interface SavingsGoal {
     currentAmount: number;
     targetDate?: Date;
     category: string;
+    created_date: string;
+    modified_date: string;
 }
 
 export interface Notification {
@@ -184,6 +194,8 @@ export interface Notification {
     message: string;
     date: Date;
     isRead: boolean;
+    created_date: string;
+    modified_date: string;
 }
 
 export interface Report {
@@ -199,6 +211,8 @@ export interface Report {
             [key: string]: number;
         };
     };
+    created_date: string;
+    modified_date: string;
 }
 
 export interface Borrower {
@@ -221,6 +235,8 @@ export interface Borrower {
     phone?: string;
     type?: 'person' | 'institution';
     website?: string;
+    created_date?: string;
+    modified_date?: string;
 }
 
 export interface Loan {
@@ -254,6 +270,8 @@ export interface Loan {
     sub_state?: string;
     actual_payments_scheduled?: unknown[];
     is_funded?: boolean;
+    created_date?: string;
+    modified_date?: string;
 }
 
 export interface Activity {
@@ -263,6 +281,8 @@ export interface Activity {
     date: Date;
     amount: number;
     tag?: string;
+    created_date?: string;
+    modified_date?: string;
 }
 
 export interface Vault {
@@ -303,11 +323,7 @@ export interface Vault {
     is_ltv_issue_count?: 'yes' | 'no';
     arbitrary_text?: string;
     type?: string;
-    payment_projection?: {
-        summary?: {
-            equityIncreasing?: 'yes' | 'no';
-        }
-    };
+    payment_projection?: PaymentProjection;
     available_for_lending_amount?: number | string;
     spread?: number | string;
     liquidity_source?: {
@@ -327,6 +343,10 @@ export interface Vault {
     amount?: string | number;
     interestRate?: string;
     accountType?: string;
+    expenseRate?: string;
+    creditLimitType?: string;
+    created_date?: string;
+    modified_date?: string;
 }
 
 export interface BankCreateInput {
@@ -341,6 +361,8 @@ export interface Holding {
   id: string;
   nickname: string;
   accounts: string[]; // tableau d'ids d'accounts
+  created_date?: string;
+  modified_date?: string;
   // Ajoute d'autres champs si besoin
 }
 
@@ -380,4 +402,37 @@ export interface Bank {
   score: number;
   total_interest: number;
   total_principal: number;
+  created_date?: string;
+  modified_date?: string;
+}
+
+// Interface pour les projections de paiement des Super Vaults
+export interface PaymentProjection {
+  payments: {
+    applyPaymentTo: string;
+    endingCV: number;
+    endingPolicyLoan: number;
+    reachedPassiveIncome: boolean;
+    potentialAnnualPassiveIncome: number;
+  };
+  trends: {
+    futureCashValues: number[];
+    futureLoanAmounts: number[];
+    futureEquities: number[];
+    futureLTVs: number[];
+    maxLTVs: number[];
+  };
+  metrics: {
+    dscr: number;
+    currentLTV: number;
+    breakevenLTV: number;
+    recommendedMaxLoanAmount: number;
+    recommendedMaxLTV: number;
+  };
+  summary: {
+    dscrWithin: boolean;
+    maxLTVWithin: boolean;
+    ltvDecreasing: boolean;
+    equityIncreasing: boolean;
+  };
 } 

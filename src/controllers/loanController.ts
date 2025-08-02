@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '../config/api';
 import type { Loan } from '../types/types';
+import { addCreateDates, addModifiedDate } from '../utils/dateUtils';
 
 export const fetchLoans = async (token: string, bankId: string): Promise<Loan[]> => {
   try {
@@ -44,13 +45,16 @@ export const createLoan = async (
   }
 ): Promise<Loan> => {
   try {
+    // Add created_date and modified_date to loan data
+    const loanDataWithDates = addCreateDates(loanData);
+    
     const response = await fetch(`${API_BASE_URL}/banks/${bankId}/notes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(loanData)
+      body: JSON.stringify(loanDataWithDates)
     });
 
     if (!response.ok) {
@@ -71,13 +75,16 @@ export const updateLoan = async (
   data: Partial<Loan>
 ): Promise<Loan> => {
   try {
+    // Add modified_date to update data
+    const dataWithModifiedDate = addModifiedDate(data);
+    
     const response = await fetch(`${API_BASE_URL}/notes/${noteId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(dataWithModifiedDate)
     });
     
     if (!response.ok) {

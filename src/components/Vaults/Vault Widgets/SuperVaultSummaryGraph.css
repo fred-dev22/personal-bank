@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
+
+.super-vault-chart-container {
+  width: 100%;
+  height: 290px; 
+  margin: 0;
+  padding: 0;
+  position: relative; /* Make container relative to handle tooltip overflow */
+  overflow: visible; /* Ensure overflow is visible */
+}
+
+.super-vault-chart {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+#chartjs-tooltip {
+  opacity: 0;
+  position: absolute;
+  background: #FBFBFD;
+  border: 1px solid #DFDFE6;
+  border-radius: 8px;
+  color: white;
+  pointer-events: none;
+  -webkit-transition: all .1s ease;
+  transition: all .1s ease;
+  padding: 8px 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 227px; /* Fixed width */
+  white-space: nowrap; /* Prevent text wrap */
+  overflow: visible; /* Ensure overflow is visible */
+  z-index: 9999; /* Ensure tooltip is in front */
+}
+
+#tooltip-line {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(to bottom, 
+      rgba(255, 255, 255, 0) 0%,
+      #8FA7DE 55%, 
+      #8FA7DE 65%, 
+      rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: all .1s ease;
+  transition: all .1s ease;
+  z-index: 5; /* Ensure line is behind the tooltip */
+}
+
+.tooltip-header {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #6B6B70; /* Updated color */
+  margin-bottom: 12px;
+}
+
+.tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: normal;
+}
+
+.tooltip-item-value {
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.tooltip-line {
+  border-bottom: 1px solid #DFDFE6;
+  margin-bottom: 4px;
+}
+
+.tooltip-cash {
+  color: #1B4A7B;
+}
+
+.tooltip-loan {
+  color: #999F9E;
+}
+
+.tooltip-equity {
+  color: #00B5AE;
+}

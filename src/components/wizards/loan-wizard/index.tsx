@@ -256,8 +256,15 @@ export const LoanWizard: React.FC<{
       }
 
       try {
-        // Déterminer le statut selon is_funded
-        const loanStatus = loanData.is_funded ? 'Funded' : 'Funding';
+        // Déterminer le statut selon la date de début et is_funded
+        const today = new Date();
+        const startDate = new Date(loanData.start_date || '');
+        const isStartDatePastOrToday = startDate <= today;
+        
+        // Si la date est dans le passé ou aujourd'hui ET que le loan est financé → "Funded" (On Track)
+        // Si la date est dans le passé ou aujourd'hui mais pas encore financé → "Funded" (On Track) quand même
+        // Si la date est dans le futur → "Funding" (To Fund)
+        const loanStatus = isStartDatePastOrToday ? 'Funded' : 'Funding';
         
         // Préparer les données pour l'API
         const loanPayload = {

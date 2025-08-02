@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Tabs, Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
 import { Transfers } from "./Vault Widgets/Transfers";
 import { VaultFinancials } from "./Vault Widgets/VaultFinancials";
+import { SuperVaultGraphIframe } from "./Vault Widgets/SuperVaultGraphIframe";
+import { DSCRCard, MonthlyPaymentCard } from "./Vault Widgets";
 import type { Vault, Loan, Borrower, Activity } from "../../types/types";
 import { EditVault } from "./EditVault";
 import "./VaultDetails.css";
@@ -116,16 +118,8 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
       );
     }
 
-    // Cash Vault (non-gateway) : Seulement VaultFinancials (même style que Gateway mais sans Transfers)
-    // Élargi la condition pour inclure plus de types possibles
-    if (vault.type === 'Cash Vault' || 
-        vault.type === 'cash vault' || // Type retourné par l'API
-        vault.type === 'Checking' || 
-        vault.type === 'Savings' || 
-        vault.type === 'cash' ||
-        vault.type === 'Cash' ||
-        !vault.type || // Si pas de type défini, considérer comme cash vault
-        (vault.type && vault.type.toLowerCase().includes('cash'))) {
+    // Cash Vault (non-gateway)
+    if (vault.type === 'cash vault' || !vault.type) {
       return (
         <VaultFinancials
           balance={vault.balance ?? 0}
@@ -137,10 +131,253 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
       );
     }
 
-    // Super Vault or other types
+    // Super Vault
+    console.log('Checking Super Vault condition:', vault.type === 'super vault', 'Vault type:', vault.type);
+    if (vault.type === 'super vault') {
+      return (
+        <div style={{ overflow: 'visible', position: 'relative' }}>
+          <div style={{ 
+            background: 'white', 
+            borderRadius: '12px', 
+            padding: '24px',
+            marginBottom: '20px',
+            overflow: 'visible',
+            position: 'relative'
+          }}>
+            {/* Header */}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ 
+                fontSize: '14px', 
+                color: '#6B7280', 
+                marginBottom: '4px',
+                fontWeight: '500'
+              }}>
+                Growth projection
+              </div>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'baseline', 
+                gap: '12px',
+                marginBottom: '8px'
+              }}>
+                <h2 style={{ 
+                  fontSize: '24px', 
+                  fontWeight: '700', 
+                  color: '#111827',
+                  margin: 0
+                }}>
+                  Divergent lines
+                </h2>
+                <span style={{ 
+                  fontSize: '14px', 
+                  color: '#6B7280',
+                  fontWeight: '400'
+                }}>
+                  Equity is increasing
+                </span>
+              </div>
+              
+              {/* Legend */}
+              <div style={{ 
+                display: 'flex', 
+                gap: '20px',
+                alignItems: 'center'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%', 
+                    backgroundColor: '#1B4A7B' 
+                  }}></div>
+                  <span style={{ fontSize: '12px', color: '#6B7280' }}>Cash value</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%', 
+                    backgroundColor: '#999F9E' 
+                  }}></div>
+                  <span style={{ fontSize: '12px', color: '#6B7280' }}>Line of credit</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%', 
+                    backgroundColor: '#00B5AE' 
+                  }}></div>
+                  <span style={{ fontSize: '12px', color: '#6B7280' }}>Equity</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Graph */}
+            <div style={{ 
+              overflow: 'visible', 
+              position: 'relative',
+              zIndex: 10
+            }}>
+              {vault.payment_projection ? (
+                (() => {
+                  console.log('📊 Vault projection data:', vault.payment_projection);
+                  console.log('📊 Future cash values:', vault.payment_projection.trends?.futureCashValues);
+                  console.log('📊 Future loan amounts:', vault.payment_projection.trends?.futureLoanAmounts);
+                  console.log('📊 Future equities:', vault.payment_projection.trends?.futureEquities);
+                  
+                  return (
+                    <SuperVaultGraphIframe
+                      futureCashValues={vault.payment_projection.trends?.futureCashValues || []}
+                      futureLoanAmounts={vault.payment_projection.trends?.futureLoanAmounts || []}
+                      futureEquities={vault.payment_projection.trends?.futureEquities || []}
+                      withTooltip={true}
+                    />
+                  );
+                })()
+              ) : (
+                <SuperVaultGraphIframe
+                  futureCashValues={[10000, 15000, 22000, 30000, 39000, 50000, 62000, 76000, 92000, 110000, 130000, 152000, 176000, 202000, 230000, 260000, 292000, 326000, 362000, 400000, 440000]}
+                  futureLoanAmounts={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+                  futureEquities={[10000, 15000, 22000, 30000, 39000, 50000, 62000, 76000, 92000, 110000, 130000, 152000, 176000, 202000, 230000, 260000, 292000, 326000, 362000, 400000, 440000]}
+                  withTooltip={true}
+                />
+              )}
+            </div>
+
+            {/* Footer */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginTop: '16px',
+              paddingTop: '16px',
+              borderTop: '1px solid #E5E7EB'
+            }}>
+              <div style={{ 
+                fontSize: '14px', 
+                color: '#1B4A7B',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}>
+                What is divergence?
+              </div>
+              <div style={{ 
+                fontSize: '12px', 
+                color: '#9CA3AF'
+              }}>
+                20 years
+              </div>
+            </div>
+          </div>
+
+          {/* Dashboard Title */}
+          <div style={{ 
+            marginBottom: '20px',
+            marginTop: '24px'
+          }}>
+            <h2 style={{ 
+              fontSize: '24px', 
+              fontWeight: '700', 
+              color: '#111827',
+              margin: 0
+            }}>
+              Dashboard
+            </h2>
+          </div>
+
+          {/* DSCR Cards Section */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr 1fr', 
+            gap: '16px', 
+            marginBottom: '24px'
+          }}>
+            {/* Income DSCR Card */}
+            <DSCRCard
+              title="Income DSCR"
+              value={0} // TODO: Get from vault data
+              zone1Label="loss"
+              zone2Label="low profit"
+              zone3Label="high profit"
+              zone2Value={1.00}
+              zone3Value={1.50}
+              zone1Color="#E5E7EB"
+              zone2Color="#E5E7EB"
+              zone3Color="#00B5AE"
+              minValue={0}
+              maxValue={3}
+              percentage={false}
+              decimalPlaces={true}
+              hideValue={true}
+            />
+
+            {/* Payment Application Card */}
+            <MonthlyPaymentCard
+              title="Payment application"
+              lineOfCredit="tbd"
+              cashValue="tbd"
+              buttonText="Apply to August Payments"
+              onApplyClick={() => {
+                console.log('Apply to August Payments clicked');
+                // TODO: Implement payment application logic
+              }}
+            />
+
+            {/* Growth DSCR Card */}
+            <DSCRCard
+              title="Growth DSCR"
+              value={10.00}
+              zone1Label="loss"
+              zone2Label="slow"
+              zone3Label="fast"
+              zone2Value={1.00}
+              zone3Value={1.50}
+              zone1Color="#E5E7EB"
+              zone2Color="#E5E7EB"
+              zone3Color="#00B5AE"
+              minValue={0}
+              maxValue={15}
+              percentage={false}
+              decimalPlaces={true}
+              hideValue={false}
+            />
+
+            {/* Debt to Asset Card */}
+            <DSCRCard
+              title="Debt to asset"
+              value={0}
+              zone1Label="too slow"
+              zone2Label="optimal"
+              zone3Label="too fast"
+              zone2Value={30}
+              zone3Value={72}
+              zone1Color="#1B4A7B"
+              zone2Color="#00B5AE"
+              zone3Color="#E5E7EB"
+              minValue={0}
+              maxValue={100}
+              percentage={true}
+              decimalPlaces={false}
+              hideValue={false}
+            />
+          </div>
+
+          <VaultFinancials
+            balance={vault.balance ?? 0}
+            held={vault.hold ?? 0}
+            reserve={vault.reserve ?? 0}
+            pending={0}
+            available={availableToLend}
+          />
+        </div>
+      );
+    }
+
+    // Other types
     return (
         <div className="coming-soon">
-            Graphs for Super Vault will be displayed here soon.
+            Graphs for this vault type will be displayed here soon.
         </div>
     );
   };
@@ -264,6 +501,15 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
 
   return (
     <div className="vault-details-container">
+      <style>
+        {`
+          .dscr-card, .monthly-payment-card {
+            height: 280px !important;
+            min-height: 280px !important;
+            max-height: 280px !important;
+          }
+        `}
+      </style>
       <div className="vault-details-header">
         <div className="header-left">
           <button className="icon-button" onClick={onBack}>

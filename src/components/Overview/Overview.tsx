@@ -196,33 +196,33 @@ export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGa
               <div className="text-wrapper" style={{fontWeight: 700, fontSize: 18, color: '#0d1728'}}>Vaults</div>
             </div>
             {vaults.length > 0 ? (
-              <div className="vault-summary-block">
-                {/* Liste des vaults */}
-                <div style={{width:500, background: '#fff', borderRadius: 12, padding: '16px 0', display: 'flex', flexDirection: 'column'}}>
-                  {vaults.map(vault => {
-                    const selected = vault.id === selectedVaultId;
-                    return (
-                      <div
-                        key={vault.id}
-                        className="vault-list-row"
-                        onClick={() => setSelectedVaultId(vault.id)}
-                        style={{
-                          background: selected ? '#e8edf7' : 'transparent',
-                          color: selected ? '#23305e' : '#232b3a',
-                          fontWeight: selected ? 700 : 500,
-                          borderRadius: 12,
-                          padding: '16px 24px',
+            <div className="vault-summary-block">
+              {/* Liste des vaults */}
+              <div style={{width:500, background: '#fff', borderRadius: 12, padding: '16px 0', display: 'flex', flexDirection: 'column'}}>
+                {vaults.map(vault => {
+                  const selected = vault.id === selectedVaultId;
+                  return (
+                    <div
+                      key={vault.id}
+                      className="vault-list-row"
+                      onClick={() => setSelectedVaultId(vault.id)}
+                      style={{
+                        background: selected ? '#e8edf7' : 'transparent',
+                        color: selected ? '#23305e' : '#232b3a',
+                        fontWeight: selected ? 700 : 500,
+                        borderRadius: 12,
+                        padding: '16px 24px',
                           margin: '0 12px 8px 12px',
                           cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
                           justifyContent: 'space-between',
                           transition: 'all 0.2s ease'
-                        }}
-                      >
+                      }}
+                    >
                         <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
                           <span style={{fontSize: 16}}>{vault.nickname || vault.name || 'Unnamed Vault'}</span>
-                          {vault.issues > 0 && (
+                      {vault.issues > 0 && (
                             <span style={{color: '#b50007', fontWeight: 700, fontSize: 14}}>
                               {vault.issues}
                             </span>
@@ -231,79 +231,79 @@ export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGa
                         <div style={{fontSize: 16, fontWeight: 600}}>
                           ${vault.balance?.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) || '0.00'}
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {/* Détail du vault sélectionné */}
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Détail du vault sélectionné */}
                 {selectedVault ? (
-                  <div className="vault-summary-details">
-                    <div style={{width: '100%'}}>
-                      {/* Header vault name */}
-                      <div style={{display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32}}>
-                        <span style={{
-                          display: 'inline-block',
-                          padding: '6px 24px',
-                          borderRadius: 20,
-                          border: '1.5px solid #b5b5b5',
-                          background: '#fff',
-                          color: '#23305e',
-                          fontWeight: 600,
-                          fontSize: 17,
-                          minWidth: 0,
-                          width: 'fit-content',
-                        }}>{selectedVault.nickname || selectedVault.name || '-'}</span>
-                      </div>
-                      {/* Financials */}
-                      <div style={{marginBottom: 40}}>
-                        <div style={{fontWeight: 600, color: '#0d1728', marginBottom: 12, fontSize: 17}}>Financials</div>
-                        <div style={{display: 'flex', gap: 48}}>
-                          <div>
-                            <div style={{fontWeight: 600, color: '#23305e', fontSize: 16}}>
-                              {selectedVault.financials?.paidIn !== undefined ? `$${selectedVault.financials.paidIn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : '-'}
-                            </div>
-                            <div style={{color: '#b5b5b5', fontSize: 14}}>June paid in</div>
-                          </div>
-                          <div>
-                            <div style={{fontWeight: 600, color: '#23305e', fontSize: 16}}>
-                              {selectedVault.financials?.paidOut !== undefined ? `$${selectedVault.financials.paidOut.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : '-'}
-                            </div>
-                            <div style={{color: '#b5b5b5', fontSize: 14}}>June paid out</div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Health */}
+              <div className="vault-summary-details">
+                <div style={{width: '100%'}}>
+                  {/* Header vault name */}
+                  <div style={{display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32}}>
+                    <span style={{
+                      display: 'inline-block',
+                      padding: '6px 24px',
+                      borderRadius: 20,
+                      border: '1.5px solid #b5b5b5',
+                      background: '#fff',
+                      color: '#23305e',
+                      fontWeight: 600,
+                      fontSize: 17,
+                      minWidth: 0,
+                      width: 'fit-content',
+                    }}>{selectedVault.nickname || selectedVault.name || '-'}</span>
+                  </div>
+                  {/* Financials */}
+                  <div style={{marginBottom: 40}}>
+                    <div style={{fontWeight: 600, color: '#0d1728', marginBottom: 12, fontSize: 17}}>Financials</div>
+                    <div style={{display: 'flex', gap: 48}}>
                       <div>
-                        <div style={{fontWeight: 600, color: '#0d1728', marginBottom: 12, fontSize: 17}}>Health</div>
-                        <div style={{display: 'flex', gap: 48}}>
-                          <div>
-                            <div style={{fontWeight: 600, color: '#00b894', fontSize: 16}}>
-                              {selectedVault.health?.reserves !== undefined ? `${selectedVault.health.reserves}%` : '-'}
-                            </div>
-                            <div style={{color: '#b5b5b5', fontSize: 14}}>Reserves</div>
-                          </div>
-                          <div>
-                            <div style={{fontWeight: 600, color: '#00baff', fontSize: 16}}>
-                              {selectedVault.health?.loanToValue !== undefined ? `${selectedVault.health.loanToValue}%` : '-'}
-                            </div>
-                            <div style={{color: '#b5b5b5', fontSize: 14}}>Loan to value</div>
-                          </div>
-                          <div>
-                            <div style={{fontWeight: 600, color: '#b50007', fontSize: 16}}>
-                              {selectedVault.health?.incomeDSCR !== undefined ? selectedVault.health.incomeDSCR : '-'}
-                            </div>
-                            <div style={{color: '#b5b5b5', fontSize: 14}}>Income DSCR</div>
-                          </div>
-                          <div>
-                            <div style={{fontWeight: 600, color: '#b50007', fontSize: 16}}>
-                              {selectedVault.health?.growthDSCR !== undefined ? selectedVault.health.growthDSCR : '-'}
-                            </div>
-                            <div style={{color: '#b5b5b5', fontSize: 14}}>Growth DSCR</div>
-                          </div>
+                        <div style={{fontWeight: 600, color: '#23305e', fontSize: 16}}>
+                          {selectedVault.financials?.paidIn !== undefined ? `$${selectedVault.financials.paidIn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : '-'}
                         </div>
+                        <div style={{color: '#b5b5b5', fontSize: 14}}>June paid in</div>
+                      </div>
+                      <div>
+                        <div style={{fontWeight: 600, color: '#23305e', fontSize: 16}}>
+                          {selectedVault.financials?.paidOut !== undefined ? `$${selectedVault.financials.paidOut.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : '-'}
+                        </div>
+                        <div style={{color: '#b5b5b5', fontSize: 14}}>June paid out</div>
                       </div>
                     </div>
                   </div>
+                  {/* Health */}
+                  <div>
+                    <div style={{fontWeight: 600, color: '#0d1728', marginBottom: 12, fontSize: 17}}>Health</div>
+                    <div style={{display: 'flex', gap: 48}}>
+                      <div>
+                        <div style={{fontWeight: 600, color: '#00b894', fontSize: 16}}>
+                              {selectedVault.health?.reserves !== undefined ? `${selectedVault.health.reserves}%` : '-'}
+                        </div>
+                        <div style={{color: '#b5b5b5', fontSize: 14}}>Reserves</div>
+                      </div>
+                      <div>
+                        <div style={{fontWeight: 600, color: '#00baff', fontSize: 16}}>
+                          {selectedVault.health?.loanToValue !== undefined ? `${selectedVault.health.loanToValue}%` : '-'}
+                        </div>
+                        <div style={{color: '#b5b5b5', fontSize: 14}}>Loan to value</div>
+                      </div>
+                      <div>
+                        <div style={{fontWeight: 600, color: '#b50007', fontSize: 16}}>
+                          {selectedVault.health?.incomeDSCR !== undefined ? selectedVault.health.incomeDSCR : '-'}
+                        </div>
+                        <div style={{color: '#b5b5b5', fontSize: 14}}>Income DSCR</div>
+                      </div>
+                      <div>
+                        <div style={{fontWeight: 600, color: '#b50007', fontSize: 16}}>
+                          {selectedVault.health?.growthDSCR !== undefined ? selectedVault.health.growthDSCR : '-'}
+                        </div>
+                        <div style={{color: '#b5b5b5', fontSize: 14}}>Growth DSCR</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
                 ) : (
                   <div className="vault-summary-details" style={{
                     display: 'flex',
@@ -329,7 +329,7 @@ export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGa
               }}>
                 <div style={{fontSize: 16, marginBottom: 8}}>No vaults available</div>
                 <div style={{fontSize: 14}}>Create your first vault to get started</div>
-              </div>
+            </div>
             )}
           </div>
         </div>

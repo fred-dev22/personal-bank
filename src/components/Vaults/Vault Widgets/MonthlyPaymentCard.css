@@ -1,0 +1,73 @@
+.monthly-payment-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 320px;
+  min-height: 320px;
+  max-height: 320px;
+}
+
+.monthly-payment-card-header {
+  margin-bottom: 16px;
+}
+
+.monthly-payment-card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  text-align: left;
+}
+
+.monthly-payment-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.payment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payment-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.payment-value {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+.payment-action {
+  display: flex;
+  justify-content: center;
+}
+
+.apply-button {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.apply-button:hover {
+  background: #e8e8e8;
+} 

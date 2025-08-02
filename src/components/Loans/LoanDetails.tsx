@@ -169,7 +169,9 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         <div className="loan-avatar loan-avatar-initials">
           {getInitials(borrower.fullName)}
         </div>
-        <span className="loan-name">{loan.nickname || 'Loan'}</span>
+        <span className="loan-name">
+          {loan.nickname || 'Loan'} - {loan.id}
+        </span>
         <div className="loan-header-spacer" />
         <Button
           icon="icon"

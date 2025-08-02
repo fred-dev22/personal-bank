@@ -124,14 +124,11 @@ export const VaultWizard: React.FC<{
           // Amount et Interest Rate ne sont pas requis à l'étape 1 pour Super Vault
           break;
         case 2: // Asset
-          if (!vaultData.assetName?.trim()) {
-            errors.assetName = 'Asset name is required';
-          }
           if (!vaultData.assetType?.trim()) {
             errors.assetType = 'Asset type is required';
           }
           if (!vaultData.amount || Number(vaultData.amount) <= 0) {
-            errors.amount = 'Amount is required and must be greater than 0';
+            errors.amount = 'Accumulated value is required and must be greater than 0';
           }
           break;
                   case 3: // Debt

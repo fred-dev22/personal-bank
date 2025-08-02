@@ -112,7 +112,7 @@ export const StepConfirm: React.FC<{
                     {selectedVault.nickname || selectedVault.name}
                   </div>
                   <div style={{ fontSize: '14px', color: '#666' }}>
-                    {selectedVault.type || 'Cash vault'}
+                                            {selectedVault.type || 'cash vault'}
                   </div>
                 </div>
                 <div style={{ fontSize: '18px', fontWeight: '700' }}>

@@ -1,0 +1,34 @@
+.dscr-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 320px;
+  min-height: 320px;
+  max-height: 320px;
+}
+
+.dscr-card-header {
+  margin-bottom: 16px;
+}
+
+.dscr-card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  text-align: left;
+}
+
+.dscr-card-content {
+  width: 100%;
+}
+
+.metric-card-iframe {
+  border: none;
+  width: 100%;
+  height: 88px;
+  overflow: hidden;
+} 

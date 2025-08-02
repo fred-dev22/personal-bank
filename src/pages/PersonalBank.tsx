@@ -5,7 +5,7 @@ import { Loans } from '../components/Loans/Loans';
 import { Vaults } from '../components/Vaults/Vaults';
 import { Borrower } from '../components/Borrower/Borrower';
 import { Activities } from '../components/Activities/Activities';
-import { ActivityProvider, useActivity } from '../contexts/ActivityContext';
+import { useActivity } from '../contexts/ActivityContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import type { Loan, Vault, Borrower as BorrowerType, User, Activity } from '../types/types';
@@ -15,6 +15,9 @@ import { fetchBorrowers } from '../controllers/borrowerController';
 import { fetchAllUserActivities } from '../controllers/activityController';
 import { Settings } from '../components/Settings/Settings';
 import { Snackbar } from '@jbaluch/components';
+import borrowerIcon from '../assets/borrower.svg';
+import loanIcon from '../assets/loan.svg';
+import vaultIcon from '../assets/vault.svg';
 import './PersonalBank.css';
 import { VaultWizard } from '../components/wizards/vault-wizard';
 import { LoanWizard } from '../components/wizards/loan-wizard';
@@ -38,18 +41,39 @@ const PersonalBankContent: React.FC = () => {
   const [showGatewayWizard, setShowGatewayWizard] = useState(false);
   const [showLoanWizard, setShowLoanWizard] = useState(false);
 
+  // Fonction pour déterminer l'icône selon le type d'activité
+  const getActivityIcon = (message: string) => {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('loading bank data')) {
+      return () => <img src="/src/assets/logo.png" alt="Bank" style={{ width: 16, height: 16 }} />;
+    }
+    
+    if (lowerMessage.includes('loan') || lowerMessage.includes('prêt') || lowerMessage.includes('creating loan') || lowerMessage.includes('loading loan')) {
+      return () => <img src={loanIcon} alt="Loan" style={{ width: 16, height: 16 }} />;
+    }
+    
+    if (lowerMessage.includes('vault') || lowerMessage.includes('coffre') || lowerMessage.includes('creating vault') || lowerMessage.includes('loading vault')) {
+      return () => <img src={vaultIcon} alt="Vault" style={{ width: 16, height: 16 }} />;
+    }
+    
+    if (lowerMessage.includes('borrower') || lowerMessage.includes('emprunteur') || lowerMessage.includes('creating borrower') || lowerMessage.includes('loading borrower')) {
+      return () => <img src={borrowerIcon} alt="Borrower" style={{ width: 16, height: 16 }} />;
+    }
+    
+    // Icône par défaut (peut être une icône générale ou vide)
+    return function DefaultIcon() {};
+  };
+
   const getLoans = async (user: User | null, setLoans: React.Dispatch<React.SetStateAction<Loan[]>>) => {
     try {
       const token = localStorage.getItem('authToken');
       if (!token || !user?.current_pb) return;
       const bankId = user.current_pb;
-      showActivity('Loading loans...');
       const data = await fetchLoans(token, bankId);
       setLoans(data);
-      hideActivity();
       console.log('Loans fetched via API:', data);
     } catch (error) {
-      hideActivity();
       console.error('Error fetching loans:', error);
     }
   };
@@ -59,13 +83,10 @@ const PersonalBankContent: React.FC = () => {
       const token = localStorage.getItem('authToken');
       if (!token || !user?.current_pb) return;
       const bankId = user.current_pb;
-      showActivity('Loading vaults...');
       const data = await fetchVaults(token, bankId);
       setVaults(data);
-      hideActivity();
       console.log('Vaults fetched via API:', data);
     } catch (error) {
-      hideActivity();
       console.error('Error fetching vaults:', error);
     }
   };
@@ -75,21 +96,25 @@ const PersonalBankContent: React.FC = () => {
       const token = localStorage.getItem('authToken');
       if (!token || !user?.current_pb) return;
       const bankId = user.current_pb;
-      showActivity('Loading borrowers...');
       const data = await fetchBorrowers(token, bankId);
       setBorrowers(data);
-      hideActivity();
       console.log('Borrowers fetched via API:', data);
     } catch (error) {
-      hideActivity();
       console.error('Error fetching borrowers:', error);
     }
   };
 
   useEffect(() => {
-    getLoans(user, setLoans);
-    getVaults(user, setVaults);
-    getBorrowers(user, setBorrowers);
+    if (user?.current_pb) {
+      showActivity('Loading bank data');
+      Promise.all([
+        getLoans(user, setLoans),
+        getVaults(user, setVaults),
+        getBorrowers(user, setBorrowers)
+      ]).finally(() => {
+        hideActivity();
+      });
+    }
   }, [user?.current_pb]);
 
   useEffect(() => {
@@ -119,12 +144,12 @@ const PersonalBankContent: React.FC = () => {
   const mainNavItems = current_pb_onboarding_state !== 'done'
     ? [{ id: 'overview', label: 'Overview' }]
     : [
-        { id: 'overview', label: 'Overview' },
-        { id: 'loans', label: 'Loans' },
-        { id: 'vaults', label: 'Vaults' },
-        { id: 'activity', label: 'Activity' },
-        { id: 'borrowers', label: 'Borrowers' },
-      ];
+    { id: 'overview', label: 'Overview' },
+    { id: 'loans', label: 'Loans' },
+    { id: 'vaults', label: 'Vaults' },
+    { id: 'activity', label: 'Activity' },
+    { id: 'borrowers', label: 'Borrowers' },
+  ];
 
   const bottomNavItems = [
     { id: 'settings', label: 'Settings' },
@@ -162,6 +187,28 @@ const PersonalBankContent: React.FC = () => {
   const handleVaultCreated = (vault: Vault) => {
     setVaults(prev => [...prev, vault]);
     // L'onboarding_state sera mis à jour automatiquement par OnboardingCard
+    
+    // Si on n'est pas en onboarding, rediriger vers les détails du vault
+    if (current_pb_onboarding_state === 'done' || !current_pb_onboarding_state) {
+      setShowVaultWizard(false);
+      setTimeout(() => {
+        setSelectedVaultId(vault.id);
+        setCurrentPage('vaults');
+      }, 100);
+    }
+  };
+
+  const handleLoanCreated = (loan: Loan) => {
+    // Le loan est déjà ajouté à la liste par setLoans dans le wizard
+    
+    // Si on n'est pas en onboarding, rediriger vers les détails du loan
+    if (current_pb_onboarding_state === 'done' || !current_pb_onboarding_state) {
+      setShowLoanWizard(false);
+      setTimeout(() => {
+        setSelectedLoanId(loan.id);
+        setCurrentPage('loans');
+      }, 100);
+    }
   };
 
   if (showVaultWizard) {
@@ -180,6 +227,7 @@ const PersonalBankContent: React.FC = () => {
     return (
       <LoanWizard 
         onClose={() => setShowLoanWizard(false)} 
+        onLoanCreated={handleLoanCreated}
         borrowers={borrowers}
         onBorrowersUpdate={setBorrowers}
         loans={loans}
@@ -227,7 +275,7 @@ const PersonalBankContent: React.FC = () => {
       </div>
       {isVisible && (
         <Snackbar
-          icon={function Xs(){}}
+          icon={getActivityIcon(message)}
           text={message}
           type="success"
           className="snackbar-fixed-bottom-right"
@@ -239,9 +287,5 @@ const PersonalBankContent: React.FC = () => {
 };
 
 export const PersonalBank: React.FC = () => {
-  return (
-    <ActivityProvider>
-      <PersonalBankContent />
-    </ActivityProvider>
-  );
+  return <PersonalBankContent />;
 }; 

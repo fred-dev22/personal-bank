@@ -76,7 +76,7 @@ export const StepFunding: React.FC<{
                 />
                 <div>
                   <div className="loan-wizard-funding-card-title">{vault.nickname || vault.name}</div>
-                  <div className="loan-wizard-funding-card-subtitle">{vault.type || 'Cash Vault'}</div>
+                                        <div className="loan-wizard-funding-card-subtitle">{vault.type || 'cash vault'}</div>
                 </div>
                 <div className="loan-wizard-funding-card-amount">
                   ${vault.available_for_lending_amount || vault.balance || 0}

@@ -26,11 +26,11 @@ function getIssues(vault: Vault) {
 }
 
 function getEquityTrend(vault: Vault) {
-  if (vault.type === 'Super Vault') {
-    if (vault.payment_projection?.summary?.equityIncreasing === 'yes') return 'Increasing';
+  if (vault.type === 'super vault') {
+    if (vault.payment_projection?.summary?.equityIncreasing) return 'Increasing';
     return 'Decreasing';
   }
-  if (vault.type === 'Cash Vault') return 'n/a';
+  if (vault.type === 'cash vault') return 'n/a';
   return 'n/a';
 }
 
@@ -42,7 +42,7 @@ function getAvailable(vault: Vault) {
 }
 
 function getTotalSpread(vault: Vault) {
-  if (vault.type === 'Super Vault') {
+  if (vault.type === 'super vault') {
     if (vault.spread !== undefined && vault.spread !== null && vault.spread !== '') {
       return `${Number(vault.spread).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
     }
@@ -159,60 +159,94 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
       {/* Vaults Block */}
       <section className="vaults-block">
         <div className="table-title">Vaults</div>
-        <Table
-          columns={[
-            {
-              key: 'nickname',
-              label: 'Name',
-              cellComponent: TextCell,
-              width: '100%',
-              alignment: 'left',
-              getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname }),
-            },
-            {
-              key: 'issues',
-              label: 'Issues',
-              cellComponent: MetricCell,
-              width: '100%',
-              alignment: 'center',
-              getCellProps: (row: Vault) => {
-                const issues = getIssues(row);
-                return {
-                  value: issues,
-                  status: issues > 0 ? 'bad' : 'good',
-                  style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
-                };
+        {otherVaults.length > 0 ? (
+          <Table
+            columns={[
+              {
+                key: 'nickname',
+                label: 'Name',
+                cellComponent: TextCell,
+                width: '100%',
+                alignment: 'left',
+                getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname }),
               },
-            },
-            {
-              key: 'total_spread',
-              label: 'Total Spread',
-              cellComponent: TextCell,
-              width: '100%',
-              alignment: 'center',
-              getCellProps: (row: Vault) => ({ text: getTotalSpread(row) }),
-            },
-            {
-              key: 'equity_trend',
-              label: 'Equity Trend',
-              cellComponent: TagCell,
-              width: '100%',
-              alignment: 'center',
-              getCellProps: (row: Vault) => ({ label: getEquityTrend(row), size: 'small' }),
-            },
-            {
-              key: 'available',
-              label: 'Available',
-              cellComponent: TextCell,
-              width: '100%',
-              alignment: 'right',
-              getCellProps: (row: Vault) => ({ text: getAvailable(row) }),
-            },
-          ]}
-          data={otherVaults}
-          clickableRows
-          onRowClick={(row: Vault) => onSelectVault && onSelectVault(row.id)}
-        />
+              {
+                key: 'issues',
+                label: 'Issues',
+                cellComponent: MetricCell,
+                width: '100%',
+                alignment: 'center',
+                getCellProps: (row: Vault) => {
+                  const issues = getIssues(row);
+                  return {
+                    value: issues,
+                    status: issues > 0 ? 'bad' : 'good',
+                    style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
+                  };
+                },
+              },
+              {
+                key: 'total_spread',
+                label: 'Total Spread',
+                cellComponent: TextCell,
+                width: '100%',
+                alignment: 'center',
+                getCellProps: (row: Vault) => ({ text: getTotalSpread(row) }),
+              },
+              {
+                key: 'equity_trend',
+                label: 'Equity Trend',
+                cellComponent: TagCell,
+                width: '100%',
+                alignment: 'center',
+                getCellProps: (row: Vault) => ({ label: getEquityTrend(row), size: 'small' }),
+              },
+              {
+                key: 'available',
+                label: 'Available',
+                cellComponent: TextCell,
+                width: '100%',
+                alignment: 'right',
+                getCellProps: (row: Vault) => ({ text: getAvailable(row) }),
+              },
+            ]}
+            data={otherVaults}
+            clickableRows
+            onRowClick={(row: Vault) => onSelectVault && onSelectVault(row.id)}
+          />
+        ) : (
+          <div className="empty-vaults-state">
+            <div className="empty-vault-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="12" width="36" height="24" rx="4" stroke="#9CA3AF" strokeWidth="2" fill="none"/>
+                <circle cx="36" cy="24" r="3" stroke="#9CA3AF" strokeWidth="2" fill="none"/>
+                <path d="M12 18h12M12 22h8M12 26h10" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <h3 className="empty-vault-title">No vaults yet</h3>
+            <p className="empty-vault-description">
+              A vault is a secure space for both storing and leveraging your money. This allows the same 
+              dollars to be in two places at once. You must add a vault before you can add loans.
+            </p>
+            <Button
+              icon="iconless"
+              iconComponent={undefined}
+              interaction="default"
+              justified="center"
+              onClick={onAddVault}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}
+              type="primary"
+              ariaLabel={undefined}
+              aria-label="Add Vault"
+              name="add-vault-empty"
+              form=""
+              className="empty-vault-button"
+            >
+              Add Vault
+            </Button>
+          </div>
+        )}
       </section>
     </section>
   );

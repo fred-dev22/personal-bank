@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input } from '@jbaluch/components';
 import type { Vault } from '../../../types/types';
+import VaultChart from './VaultChart';
 
 export const StepReserve: React.FC<{
   vaultData: Vault;
@@ -61,27 +62,14 @@ export const StepReserve: React.FC<{
           </div>
         </form>
       </div>
-      {/* Colonne droite : résumé */}
+      {/* Colonne droite : graphique */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{
-          background: '#fbfbfd',
-          borderRadius: 8,
-          padding: 24,
-          minWidth: 260,
-          minHeight: 260,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <div style={{ fontWeight: 700, fontSize: 24 }}>${Number(vaultData.amount ?? vaultData.balance ?? 0)}</div>
-          <div style={{ color: '#595959', fontSize: 14, marginBottom: 16 }}>Account balance</div>
-          <div style={{ width: 120, height: 120, background: '#e0e7ef', borderRadius: '50%' }} />
-          <div style={{ marginTop: 16 }}>
-            <div>Available: ${Number(vaultData.amount ?? vaultData.balance ?? 0) - (Number(vaultData.reserve) || 0)}</div>
-            <div>Reserve: ${vaultData.reserve || 0}</div>
-          </div>
-        </div>
+        <VaultChart
+          totalAmount={Number(vaultData.amount ?? vaultData.balance ?? 0)}
+          reserve={Number(vaultData.reserve) || 0}
+          hold={0}
+          title="Account balance"
+        />
       </div>
     </div>
   );
