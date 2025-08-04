@@ -499,4 +499,115 @@
   position: relative;
   white-space: nowrap;
   width: fit-content;
+}
+
+/* Cards Container */
+.overview-cards-container {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .frame-overview {
+    gap: 32px;
+  }
+  
+  .row, .row-2 {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .overview-cards-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .overview-cards-container .todo-overview-card,
+  .overview-cards-container .tasks-overview-card {
+    width: 100% !important;
+  }
+  
+  .vault-summary-block {
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .vault-summary-list {
+    min-width: auto;
+    border-right: none;
+    border-bottom: 1px solid #ececec;
+    padding: 16px 24px;
+  }
+  
+  .vault-summary-details {
+    padding: 16px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .frame-overview {
+    gap: 24px;
+  }
+  
+  .page-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .subtitle {
+    font-size: 0.875rem;
+  }
+  
+  .vault-summary-list {
+    padding: 12px 16px;
+  }
+  
+  .vault-summary-details {
+    padding: 12px 16px;
+  }
+  
+  .vault-list-row {
+    padding: 8px 12px 8px 0;
+    font-size: 0.875rem;
+  }
+  
+  .vault-list-balance {
+    min-width: 80px;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .frame-overview {
+    gap: 16px;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+  }
+  
+  .vault-summary-list {
+    padding: 8px 12px;
+  }
+  
+  .vault-summary-details {
+    padding: 8px 12px;
+  }
+  
+  .vault-list-row {
+    padding: 6px 8px 6px 0;
+    font-size: 0.75rem;
+  }
+  
+  .vault-list-balance {
+    min-width: 60px;
+    font-size: 0.75rem;
+  }
 } 

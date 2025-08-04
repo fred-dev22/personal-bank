@@ -1,0 +1,133 @@
+.todo-overview-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  flex: 1;
+  width: 50%;
+}
+
+.todo-overview-card__title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #0d1728;
+  margin: 0 0 20px 0;
+}
+
+.todo-overview-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.todo-overview-card__action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  border-bottom: 1px solid #EEEEF2;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.todo-overview-card__action-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.todo-overview-card__count-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.todo-overview-card__count-badge.active {
+  background: #00B5AE;
+  color: #fff;
+}
+
+.todo-overview-card__count-badge.inactive {
+  background: #E7E7EC;
+  color: #7B7B93;
+}
+
+.todo-overview-card__label {
+  font-weight: 400;
+  font-size: 16px;
+  flex: 1;
+}
+
+.todo-overview-card__label.active {
+  color: #0d1728;
+}
+
+.todo-overview-card__label.inactive {
+  color: #7B7B93;
+}
+
+.todo-overview-card__late-tag {
+  background: #B500071A;
+  color: #B50007;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .todo-overview-card {
+    padding: 16px;
+    width: 100%;
+  }
+  
+  .todo-overview-card__action-row {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 8px;
+  }
+  
+  .todo-overview-card__action-info {
+    gap: 8px;
+  }
+  
+  .todo-overview-card__label {
+    font-size: 14px;
+  }
+  
+  .todo-overview-card__late-tag {
+    font-size: 11px;
+    padding: 1px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .todo-overview-card {
+    padding: 12px;
+  }
+  
+  .todo-overview-card__action-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .todo-overview-card__action-info {
+    width: 100%;
+  }
+  
+  .todo-overview-card__late-tag {
+    align-self: flex-start;
+  }
+} 
