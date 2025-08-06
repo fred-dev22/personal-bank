@@ -183,7 +183,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
                     status: issues > 0 ? 'bad' : 'good',
                     style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
                   };
-                },
+                }, 
               },
               {
                 key: 'total_spread',

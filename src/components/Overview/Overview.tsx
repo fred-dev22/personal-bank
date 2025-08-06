@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { OnboardingCard } from '../OnboardingCard/OnboardingCard';
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
@@ -9,6 +9,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { TodoOverviewCard } from './TodoOverviewCard';
 import { TasksOverviewCard } from './TasksOverviewCard';
 import { VaultsOverviewCard } from './VaultsOverviewCard';
+import { PaymentsScreen } from './PaymentsScreen';
+import { LoansScreen } from './LoansScreen';
+import { RequestsScreen } from './RequestsScreen';
+import { TransfersScreen } from './TransfersScreen';
 
 interface OverviewProps {
   vaults: Vault[];
@@ -17,8 +21,11 @@ interface OverviewProps {
   onAddLoan?: () => void;
 }
 
+type OverviewScreen = 'main' | 'payments' | 'loans' | 'requests' | 'transfers';
+
 export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGatewayWizard, onAddLoan }) => {
   const { user, current_pb_onboarding_state, setCurrentPbOnboardingState } = useAuth();
+  const [currentScreen, setCurrentScreen] = useState<OverviewScreen>('main');
 
   // Format current date
   const currentDate = new Date();
@@ -39,6 +46,87 @@ export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGa
     'add-loan',
   ].includes(current_pb_onboarding_state);
 
+  const handleBackToMain = () => {
+    setCurrentScreen('main');
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'payments':
+        return <PaymentsScreen onBack={handleBackToMain} />;
+      case 'loans':
+        return <LoansScreen onBack={handleBackToMain} />;
+      case 'requests':
+        return <RequestsScreen onBack={handleBackToMain} />;
+      case 'transfers':
+        return <TransfersScreen onBack={handleBackToMain} />;
+      default:
+        return (
+          <div className="div">
+            <div className="to-do-section" style={{width: '100%'}}>
+              {/* Header */}
+              <div style={{marginBottom: 24}}>
+                <h2 style={{fontWeight: 700, fontSize: 18, color: '#0d1728', margin: 0}}>To Do</h2>
+              </div>
+              
+              {/* Cards Container */}
+              <div className="overview-cards-container">
+                {/* Actions Card */}
+                <TodoOverviewCard 
+                  actions={[
+                    {
+                      id: 'payments',
+                      label: 'payments to receive',
+                      count: 2,
+                      isActive: true,
+                      buttonText: 'Receive',
+                      buttonAction: () => setCurrentScreen('payments'),
+                      hasLateTag: true,
+                      lateCount: 1
+                    },
+                    {
+                      id: 'loans',
+                      label: 'loan to fund',
+                      count: 1,
+                      isActive: true,
+                      buttonText: 'Fund',
+                      buttonAction: () => setCurrentScreen('loans')
+                    },
+                    {
+                      id: 'requests',
+                      label: 'requests to review',
+                      count: 0,
+                      isActive: false,
+                      buttonText: 'Review',
+                      buttonAction: () => setCurrentScreen('requests')
+                    },
+                    {
+                      id: 'transfers',
+                      label: 'amounts to transfer',
+                      count: 2,
+                      isActive: true,
+                      buttonText: 'Transfer',
+                      buttonAction: () => setCurrentScreen('transfers')
+                    }
+                  ]}
+                />
+
+                {/* Tasks Card */}
+                <TasksOverviewCard 
+                  onAddTask={() => console.log('Add task')}
+                />
+              </div>
+            </div>
+            <VaultsOverviewCard 
+              vaults={vaults}
+              onVaultSelect={(vaultId) => console.log('Vault selected:', vaultId)}
+              onVaultDetails={(vaultId) => console.log('Navigate to vault details:', vaultId)}
+            />
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="frame-overview">
       <header className="page-toolbar">
@@ -56,67 +144,7 @@ export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGa
           onAddLoan={onAddLoan}
         />
       ) : (
-        <div className="div">
-          <div className="to-do-section" style={{width: '100%'}}>
-            {/* Header */}
-            <div style={{marginBottom: 24}}>
-              <h2 style={{fontWeight: 700, fontSize: 18, color: '#0d1728', margin: 0}}>To Do</h2>
-            </div>
-            
-            {/* Cards Container */}
-            <div className="overview-cards-container">
-              {/* Actions Card */}
-              <TodoOverviewCard 
-                actions={[
-                  {
-                    id: 'payments',
-                    label: 'payments to receive',
-                    count: 2,
-                    isActive: true,
-                    buttonText: 'Receive',
-                    buttonAction: () => console.log('Receive payments'),
-                    hasLateTag: true,
-                    lateCount: 1
-                  },
-                  {
-                    id: 'loans',
-                    label: 'loan to fund',
-                    count: 1,
-                    isActive: true,
-                    buttonText: 'Fund',
-                    buttonAction: () => console.log('Fund loan')
-                  },
-                  {
-                    id: 'requests',
-                    label: 'requests to review',
-                    count: 0,
-                    isActive: false,
-                    buttonText: 'Review',
-                    buttonAction: () => console.log('Review requests')
-                  },
-                  {
-                    id: 'transfers',
-                    label: 'amounts to transfer',
-                    count: 2,
-                    isActive: true,
-                    buttonText: 'Transfer',
-                    buttonAction: () => console.log('Transfer amounts')
-                  }
-                ]}
-              />
-
-              {/* Tasks Card */}
-              <TasksOverviewCard 
-                onAddTask={() => console.log('Add task')}
-              />
-            </div>
-          </div>
-                    <VaultsOverviewCard 
-            vaults={vaults}
-            onVaultSelect={(vaultId) => console.log('Vault selected:', vaultId)}
-            onVaultDetails={(vaultId) => console.log('Navigate to vault details:', vaultId)}
-          />
-        </div>
+        renderScreen()
       )}
     </div>
   );
