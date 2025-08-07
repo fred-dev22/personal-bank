@@ -274,20 +274,22 @@ export const Loans: React.FC<LoansProps> = ({
               onApply={setAppliedFilters}
             />
           </div>
-          <MenuButton
-            items={[
-              { id: 'add-loan', label: 'Add loan' },
-              { id: 'upload-loans', label: 'Upload loans' },
-              { id: 'add-request', label: 'Add request' }
-            ]}
-            label="Add"
-            menuStyle="text"
-            onItemClick={handleMenuAction}
-            type="primary"
-            ariaLabel={undefined}
-            aria-label="Add Loan"
-            className="add-loan-btn"
-          />
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <MenuButton
+              items={[
+                { id: 'add-loan', label: 'Add loan' },
+                { id: 'upload-loans', label: 'Upload loans' },
+                { id: 'add-request', label: 'Add request' }
+              ]}
+              label="Add"
+              menuStyle="text"
+              onItemClick={handleMenuAction}
+              type="primary"
+              ariaLabel={undefined}
+              aria-label="Add Loan"
+              className="add-loan-btn"
+            />
+          </div>
         </div>
       </header>
       <section className="all-loans-table">

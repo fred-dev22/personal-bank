@@ -1,1 +1,12 @@
+/* Global overrides for library components */
 
+/* Fix dropdown menu width and positioning */
+.idbZXk .menu-wrapper {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  min-width: fit-content !important;
+  width: max-content !important;
+  background-color: red !important;
+}

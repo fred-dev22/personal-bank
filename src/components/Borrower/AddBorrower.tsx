@@ -1,6 +1,8 @@
 import React from 'react';
 import './addBorrower.css';
 import { Button, Input, CloseButton } from "@jbaluch/components";
+import { SegmentedControl } from '../ui';
+import type { SegmentedControlItem } from '../ui';
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import type { Borrower } from '../../types/types';
@@ -61,6 +63,11 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
     website: initialData?.website || ''
   });
   const [selectedPhoto, setSelectedPhoto] = React.useState<string | null>(null);
+
+  const borrowerTypeItems: SegmentedControlItem[] = [
+    { id: 'person', label: 'Person', count: 0 },
+    { id: 'institution', label: 'Institution', count: 0 }
+  ];
 
   const handleInputChange = (field: keyof Borrower, value: string | number | string[]): void => {
     setFormData(prev => ({
@@ -133,11 +140,12 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
     }
   };
 
-  const handleTypeChange = (type: 'person' | 'institution'): void => {
-    setBorrowerType(type);
+  const handleTypeChange = (type: string): void => {
+    const borrowerType = type as 'person' | 'institution';
+    setBorrowerType(borrowerType);
     setFormData(prev => ({
       ...prev,
-      type
+      type: borrowerType
     }));
   };
 
@@ -188,23 +196,11 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
 
       {/* Person/Institution Toggle */}
       <div className="add-borrower__toggle-section">
-        <div className="add-borrower__toggle">
-          <button
-            type="button"
-            className={`add-borrower__toggle-item ${borrowerType === 'person' ? 'add-borrower__toggle-item--active' : ''}`}
-            onClick={() => handleTypeChange('person')}
-          >
-            Person
-          </button>
-          <div className="add-borrower__toggle-divider"></div>
-          <button
-            type="button"
-            className={`add-borrower__toggle-item ${borrowerType === 'institution' ? 'add-borrower__toggle-item--active' : ''}`}
-            onClick={() => handleTypeChange('institution')}
-          >
-            Institution
-          </button>
-        </div>
+        <SegmentedControl
+          items={borrowerTypeItems}
+          activeItemId={borrowerType}
+          onItemClick={handleTypeChange}
+        />
       </div>
 
       {/* Avatar Section */}

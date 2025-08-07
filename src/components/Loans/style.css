@@ -968,3 +968,22 @@
   align-items: center;
   width: 100%;
 }
+
+/* Fix dropdown positioning for Add button */
+.search-filter-action .add-loan-btn {
+  position: relative;
+  z-index: 1000;
+}
+
+.search-filter-action .add-loan-btn .jbaluch-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: auto !important;
+  z-index: 1001 !important;
+  margin-top: 4px !important;
+}
+
+/* Global overrides for library components */
+
+/* Override library's fixed positioning for dropdown menus */
