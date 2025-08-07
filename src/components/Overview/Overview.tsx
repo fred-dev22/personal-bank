@@ -15,9 +15,10 @@ interface OverviewProps {
   onAddVault?: () => void;
   onShowGatewayWizard?: () => void;
   onAddLoan?: () => void;
+  onVaultDetails?: (vaultId: string) => void;
 }
 
-export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGatewayWizard, onAddLoan }) => {
+export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGatewayWizard, onAddLoan, onVaultDetails }) => {
   const { user, current_pb_onboarding_state, setCurrentPbOnboardingState } = useAuth();
 
   // Format current date
@@ -114,7 +115,7 @@ export const Overview: React.FC<OverviewProps> = ({ vaults, onAddVault, onShowGa
                     <VaultsOverviewCard 
             vaults={vaults}
             onVaultSelect={(vaultId) => console.log('Vault selected:', vaultId)}
-            onVaultDetails={(vaultId) => console.log('Navigate to vault details:', vaultId)}
+            onVaultDetails={onVaultDetails}
           />
         </div>
       )}

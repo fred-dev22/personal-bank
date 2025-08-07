@@ -24,7 +24,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
   hold, 
   title = "Account balance" 
 }) => {
-  const available = totalAmount - reserve - hold;
+  const available = Math.max(0, totalAmount - reserve - hold);
   
   const data = {
     labels: ['Available', 'Reserve', 'Hold'],
@@ -51,7 +51,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
+          label: (context: { label?: string; parsed: number; dataset: { data: number[] } }) => {
             const label = context.label || '';
             const value = context.parsed;
             const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
@@ -68,13 +68,14 @@ export const VaultChart: React.FC<VaultChartProps> = ({
       background: '#fbfbfd',
       borderRadius: 8,
       padding: 24,
-      minWidth: 260,
+      width: '100%',
+      maxWidth: 350,
       minHeight: 260,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      margin: '0 auto',
+      textAlign: 'center',
     }}>
       <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 8 }}>
         ${totalAmount.toLocaleString()}
@@ -82,7 +83,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
       <div style={{ color: '#595959', fontSize: 14, marginBottom: 16 }}>
         {title}
       </div>
-      <div style={{ width: 200, height: 200, position: 'relative' }}>
+      <div style={{ width: 240, height: 240, position: 'relative' }}>
         <Doughnut data={data} options={options} />
         {/* Texte au centre du graphique */}
         <div style={{
@@ -93,10 +94,10 @@ export const VaultChart: React.FC<VaultChartProps> = ({
           textAlign: 'center',
           pointerEvents: 'none',
         }}>
-          <div style={{ fontWeight: 700, fontSize: 20, color: '#0d1728' }}>
+          <div style={{ fontWeight: 700, fontSize: 22, color: '#0d1728' }}>
             ${available.toLocaleString()}
           </div>
-          <div style={{ fontSize: 12, color: '#595959' }}>
+          <div style={{ fontSize: 13, color: '#595959' }}>
             Available to lend
           </div>
         </div>

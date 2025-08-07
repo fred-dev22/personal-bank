@@ -160,6 +160,8 @@ const PersonalBankContent: React.FC = () => {
   // Callback handlers
   const handleNavigation = (data: { itemId: string }) => {
     setCurrentPage(data.itemId);
+    // Scroll vers le haut de la page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSignOut = async () => {
@@ -174,6 +176,15 @@ const PersonalBankContent: React.FC = () => {
   const handleShowLoanDetails = (loanId: string) => {
     setCurrentPage('loans');
     setSelectedLoanId(loanId);
+    // Scroll vers le haut de la page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleShowVaultDetails = (vaultId: string) => {
+    setCurrentPage('vaults');
+    setSelectedVaultId(vaultId);
+    // Scroll vers le haut de la page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleAddVault = () => setShowVaultWizard(true);
@@ -194,6 +205,8 @@ const PersonalBankContent: React.FC = () => {
       setTimeout(() => {
         setSelectedVaultId(vault.id);
         setCurrentPage('vaults');
+        // Scroll vers le haut de la page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 100);
     }
   };
@@ -207,6 +220,8 @@ const PersonalBankContent: React.FC = () => {
       setTimeout(() => {
         setSelectedLoanId(loan.id);
         setCurrentPage('loans');
+        // Scroll vers le haut de la page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 100);
     }
   };
@@ -249,7 +264,7 @@ const PersonalBankContent: React.FC = () => {
         onToggleCollapse={handleToggleCollapse}
       />
       <div className="content-container">
-        {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} onShowGatewayWizard={handleShowGatewayWizard} onAddLoan={() => setShowLoanWizard(true)} />}
+        {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} onShowGatewayWizard={handleShowGatewayWizard} onAddLoan={() => setShowLoanWizard(true)} onVaultDetails={handleShowVaultDetails} />}
         {currentPage === 'loans' && (
           <Loans
             loans={loans}
@@ -259,18 +274,31 @@ const PersonalBankContent: React.FC = () => {
             onShowBorrowerDetails={(borrowerId: string) => {
               setSelectedBorrowerId(borrowerId);
               setCurrentPage('borrowers');
+              // Scroll vers le haut de la page
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onShowVaultDetails={(vaultId: string) => {
               setSelectedVaultId(vaultId);
               setCurrentPage('vaults');
+              // Scroll vers le haut de la page
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onShowLoanDetails={handleShowLoanDetails}
             onAddLoan={() => setShowLoanWizard(true)}
           />
         )}
-        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={setSelectedVaultId} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} onAddLoan={() => setShowLoanWizard(true)} />}
+        {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={(vaultId) => {
+          setSelectedVaultId(vaultId);
+          // Scroll vers le haut de la page
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} onAddLoan={() => setShowLoanWizard(true)} />}
         {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
-        {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={handleShowLoanDetails} />}
+        {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={(loanId) => {
+          setSelectedLoanId(loanId);
+          setCurrentPage('loans');
+          // Scroll vers le haut de la page
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />}
         {currentPage === 'settings' && <Settings />}
       </div>
       {isVisible && (
