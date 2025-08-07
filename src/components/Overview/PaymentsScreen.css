@@ -1,0 +1,263 @@
+.payments-screen {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 24px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.payments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 0;
+  border-bottom: none;
+}
+
+.payments-back-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #0d1728;
+  font-weight: 600;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.payments-back-button:hover {
+  color: #1890ff;
+}
+
+.back-arrow {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.back-text {
+  font-weight: 600;
+}
+
+.payments-filter {
+  display: flex;
+  align-items: center;
+}
+
+.filter-dropdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: none !important;
+  outline: none;
+  border-radius: 6px;
+  background: #fff;
+  color: #0d1728;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-dropdown:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none !important;
+}
+
+.filter-dropdown:focus {
+  border: none !important;
+  outline: none;
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  color: #666;
+  margin-left: 8px;
+}
+
+.payments-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.payments-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.payments-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #0d1728;
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.payments-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.payment-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.5fr 1fr;
+  gap: 0;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.payment-row:hover {
+  background-color: #f8f9fa;
+}
+
+.payment-row:last-child {
+  border-bottom: none;
+}
+
+.payment-cell {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.payment-cell:first-child {
+  padding-left: 0;
+}
+
+.payment-cell:last-child {
+  padding-right: 0;
+}
+
+.payment-cell-amount {
+  justify-content: flex-end;
+  padding-right: 32px;
+}
+
+.payment-cell-description {
+  justify-content: flex-start;
+  padding-left: 32px;
+}
+
+.payment-cell-avatar {
+  justify-content: flex-start;
+}
+
+.payment-cell-date {
+  justify-content: flex-start;
+}
+
+.payment-cell-vault {
+  justify-content: flex-start;
+}
+
+.avatar-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.payment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f0f0f0;
+}
+
+.payment-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: #0d1728;
+}
+
+.payment-due-date {
+  color: #666;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.payment-due-date.overdue {
+  color: #b50007;
+  font-weight: 600;
+}
+
+.payment-amount {
+  font-weight: 700;
+  color: #0d1728;
+  font-size: 16px;
+}
+
+.payment-description {
+  color: #666;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.payment-vault {
+  color: #666;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payments-screen {
+    padding: 16px;
+  }
+  
+  .payments-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .payment-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 12px 0;
+  }
+  
+  .payment-cell {
+    justify-content: flex-start;
+  }
+  
+  .payment-name {
+    font-size: 14px;
+  }
+  
+  .payment-details {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payments-screen {
+    padding: 12px;
+  }
+  
+  .payment-row {
+    padding: 8px 0;
+  }
+  
+  .payment-name {
+    font-size: 14px;
+  }
+  
+  .payment-details {
+    font-size: 12px;
+  }
+} 
