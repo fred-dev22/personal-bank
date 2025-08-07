@@ -45,6 +45,9 @@ export const TodoOverviewCard: React.FC<TodoOverviewCardProps> = ({ actions }) =
               name={action.id}
               form=""
               ariaLabel={action.buttonText}
+              iconComponent={undefined}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}
               style={{
                 width: 100,
                 height: 32,

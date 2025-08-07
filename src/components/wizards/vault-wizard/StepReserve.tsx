@@ -12,8 +12,8 @@ export const StepReserve: React.FC<{
     <div style={{
       display: 'flex',
       alignItems: 'flex-start',
-      gap: 32,
-      width: 800,
+      gap: 0,
+      width: 750,
       margin: '0 auto',
     }}>
       {/* Colonne gauche */}
@@ -59,11 +59,22 @@ export const StepReserve: React.FC<{
                type="currency"
                error={validationErrors.reserve}
              />
+             {validationErrors.reserve && (
+               <div style={{ color: '#b50007', fontSize: 12, marginTop: 4 }}>
+                 {validationErrors.reserve}
+               </div>
+             )}
           </div>
         </form>
       </div>
       {/* Colonne droite : graphique */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ 
+        flex: 1, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        padding: '20px 0'
+      }}>
         <VaultChart
           totalAmount={Number(vaultData.amount ?? vaultData.balance ?? 0)}
           reserve={Number(vaultData.reserve) || 0}

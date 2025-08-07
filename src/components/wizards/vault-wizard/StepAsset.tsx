@@ -15,19 +15,19 @@ export const StepAsset: React.FC<{
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>Asset configuration</h2>
         <p style={{ color: '#666', marginBottom: 0 }}>Your Super Vault contains an appreciating asset. Let's set up its details.</p>
-      </div>
-      
+         </div>
+        
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={{ display: 'flex', gap: 32, maxWidth: 1200 }}>
           {/* Left Section - Asset Details Input */}
           <div style={{ width: 350 }}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
+                                   <div style={{ marginBottom: 24 }}>
+            <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
                 Asset type <span style={{ color: 'red' }}>*</span>
-              </label>
-              <PopupButton
+            </label>
+            <PopupButton
                 defaultValue="Indexed Universal Life"
-                items={[
+              items={[
                   { id: 'Indexed Universal Life', label: 'Indexed Universal Life' },
                   { id: 'Whole Life', label: 'Whole Life' },
                   { id: 'Universal Life', label: 'Universal Life' },
@@ -37,36 +37,36 @@ export const StepAsset: React.FC<{
                   { id: 'Stocks', label: 'Stocks' },
                   { id: 'Bonds', label: 'Bonds' },
                   { id: 'Other', label: 'Other' }
-                ]}
-                label="Asset Type"
-                menuStyle="text"
-                onSelect={(selectedId: string) => {
-                  setVaultData({ ...vaultData, assetType: selectedId });
-                }}
-                width="100%"
-                menuMaxHeight="200px"
+              ]}
+              label="Asset Type"
+              menuStyle="text"
+                             onSelect={(selectedId: string) => {
+                 setVaultData({ ...vaultData, assetType: selectedId });
+               }}
+              width="100%"
+              menuMaxHeight="200px"
                 style={{ height: '40px' }}
-              />
-              {validationErrors.assetType && (
-                <div style={{ color: '#d32f2f', fontSize: 14, marginTop: 4 }}>
-                  {validationErrors.assetType}
-                </div>
-              )}
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <Input
+            />
+            {validationErrors.assetType && (
+              <div style={{ color: '#d32f2f', fontSize: 14, marginTop: 4 }}>
+                {validationErrors.assetType}
+              </div>
+            )}
+          </div>
+        
+            <div style={{ marginBottom: 24 }}>
+           <Input
                 label="Accumulated value"
                 placeholder="Enter accumulated value"
-                required
+             required
                 value={vaultData.amount?.toString() || '30000.00'}
-                onChange={(value: string) => setVaultData({ ...vaultData, amount: parseFloat(value) || 0 })}
-                error={validationErrors.amount}
-                type="currency"
+             onChange={(value: string) => setVaultData({ ...vaultData, amount: parseFloat(value) || 0 })}
+             error={validationErrors.amount}
+             type="currency"
                 style={{ height: '40px' }}
-              />
-            </div>
-
+           />
+         </div>
+         
             <div 
               style={{ 
                 display: 'flex', 
@@ -91,17 +91,17 @@ export const StepAsset: React.FC<{
                   We use this information for vault forecasts.
                 </p>
                 
-                <div style={{ marginBottom: 16 }}>
-                  <SelectDate
+                <div style={{ marginBottom: 24 }}>
+           <SelectDate
                     label="Start date"
                     placeholder="Select start date"
                     value={vaultData.assetStartDate || '2025-01-01'}
-                    onChange={(value: string) => setVaultData({ ...vaultData, assetStartDate: value })}
+             onChange={(value: string) => setVaultData({ ...vaultData, assetStartDate: value })}
                     style={{ height: '40px' }}
                   />
                 </div>
 
-                <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 24 }}>
                   <Input
                     label="Annual non-MEC limit"
                     placeholder="Enter annual non-MEC limit"
@@ -117,7 +117,7 @@ export const StepAsset: React.FC<{
                   </p>
                 </div>
 
-                <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 24 }}>
                   <Input
                     label="Annual guideline"
                     placeholder="Enter annual guideline"
@@ -130,7 +130,7 @@ export const StepAsset: React.FC<{
                   />
                 </div>
 
-                <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 24 }}>
                   <Input
                     label="Average growth rate"
                     placeholder="Enter growth rate"
@@ -143,7 +143,7 @@ export const StepAsset: React.FC<{
                   />
                 </div>
 
-                <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 24 }}>
                   <Input
                     label="Expense rate"
                     placeholder="Enter expense rate"
@@ -156,7 +156,7 @@ export const StepAsset: React.FC<{
                   />
                 </div>
 
-                <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 24 }}>
                   <Input
                     label="Premium paid since start date"
                     placeholder="Enter premium paid"
@@ -210,7 +210,7 @@ export const StepAsset: React.FC<{
               </div>
             </div>
           </div>
-        </div>
+         </div>
       </div>
     </div>
   );

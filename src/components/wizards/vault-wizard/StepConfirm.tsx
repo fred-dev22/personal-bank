@@ -259,23 +259,13 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
               alignItems: 'center',
               marginBottom: 8,
             }}>
-              <div style={{ fontWeight: 600, fontSize: 16 }}>Setup</div>
-              {/* <Pdf className="pdf-instance" /> */}
-              <button style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer'
-              }}>
-                {/* Remplace par <Pdf /> si tu as le composant */}
-                <span role="img" aria-label="pdf">📄</span>
-              </button>
+              <div style={{ fontWeight: 600, fontSize: 16 }}>Setup:</div>
             </div>
             <div style={{ color: '#000', marginBottom: 4 }}>
-              Open a [account type] account at your local bank.
+              • Open a {accountTypeLabel} account at your local bank.
             </div>
             <div style={{ color: '#000' }}>
-              Dedicate this account to the bank. This will make it easy to review the ledger and reconcile activity in the bank.
+              • Dedicate this account to the bank. This will make it easy to review the ledger and reconcile activity in the bank.
             </div>
           </div>
           {/* Reconcile */}
@@ -286,7 +276,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
               marginBottom: 8,
             }}>Reconcile</div>
             <div style={{ color: '#000' }}>
-              Schedule time every month to reconcile this vault's activity with your bank statement.
+              • Schedule time every month to reconcile this vault's activity with your bank statement.
             </div>
           </div>
         </div>
@@ -305,9 +295,11 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
             padding: '8px 16px',
           }}>
             <div style={{ color: '#0d1728', fontWeight: 600 }}>{accountTypeLabel}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ color: '#595959', fontSize: 14 }}>Appreciation</div>
               <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ color: '#000', fontWeight: 700, fontSize: 18 }}>${accountAmount.toLocaleString()}</div>
             </div>
           </div>

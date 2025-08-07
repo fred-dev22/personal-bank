@@ -9,7 +9,7 @@ export const StepHold: React.FC<{
   validationErrors?: {[key: string]: string};
 }> = ({ vaultData, setVaultData, validationErrors = {} }) => {
   return (
-    <div style={{ display: 'flex', gap: 32, width: 800, margin: '0 auto' }}>
+    <div style={{ display: 'flex', gap: 0, width: 750, margin: '0 auto' }}>
       {/* Colonne gauche */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '32px 0 0 0', width: 384 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -47,11 +47,22 @@ export const StepHold: React.FC<{
                type="currency"
                error={validationErrors.hold}
              />
+             {validationErrors.hold && (
+               <div style={{ color: '#b50007', fontSize: 12, marginTop: 4 }}>
+                 {validationErrors.hold}
+               </div>
+             )}
           </div>
         </form>
       </div>
       {/* Colonne droite : graphique */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ 
+        flex: 1, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        padding: '20px 0'
+      }}>
         <VaultChart
           totalAmount={Number(vaultData.amount ?? vaultData.balance ?? 0)}
           reserve={Number(vaultData.reserve) || 0}

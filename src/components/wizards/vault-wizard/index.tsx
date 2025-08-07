@@ -58,34 +58,72 @@ export const VaultWizard: React.FC<{
     const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   const [vaultData, setVaultData] = useState<Vault>(vaultToEdit || {
     id: '',
-    name: gatewayMode ? 'Gateway' : (type === 'super' ? 'Super Vault' : ''),
-    nickname: gatewayMode ? 'Gateway' : (type === 'super' ? 'Super Vault' : ''),
+    name: gatewayMode ? 'Gateway' : (type === 'super' ? 'Super Vault' : (type === 'cash' ? 'Cash Vault' : '')),
+    nickname: gatewayMode ? 'Gateway' : (type === 'super' ? 'Super Vault' : (type === 'cash' ? 'Cash Vault' : '')),
     issues: 0,
     balance: 10000,
     financials: { paidIn: 0, paidOut: 0 },
     health: { reserves: 0, loanToValue: 0, incomeDSCR: 0, growthDSCR: 0 },
-    hold: 0,
-    reserve: 0,
+    hold: gatewayMode ? 0 : (type === 'cash' ? 500 : 0),
+    hold_type: gatewayMode ? undefined : (type === 'cash' ? 'amount' : undefined),
+    reserve: gatewayMode ? 0 : (type === 'cash' ? 1000 : 0),
+    reserve_type: gatewayMode ? undefined : (type === 'cash' ? 'amount' : undefined),
     type: gatewayMode ? 'cash' : type,
     // Champs requis pour Gateway
-    amount: gatewayMode ? 10000 : undefined,
-    interestRate: gatewayMode ? '0' : undefined,
-    accountType: gatewayMode ? 'Checking' : undefined,
+    amount: gatewayMode ? 10000 : (type === 'cash' ? 0 : undefined),
+    interestRate: gatewayMode ? '0' : (type === 'cash' ? '5.00%' : undefined),
+    accountType: gatewayMode ? 'Checking' : (type === 'cash' ? 'Savings' : undefined),
     // Champs Super Vault
-    assetType: '',
+    assetType: type === 'super' ? 'Indexed Universal Life' : '',
     assetName: '',
-    assetStartDate: '',
-    annualNonMecLimit: '',
-    annualGuidelineAmount: '',
-    annualGrowthRate: '',
-    premiumPaidThisYear: '',
-    debtBalance: '',
-    debtCeilingRate: '',
-    debtLtv: '',
+    assetStartDate: type === 'super' ? '2025-01-01' : '',
+    annualNonMecLimit: type === 'super' ? '39000.00' : '',
+    annualGuidelineAmount: type === 'super' ? '15000.00' : '',
+    annualGrowthRate: type === 'super' ? '7.00' : '',
+    premiumPaidThisYear: type === 'super' ? '30000.00' : '',
+    debtBalance: type === 'super' ? '0.00' : '',
+    debtCeilingRate: type === 'super' ? '5.00' : '',
+    debtLtv: type === 'super' ? '90.00' : '',
+    creditLimitType: type === 'super' ? '%' : '',
   });
 
   const { user, current_pb_onboarding_state, setCurrentPbOnboardingState } = useAuth();
   const { showActivity, hideActivity } = useActivity();
+
+  // Mettre à jour les valeurs par défaut quand le type change
+  React.useEffect(() => {
+    if (type === 'cash' && !gatewayMode) {
+      setVaultData(prev => ({
+        ...prev,
+        name: prev.name || 'Cash Vault',
+        nickname: prev.nickname || 'Cash Vault',
+        amount: prev.amount || 0,
+        interestRate: prev.interestRate || '5.00%',
+        accountType: prev.accountType || 'Savings',
+        reserve: prev.reserve || 1000,
+        reserve_type: prev.reserve_type || 'amount',
+        hold: prev.hold || 500,
+        hold_type: prev.hold_type || 'amount',
+      }));
+    } else if (type === 'super' && !gatewayMode) {
+      setVaultData(prev => ({
+        ...prev,
+        name: prev.name || 'Super Vault',
+        nickname: prev.nickname || 'Super Vault',
+        amount: prev.amount || 30000,
+        assetType: prev.assetType || 'Indexed Universal Life',
+        assetStartDate: prev.assetStartDate || '2025-01-01',
+        annualNonMecLimit: prev.annualNonMecLimit || '39000.00',
+        annualGuidelineAmount: prev.annualGuidelineAmount || '15000.00',
+        annualGrowthRate: prev.annualGrowthRate || '7.00',
+        premiumPaidThisYear: prev.premiumPaidThisYear || '30000.00',
+        debtBalance: prev.debtBalance || '0.00',
+        debtCeilingRate: prev.debtCeilingRate || '5.00',
+        debtLtv: prev.debtLtv || '90.00',
+        creditLimitType: prev.creditLimitType || '%',
+      }));
+    }
+  }, [type, gatewayMode]);
 
   // Fonction de validation pour chaque étape
   const validateStep = (stepIndex: number): {[key: string]: string} => {
@@ -107,11 +145,15 @@ export const VaultWizard: React.FC<{
         case 2: // Reserve
           if (!vaultData.reserve || Number(vaultData.reserve) <= 0) {
             errors.reserve = 'Reserve amount is required and must be greater than 0';
+          } else if (Number(vaultData.reserve) > Number(vaultData.amount)) {
+            errors.reserve = 'Reserve amount cannot exceed the account balance';
           }
           break;
         case 3: // Hold
           if (!vaultData.hold || Number(vaultData.hold) <= 0) {
             errors.hold = 'Hold amount is required and must be greater than 0';
+          } else if ((Number(vaultData.reserve) + Number(vaultData.hold)) > Number(vaultData.amount)) {
+            errors.hold = 'Reserve + Hold cannot exceed the account balance';
           }
           break;
       }
@@ -147,11 +189,15 @@ export const VaultWizard: React.FC<{
                   case 4: // Reserve
             if (!vaultData.reserve || Number(vaultData.reserve) <= 0) {
               errors.reserve = 'Reserve amount is required and must be greater than 0';
+            } else if (Number(vaultData.reserve) > Number(vaultData.amount)) {
+              errors.reserve = 'Reserve amount cannot exceed the account balance';
             }
             break;
           case 5: // Hold
             if (!vaultData.hold || Number(vaultData.hold) <= 0) {
               errors.hold = 'Hold amount is required and must be greater than 0';
+            } else if ((Number(vaultData.reserve) + Number(vaultData.hold)) > Number(vaultData.amount)) {
+              errors.hold = 'Reserve + Hold cannot exceed the account balance';
             }
             break;
       }

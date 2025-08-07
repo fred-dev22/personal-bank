@@ -64,10 +64,6 @@
   font-weight: 700;
 }
 
-.vaults-overview-card__vault-item.gateway {
-  background: #f5f5f5;
-}
-
 .vaults-overview-card__vault-info {
   display: flex;
   align-items: center;

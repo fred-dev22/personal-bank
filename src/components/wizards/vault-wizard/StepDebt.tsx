@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, PopupButton } from '@jbaluch/components';
+import { Input } from '@jbaluch/components';
 import type { Vault } from '../../../types/types';
 
 export const StepDebt: React.FC<{
@@ -18,7 +18,7 @@ export const StepDebt: React.FC<{
         <div style={{ display: 'flex', gap: 32, maxWidth: 1200 }}>
           {/* Left Section - Debt Details Input */}
           <div style={{ width: 350 }}>
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 24 }}>
               <Input
                 label="Outstanding balance"
                 placeholder="Enter outstanding balance"
@@ -34,7 +34,7 @@ export const StepDebt: React.FC<{
               </p>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 24 }}>
               <Input
                 label="Interest rate"
                 placeholder="Enter interest rate"
@@ -50,27 +50,28 @@ export const StepDebt: React.FC<{
               </p>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 24 }}>
               <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
                 Credit limit <span style={{ color: 'red' }}>*</span>
               </label>
               <div style={{ display: 'flex', gap: 8 }}>
                 <div style={{ width: '30%' }}>
-                  <PopupButton
-                    defaultValue="%"
-                    items={[
-                      { id: '%', label: '%' },
-                      { id: '$', label: '$' }
-                    ]}
-                    label="Type"
-                    menuStyle="text"
-                    onSelect={(selectedId: string) => {
-                      setVaultData({ ...vaultData, creditLimitType: selectedId });
+                  <select
+                    value={vaultData.creditLimitType || '%'}
+                    onChange={(e) => setVaultData({ ...vaultData, creditLimitType: e.target.value })}
+                    style={{
+                      width: '100%',
+                      height: '40px',
+                      padding: '8px 12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      backgroundColor: 'white'
                     }}
-                    width="100%"
-                    menuMaxHeight="100px"
-                    style={{ height: '40px' }}
-                  />
+                  >
+                    <option value="%">%</option>
+                    <option value="$">$</option>
+                  </select>
                 </div>
                 <div style={{ width: '70%' }}>
                   <Input
@@ -78,7 +79,7 @@ export const StepDebt: React.FC<{
                     value={vaultData.debtLtv || '90.00'}
                     onChange={(value: string) => setVaultData({ ...vaultData, debtLtv: value })}
                     error={validationErrors.debtLtv}
-                    type="percentage"
+                    type={vaultData.creditLimitType === '$' ? 'currency' : 'percentage'}
                     style={{ height: '40px' }}
                   />
                 </div>

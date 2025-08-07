@@ -93,7 +93,7 @@ export const TransfersScreen: React.FC<TransfersScreenProps> = ({ onBack }) => {
                   cellComponent: TextCell,
                   width: '25%',
                   alignment: 'left',
-                  getCellProps: (row: Transfer) => ({ text: 'Send' }),
+                  getCellProps: () => ({ text: 'Send' }),
                 },
                 {
                   key: 'amount',
