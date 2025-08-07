@@ -954,6 +954,14 @@
   margin-left: 0px !important;
 }
 
+.loans-status-tabs {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
 .empty-state-center {
   display: flex;
   justify-content: center;

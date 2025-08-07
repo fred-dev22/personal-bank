@@ -1,0 +1,108 @@
+.segmented-control {
+  display: flex;
+  background-color: #F0F0F1;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 0;
+  position: relative;
+  box-shadow: 
+    0 0 4px 0 rgba(0, 0, 0, 0.08),
+    0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.segmented-control-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.segmented-control-item:not(.active):hover {
+  background-color: #e8e8e8;
+}
+
+.segmented-control-item.active {
+  background-color: #00B5AE;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 181, 174, 0.3);
+  z-index: 1;
+}
+
+.segmented-control-label {
+  flex: 1;
+  text-align: center;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.segmented-control-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  background-color: #e0e0e0;
+  color: #595959;
+  transition: all 0.2s ease;
+}
+
+.segmented-control-item.active .segmented-control-badge {
+  background-color: #009a94;
+  color: #ffffff;
+}
+
+.segmented-control-divider {
+  width: 1px;
+  height: 12px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  margin: 0 2px;
+  align-self: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .segmented-control {
+    padding: 3px;
+  }
+  
+  .segmented-control-item {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .segmented-control-badge {
+    min-width: 18px;
+    height: 18px;
+    font-size: 11px;
+  }
+}
+
+/* Focus states for accessibility */
+.segmented-control-item:focus {
+  outline: 2px solid #00B5AE;
+  outline-offset: 2px;
+}
+
+.segmented-control-item:focus:not(:focus-visible) {
+  outline: none;
+} 
