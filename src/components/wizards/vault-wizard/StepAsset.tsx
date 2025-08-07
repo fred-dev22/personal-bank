@@ -177,35 +177,45 @@ export const StepAsset: React.FC<{
 
           {/* Right Section - Asset Type Selection */}
           <div style={{ flex: 1, maxWidth: 400 }}>
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#000' }}>$0.00</div>
-              <div style={{ fontSize: 14, color: '#666' }}>Equity</div>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <div style={{
-                border: '2px solid #008080',
-                borderRadius: 8,
-                padding: 16,
-                backgroundColor: '#f0f8f8'
-              }}>
-                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Asset</div>
-                <div style={{ fontSize: 14, color: '#666' }}>
-                  i.e. closed-end funds, real estate, permanent life insurance, etc.
+            {/* Conteneur blanc unique pour Equity et les deux blocs */}
+            <div style={{
+              backgroundColor: '#fff',
+              borderRadius: 8,
+              padding: 16,
+              border: '1px solid #ddd'
+            }}>
+              {/* Equity en haut à gauche */}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 24, fontWeight: 700, color: '#000' }}>$0.00</div>
+                <div style={{ fontSize: 12, color: '#666' }}>Equity</div>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{
+                  border: '2px solid #008080',
+                  borderRadius: 8,
+                  padding: 16,
+                  backgroundColor: '#f0f8f8',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8, textAlign: 'center' }}>Asset</div>
+                  <div style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
+                    i.e. closed-end funds, real estate, permanent life insurance, etc.
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <div style={{
-                border: '1px solid #ddd',
-                borderRadius: 8,
-                padding: 16,
-                backgroundColor: '#fff'
-              }}>
-                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Line-of-Credit</div>
-                <div style={{ fontSize: 14, color: '#666' }}>
-                  i.e. home equity loan, margin loan, personal line of credit, etc.
+              <div>
+                <div style={{
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  padding: 16,
+                  backgroundColor: '#fff',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8, textAlign: 'center' }}>Line-of-Credit</div>
+                  <div style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
+                    i.e. home equity loan, margin loan, personal line of credit, etc.
+                  </div>
                 </div>
               </div>
             </div>

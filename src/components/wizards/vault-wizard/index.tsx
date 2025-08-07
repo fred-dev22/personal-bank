@@ -7,7 +7,7 @@ import { StepHold } from './StepHold';
 import { StepConfirm } from './StepConfirm';
 import { Button } from '@jbaluch/components';
 import StepsWizard from '../wizard-components/StepsWizard';
-import type { Vault } from '../../../types/types';
+import type { Vault, HoldReserveType, VaultType, CreditLimitType } from '../../../types/types';
 import { StepAsset } from './StepAsset';
 import { StepDebt } from './StepDebt';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -64,15 +64,15 @@ export const VaultWizard: React.FC<{
     balance: 10000,
     financials: { paidIn: 0, paidOut: 0 },
     health: { reserves: 0, loanToValue: 0, incomeDSCR: 0, growthDSCR: 0 },
-    hold: gatewayMode ? 0 : (type === 'cash' ? 500 : 0),
-    hold_type: gatewayMode ? undefined : (type === 'cash' ? 'amount' : undefined),
-    reserve: gatewayMode ? 0 : (type === 'cash' ? 1000 : 0),
-    reserve_type: gatewayMode ? undefined : (type === 'cash' ? 'amount' : undefined),
-    type: gatewayMode ? 'cash' : type,
-    // Champs requis pour Gateway
-    amount: gatewayMode ? 10000 : (type === 'cash' ? 0 : undefined),
-    interestRate: gatewayMode ? '0' : (type === 'cash' ? '5.00%' : undefined),
-    accountType: gatewayMode ? 'Checking' : (type === 'cash' ? 'Savings' : undefined),
+    hold: type === 'cash' ? 500 : (type === 'super' ? 10 : 0),
+    hold_type: type === 'cash' ? ('amount' as HoldReserveType) : (type === 'super' ? ('percentage' as HoldReserveType) : undefined),
+    reserve: type === 'cash' ? 1000 : (type === 'super' ? 10 : 0),
+    reserve_type: type === 'cash' ? ('amount' as HoldReserveType) : (type === 'super' ? ('percentage' as HoldReserveType) : undefined),
+    type: gatewayMode ? ('cash vault' as VaultType) : (type === 'cash' ? ('cash vault' as VaultType) : (type === 'super' ? ('super vault' as VaultType) : undefined)),
+    // Champs requis pour Cash Vault (même pour Gateway)
+    amount: type === 'cash' ? 0 : undefined,
+    interestRate: type === 'cash' ? '5.00%' : undefined,
+    accountType: type === 'cash' ? 'Savings' : undefined,
     // Champs Super Vault
     assetType: type === 'super' ? 'Indexed Universal Life' : '',
     assetName: '',
@@ -84,7 +84,7 @@ export const VaultWizard: React.FC<{
     debtBalance: type === 'super' ? '0.00' : '',
     debtCeilingRate: type === 'super' ? '5.00' : '',
     debtLtv: type === 'super' ? '90.00' : '',
-    creditLimitType: type === 'super' ? '%' : '',
+    creditLimitType: type === 'super' ? ('percentage' as CreditLimitType) : undefined,
   });
 
   const { user, current_pb_onboarding_state, setCurrentPbOnboardingState } = useAuth();
@@ -101,9 +101,9 @@ export const VaultWizard: React.FC<{
         interestRate: prev.interestRate || '5.00%',
         accountType: prev.accountType || 'Savings',
         reserve: prev.reserve || 1000,
-        reserve_type: prev.reserve_type || 'amount',
+        reserve_type: prev.reserve_type || ('amount' as HoldReserveType),
         hold: prev.hold || 500,
-        hold_type: prev.hold_type || 'amount',
+        hold_type: prev.hold_type || ('amount' as HoldReserveType),
       }));
     } else if (type === 'super' && !gatewayMode) {
       setVaultData(prev => ({
@@ -120,7 +120,11 @@ export const VaultWizard: React.FC<{
         debtBalance: prev.debtBalance || '0.00',
         debtCeilingRate: prev.debtCeilingRate || '5.00',
         debtLtv: prev.debtLtv || '90.00',
-        creditLimitType: prev.creditLimitType || '%',
+        creditLimitType: prev.creditLimitType || ('percentage' as CreditLimitType),
+        reserve: prev.reserve || 10,
+        reserve_type: prev.reserve_type || ('percentage' as HoldReserveType),
+        hold: prev.hold || 10,
+        hold_type: prev.hold_type || ('percentage' as HoldReserveType),
       }));
     }
   }, [type, gatewayMode]);
@@ -275,14 +279,47 @@ export const VaultWizard: React.FC<{
         const holding = await createHolding(token, holdingData);
         console.log('Holding created:', holding);
         // Calcul du available_for_lending_amount
-        const availableForLending =
-          Number(vaultData.amount ?? 0) - (Number(vaultData.reserve) || 0) - (Number(vaultData.hold) || 0);
+        let availableForLending = 0;
+        
+        if (type === 'super') {
+          // Pour Super Vault : calcul basé sur le credit limit
+          const assetValue = Number(vaultData.amount) || 0;
+          const creditLimitValue = Number(vaultData.debtLtv) || 0;
+          const creditLimitType = vaultData.creditLimitType || 'percentage';
+          
+          let creditLimit = 0;
+          if (creditLimitType === 'percentage') {
+            creditLimit = (creditLimitValue / 100) * assetValue;
+          } else {
+            creditLimit = creditLimitValue;
+          }
+          
+          // Calcul des valeurs de reserve et hold
+          const reserveType = vaultData.reserve_type || 'amount';
+          const holdType = vaultData.hold_type || 'amount';
+          
+          let reserveValue = Number(vaultData.reserve) || 0;
+          let holdValue = Number(vaultData.hold) || 0;
+          
+          if (reserveType === 'percentage') {
+            reserveValue = (reserveValue / 100) * creditLimit;
+          }
+          if (holdType === 'percentage') {
+            holdValue = (holdValue / 100) * creditLimit;
+          }
+          
+          const debtBalance = Number(vaultData.debtBalance) || 0;
+          availableForLending = Math.max(0, creditLimit - reserveValue - holdValue - debtBalance);
+        } else {
+          // Pour Cash Vault : calcul basé sur le montant
+          availableForLending = Number(vaultData.amount ?? 0) - (Number(vaultData.reserve) || 0) - (Number(vaultData.hold) || 0);
+        }
         // Création du vault
         const vaultCreateData = {
           ...vaultData,
           nickname: vaultData.name, // S'assurer que le nickname est bien défini
           holding_id: holding.id,
-          type: type === 'super' ? 'super vault' : 'cash vault',
+                     type: type === 'super' ? ('super vault' as VaultType) : ('cash vault' as VaultType),
           is_gateway: !!gatewayMode,
           available_for_lending_amount: availableForLending,
         };
@@ -350,7 +387,7 @@ export const VaultWizard: React.FC<{
           selectedType={type || ''}
           onSelect={t => {
             setType(t as 'cash' | 'super');
-            setVaultData({ ...vaultData, type: t });
+                         setVaultData({ ...vaultData, type: t === 'cash' ? ('cash vault' as VaultType) : ('super vault' as VaultType) });
           }}
           onTypeSelected={() => setStep(1)}
         />
