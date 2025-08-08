@@ -48,9 +48,12 @@
 
 .gateway-tabs {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 0;
   border-bottom: 1px solid #EEEEF2;
   margin-bottom: 16px;
+  width: 100%;
 }
 
 .gateway-tab {

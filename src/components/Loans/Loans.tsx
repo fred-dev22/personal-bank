@@ -1,5 +1,7 @@
 import React, { useState, useRef } from "react";
-import { Button, IconButton, Input, MenuButton, Tabs, Table, TextCell, MetricCell, TagCell, EmptyState } from "@jbaluch/components";
+import { Button, IconButton, Input, MenuButton, Table, TextCell, MetricCell, TagCell, EmptyState } from "@jbaluch/components";
+import { SegmentedControl } from '../ui';
+import type { SegmentedControlItem } from '../ui';
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
@@ -48,6 +50,13 @@ export const Loans: React.FC<LoansProps> = ({
   const [selectedBorrower, setSelectedBorrower] = useState<BorrowerType | null>(null);
   const [appliedFilters, setAppliedFilters] = useState<Record<string, FilterValue>>({ amount: { min: '', max: '' }, date: { min: '', max: '' } });
   const filterAnchorEl = useRef<HTMLButtonElement>(null);
+
+  const statusItems: SegmentedControlItem[] = [
+    { id: 'Funded', label: 'On Track', count: 2 },
+    { id: 'To Fund', label: 'To Fund', count: 2 },
+    { id: 'behind', label: 'Late', count: 0 },
+    { id: 'Complete', label: 'Complete', count: 0 }
+  ];
   const filterCount = Object.values(appliedFilters).filter(v => {
     if (typeof v === 'string') return v.length > 0;
     if (typeof v === 'object') return v.min || v.max;
@@ -265,34 +274,32 @@ export const Loans: React.FC<LoansProps> = ({
               onApply={setAppliedFilters}
             />
           </div>
-          <MenuButton
-            items={[
-              { id: 'add-loan', label: 'Add loan' },
-              { id: 'upload-loans', label: 'Upload loans' },
-              { id: 'add-request', label: 'Add request' }
-            ]}
-            label="Add"
-            menuStyle="text"
-            onItemClick={handleMenuAction}
-            type="primary"
-            ariaLabel={undefined}
-            aria-label="Add Loan"
-            className="add-loan-btn"
-          />
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <MenuButton
+              items={[
+                { id: 'add-loan', label: 'Add loan' },
+                { id: 'upload-loans', label: 'Upload loans' },
+                { id: 'add-request', label: 'Add request' }
+              ]}
+              label="Add"
+              menuStyle="text"
+              onItemClick={handleMenuAction}
+              type="primary"
+              ariaLabel={undefined}
+              aria-label="Add Loan"
+              className="add-loan-btn"
+            />
+          </div>
         </div>
       </header>
       <section className="all-loans-table">
-        <Tabs
-          className="loans-tabs-no-margin"
-          activeTabId={selectedStatus}
-          onTabChange={setSelectedStatus}
-          tabs={[
-            { id: 'Funded', label: 'On Track' },
-            { id: 'To Fund', label: 'To Fund' },
-            { id: 'behind', label: 'Behind' },
-            { id: 'Complete', label: 'Complete' }
-          ]}
-        />
+        <div className="loans-status-tabs">
+          <SegmentedControl
+            items={statusItems}
+            activeItemId={selectedStatus}
+            onItemClick={setSelectedStatus}
+          />
+        </div>
         {filteredLoans.length === 0 ? (
           <div className="empty-state-center">
             <EmptyState

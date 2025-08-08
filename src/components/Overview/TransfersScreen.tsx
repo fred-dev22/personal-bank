@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Table, TextCell, EmptyState } from '@jbaluch/components';
+import { SegmentedControl } from '../ui';
+import type { SegmentedControlItem } from '../ui';
 import './TransfersScreen.css';
 
 interface Transfer {
@@ -50,7 +52,12 @@ export const TransfersScreen: React.FC<TransfersScreenProps> = ({ onBack }) => {
     }
   ];
 
-  const gateways = ['Gateway 1', 'Gateway 2', 'Gateway 3', 'Gateway 4'];
+  const gatewayItems: SegmentedControlItem[] = [
+    { id: 'Gateway 1', label: 'Gateway 1', count: 0 },
+    { id: 'Gateway 2', label: 'Gateway 2', count: 1 },
+    { id: 'Gateway 3', label: 'Gateway 3', count: 4 },
+    { id: 'Gateway 4', label: 'Gateway 4', count: 0 }
+  ];
 
   const filteredTransfers = transfers.filter(transfer => transfer.gateway === activeGateway);
 
@@ -68,20 +75,11 @@ export const TransfersScreen: React.FC<TransfersScreenProps> = ({ onBack }) => {
       <div className="transfers-content">
         {/* Gateway Tabs */}
         <div className="gateway-tabs">
-          {gateways.map(gateway => (
-            <button
-              key={gateway}
-              className={`gateway-tab ${activeGateway === gateway ? 'active' : ''}`}
-              onClick={() => setActiveGateway(gateway)}
-            >
-              {gateway}
-              <span className="gateway-count">
-                {gateway === 'Gateway 1' ? '0' : 
-                 gateway === 'Gateway 2' ? '1' : 
-                 gateway === 'Gateway 3' ? '4' : '0'}
-              </span>
-            </button>
-          ))}
+          <SegmentedControl
+            items={gatewayItems}
+            activeItemId={activeGateway}
+            onItemClick={setActiveGateway}
+          />
         </div>
 
         {/* Transfers Section */}
@@ -133,8 +131,8 @@ export const TransfersScreen: React.FC<TransfersScreenProps> = ({ onBack }) => {
           ) : (
             <div className="empty-state-center">
               <EmptyState
-                imageName="NoTransfers"
-                title="No transfers"
+                imageName="NoActivity"
+                title="No data available"
                 description="No transfers available for this gateway."
                 customImage={undefined}
               />
