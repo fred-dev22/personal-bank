@@ -4,7 +4,7 @@ import type { Vault } from '../../../types/types';
 
 export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> = ({ vaultData, gatewayMode }) => {
   const [activeTab, setActiveTab] = useState('summary');
-  const isSuperVault = vaultData.type === 'super';
+  const isSuperVault = vaultData.type === 'super vault';
 
   // Détermine le nom à afficher
   const vaultName = gatewayMode ? 'Gateway' : (vaultData.name || 'Vault');
@@ -17,12 +17,50 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
 
   // Calculs pour Super Vault
   const parseCurrency = (val: string | number | undefined) => Number(String(val || '0').replace(/[^0-9.-]+/g, ''));
-  const creditLimit = parseCurrency(vaultData.debtLtv); // Traité comme montant pour l'instant
-  const reserve = parseCurrency(vaultData.reserve);
-  const hold = parseCurrency(vaultData.hold);
+  
+  // Calcul du credit limit basé sur le type
+  const getCreditLimit = () => {
+    if (!isSuperVault) return 0;
+    
+    const assetValue = Number(vaultData.amount) || 0;
+    const creditLimitValue = Number(vaultData.debtLtv) || 0;
+    const creditLimitType = vaultData.creditLimitType || 'percentage';
+    
+    if (creditLimitType === 'percentage') {
+      return (creditLimitValue / 100) * assetValue;
+    } else {
+      return creditLimitValue;
+    }
+  };
+  
+  const creditLimit = getCreditLimit();
+  
+  // Calcul des valeurs de reserve et hold basé sur leur type
+  const getReserveValue = () => {
+    if (!isSuperVault) return parseCurrency(vaultData.reserve);
+    
+    const reserveType = vaultData.reserve_type || 'amount';
+    if (reserveType === 'percentage') {
+      return (parseCurrency(vaultData.reserve) / 100) * creditLimit;
+    }
+    return parseCurrency(vaultData.reserve);
+  };
+  
+  const getHoldValue = () => {
+    if (!isSuperVault) return parseCurrency(vaultData.hold);
+    
+    const holdType = vaultData.hold_type || 'amount';
+    if (holdType === 'percentage') {
+      return (parseCurrency(vaultData.hold) / 100) * creditLimit;
+    }
+    return parseCurrency(vaultData.hold);
+  };
+  
+  const reserveValue = getReserveValue();
+  const holdValue = getHoldValue();
   const debtBalance = parseCurrency(vaultData.debtBalance);
-  const availableToLend = creditLimit - reserve - hold - debtBalance;
-  const cashValue = parseCurrency(vaultData.assetName);
+  const availableToLend = Math.max(0, creditLimit - reserveValue - holdValue - debtBalance);
+  const cashValue = Number(vaultData.amount) || 0;
   const equity = cashValue - debtBalance;
 
   return (
@@ -109,12 +147,12 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#b49d47', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#595959', flex: 1 }}>Hold</div>
-                  <div style={{ color: '#595959' }}>-${hold.toLocaleString()}</div>
+                  <div style={{ color: '#595959' }}>-${holdValue.toLocaleString()}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#ff7f50', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#595959', flex: 1 }}>Safety buffer</div>
-                  <div style={{ color: '#595959' }}>-${reserve.toLocaleString()}</div>
+                  <div style={{ color: '#595959' }}>-${reserveValue.toLocaleString()}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#595959', borderRadius: 5, marginRight: 8 }} />

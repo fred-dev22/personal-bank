@@ -8,6 +8,7 @@ import {
   CategoryScale,
   LinearScale,
 } from 'chart.js';
+import type { Vault } from '../../../types/types';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale);
 
@@ -16,26 +17,76 @@ interface VaultChartProps {
   reserve: number;
   hold: number;
   title?: string;
+  isSuperVault?: boolean;
+  debtBalance?: number;
+  vaultData?: Vault; // Pour accéder aux données du vault
 }
 
 export const VaultChart: React.FC<VaultChartProps> = ({ 
   totalAmount, 
   reserve, 
   hold, 
-  title = "Account balance" 
+  title = "Account balance",
+  isSuperVault = false,
+  debtBalance = 0,
+  vaultData
 }) => {
-  const available = Math.max(0, totalAmount - reserve - hold);
+  // Calculer le credit limit pour les Super Vaults
+  const getCreditLimit = () => {
+    if (!isSuperVault || !vaultData) return totalAmount;
+    
+    const assetValue = Number(vaultData.amount) || totalAmount;
+    const creditLimitValue = Number(vaultData.debtLtv) || 0;
+    const creditLimitType = vaultData.creditLimitType || 'percentage';
+    
+    if (creditLimitType === 'percentage') {
+      return (creditLimitValue / 100) * assetValue;
+    } else {
+      return creditLimitValue;
+    }
+  };
+  
+  const creditLimit = getCreditLimit();
+  
+  // Calculer les valeurs réelles de reserve et hold pour les Super Vaults
+  const getReserveValue = () => {
+    if (!isSuperVault || !vaultData) return reserve;
+    
+    const reserveType = vaultData.reserve_type || 'amount';
+    if (reserveType === 'percentage') {
+      return (reserve / 100) * creditLimit;
+    }
+    return reserve;
+  };
+  
+  const getHoldValue = () => {
+    if (!isSuperVault || !vaultData) return hold;
+    
+    const holdType = vaultData.hold_type || 'amount';
+    if (holdType === 'percentage') {
+      return (hold / 100) * creditLimit;
+    }
+    return hold;
+  };
+  
+  const reserveValue = getReserveValue();
+  const holdValue = getHoldValue();
+  
+  const available = isSuperVault 
+    ? Math.max(0, creditLimit - reserveValue - holdValue - Math.max(0, debtBalance))
+    : Math.max(0, totalAmount - reserve - hold);
   
   const data = {
-    labels: ['Available', 'Reserve', 'Hold'],
+    labels: isSuperVault ? ['Available', 'Safety buffer', 'Debt balance', 'Hold'] : ['Available', 'Reserve', 'Hold'],
     datasets: [
       {
-        data: [available, reserve, hold],
+        data: isSuperVault ? [available, reserveValue, Math.max(0, debtBalance), holdValue] : [available, reserve, hold],
         backgroundColor: [
           '#00B5AE', // Teal for Available
-          '#1B4A7B', // Dark blue for Reserve
-          '#B49D47', // Gold for Hold
-        ],
+          '#1B4A7B', // Dark blue for Reserve/Safety buffer
+          isSuperVault ? '#808080' : '#B49D47', // Grey for Debt balance, Gold for Hold
+          isSuperVault ? '#B49D47' : undefined, // Gold for Hold in Super Vault
+        ].filter(Boolean),
         borderWidth: 0,
         cutout: '60%',
       },
@@ -78,10 +129,10 @@ export const VaultChart: React.FC<VaultChartProps> = ({
       textAlign: 'center',
     }}>
       <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 8 }}>
-        ${totalAmount.toLocaleString()}
+        ${isSuperVault ? creditLimit.toLocaleString() : totalAmount.toLocaleString()}
       </div>
       <div style={{ color: '#595959', fontSize: 14, marginBottom: 16 }}>
-        {title}
+        {isSuperVault ? 'Credit limit' : title}
       </div>
       <div style={{ width: 240, height: 240, position: 'relative' }}>
         <Doughnut data={data} options={options} />
@@ -130,22 +181,51 @@ export const VaultChart: React.FC<VaultChartProps> = ({
             backgroundColor: '#1B4A7B' 
           }} />
           <span style={{ fontSize: 12, color: '#595959' }}>
-            Reserve: ${reserve.toLocaleString()}
+            {isSuperVault ? 'Safety buffer' : 'Reserve'}: ${isSuperVault ? reserveValue.toLocaleString() : reserve.toLocaleString()}
           </span>
         </div>
-        {hold > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', width: '100%' }}>
-            <div style={{ 
-              width: 12, 
-              height: 12, 
-              borderRadius: '50%', 
-              backgroundColor: '#B49D47' 
-            }} />
-            <span style={{ fontSize: 12, color: '#595959' }}>
-              Hold: ${hold.toLocaleString()}
-            </span>
-          </div>
-        )}
+                 {isSuperVault ? (
+                   <>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', width: '100%' }}>
+                       <div style={{ 
+                         width: 12, 
+                         height: 12, 
+                         borderRadius: '50%', 
+                         backgroundColor: '#808080' 
+                       }} />
+                       <span style={{ fontSize: 12, color: '#595959' }}>
+                         Debt balance: ${Math.max(0, debtBalance).toLocaleString()}
+                       </span>
+                     </div>
+                     {holdValue > 0 && (
+                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', width: '100%' }}>
+                         <div style={{ 
+                           width: 12, 
+                           height: 12, 
+                           borderRadius: '50%', 
+                           backgroundColor: '#B49D47' 
+                         }} />
+                         <span style={{ fontSize: 12, color: '#595959' }}>
+                           Hold: ${holdValue.toLocaleString()}
+                         </span>
+                       </div>
+                     )}
+                   </>
+                 ) : (
+                  hold > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', width: '100%' }}>
+                      <div style={{ 
+                        width: 12, 
+                        height: 12, 
+                        borderRadius: '50%', 
+                        backgroundColor: '#B49D47' 
+                      }} />
+                      <span style={{ fontSize: 12, color: '#595959' }}>
+                        Hold: ${hold.toLocaleString()}
+                      </span>
+                    </div>
+                  )
+                )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input } from '@jbaluch/components';
-import type { Vault } from '../../../types/types';
+import type { Vault, HoldReserveType } from '../../../types/types';
 import VaultChart from './VaultChart';
 
 export const StepReserve: React.FC<{
@@ -8,6 +8,7 @@ export const StepReserve: React.FC<{
   setVaultData: (data: Vault) => void;
   validationErrors?: {[key: string]: string};
 }> = ({ vaultData, setVaultData, validationErrors = {} }) => {
+  const isSuperVault = vaultData.type === 'super vault';
   return (
     <div style={{
       display: 'flex',
@@ -50,20 +51,54 @@ export const StepReserve: React.FC<{
               <span style={{ color: '#b50007', fontWeight: 700 }}>*</span>
               <span style={{ color: '#595959', fontWeight: 600 }}>Reserve</span>
             </div>
-                         <Input
-               value={vaultData.reserve ?? ''}
-               onChange={(value: string) => setVaultData({ ...vaultData, reserve: value === '' ? undefined : Number(value) })}
-               placeholder="$1,000.00"
-               style={{ width: '100%' }}
-               required
-               type="currency"
-               error={validationErrors.reserve}
-             />
-             {validationErrors.reserve && (
-               <div style={{ color: '#b50007', fontSize: 12, marginTop: 4 }}>
-                 {validationErrors.reserve}
-               </div>
-             )}
+            {isSuperVault ? (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ width: '20%' }}>
+                  <select
+                    value={vaultData.reserve_type || 'amount'}
+                    onChange={(e) => setVaultData({ ...vaultData, reserve_type: e.target.value as HoldReserveType })}
+                    style={{
+                      width: '100%',
+                      height: '40px',
+                      padding: '8px 12px',
+                      border: '1px solid #ddd',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      backgroundColor: 'white'
+                    }}
+                  >
+                    <option value="amount">$</option>
+                    <option value="percentage">%</option>
+                  </select>
+                </div>
+                <div style={{ width: '80%' }}>
+                  <Input
+                    value={vaultData.reserve ?? ''}
+                    onChange={(value: string) => setVaultData({ ...vaultData, reserve: value === '' ? undefined : Number(value) })}
+                    placeholder="10.00"
+                    style={{ height: '40px' }}
+                    required
+                    type={vaultData.reserve_type === 'percentage' ? "percentage" : "currency"}
+                    error={validationErrors.reserve}
+                  />
+                </div>
+              </div>
+            ) : (
+              <Input
+                value={vaultData.reserve ?? ''}
+                onChange={(value: string) => setVaultData({ ...vaultData, reserve: value === '' ? undefined : Number(value) })}
+                placeholder="$1,000.00"
+                style={{ width: '100%' }}
+                required
+                type="currency"
+                error={validationErrors.reserve}
+              />
+            )}
+            {validationErrors.reserve && (
+              <div style={{ color: '#b50007', fontSize: 12, marginTop: 4 }}>
+                {validationErrors.reserve}
+              </div>
+            )}
           </div>
         </form>
       </div>
@@ -80,6 +115,9 @@ export const StepReserve: React.FC<{
           reserve={Number(vaultData.reserve) || 0}
           hold={0}
           title="Account balance"
+          isSuperVault={isSuperVault}
+          debtBalance={Number(vaultData.debtBalance) || 0}
+          vaultData={vaultData}
         />
       </div>
     </div>

@@ -97,7 +97,9 @@ export type AccountCategory =
   | 'Insurance';
 
 export type AnnualFeesType = 'Percentage' | 'Amount';
-export type CreditLimitType = 'Percentage' | 'Amount';
+export type CreditLimitType = 'amount' | 'percentage';
+export type HoldReserveType = 'amount' | 'percentage';
+export type VaultType = 'cash vault' | 'super vault';
 export type FinancialClass = 'Assets' | 'Liabilities';
 export type InterestRateType = 'fixed' | 'variable';
 export type LoanType = 'Revolving' | 'Amortized: Due-Date' | 'Interest-only';
@@ -302,9 +304,9 @@ export interface Vault {
     };
     nickname?: string;
     hold?: number;
-    hold_type?: 'amount' | 'percentage';
+    hold_type?: HoldReserveType;
     reserve?: number;
-    reserve_type?: 'amount' | 'percentage';
+    reserve_type?: HoldReserveType;
     comments?: string;
     liquidity_source_id?: string;
     is_gateway?: boolean;
@@ -322,7 +324,7 @@ export interface Vault {
     income_issue_count?: number;
     is_ltv_issue_count?: 'yes' | 'no';
     arbitrary_text?: string;
-    type?: string;
+    type?: VaultType;
     payment_projection?: PaymentProjection;
     available_for_lending_amount?: number | string;
     spread?: number | string;
@@ -344,7 +346,7 @@ export interface Vault {
     interestRate?: string;
     accountType?: string;
     expenseRate?: string;
-    creditLimitType?: string;
+    creditLimitType?: CreditLimitType;
     created_date?: string;
     modified_date?: string;
 }

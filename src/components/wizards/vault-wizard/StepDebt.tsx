@@ -1,12 +1,16 @@
 import React from 'react';
 import { Input } from '@jbaluch/components';
-import type { Vault } from '../../../types/types';
+import type { Vault, CreditLimitType } from '../../../types/types';
 
 export const StepDebt: React.FC<{
   vaultData: Vault;
   setVaultData: (data: Vault) => void;
   validationErrors?: {[key: string]: string};
 }> = ({ vaultData, setVaultData, validationErrors = {} }) => {
+  // Calculer l'Equity en soustrayant le debt balance de la valeur totale de l'asset
+  const assetValue = Number(vaultData.amount) || 30000;
+  const debtBalance = Number(vaultData.debtBalance) || 0;
+  const equity = assetValue - debtBalance;
   return (
     <div style={{ padding: '32px 0' }}>
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -54,11 +58,11 @@ export const StepDebt: React.FC<{
               <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
                 Credit limit <span style={{ color: 'red' }}>*</span>
               </label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <div style={{ width: '30%' }}>
-                  <select
-                    value={vaultData.creditLimitType || '%'}
-                    onChange={(e) => setVaultData({ ...vaultData, creditLimitType: e.target.value })}
+                             <div style={{ display: 'flex', gap: 8 }}>
+                 <div style={{ width: '20%' }}>
+                   <select
+                                         value={vaultData.creditLimitType || 'percentage'}
+                    onChange={(e) => setVaultData({ ...vaultData, creditLimitType: e.target.value as CreditLimitType })}
                     style={{
                       width: '100%',
                       height: '40px',
@@ -69,17 +73,17 @@ export const StepDebt: React.FC<{
                       backgroundColor: 'white'
                     }}
                   >
-                    <option value="%">%</option>
-                    <option value="$">$</option>
+                    <option value="percentage">%</option>
+                    <option value="amount">$</option>
                   </select>
                 </div>
-                <div style={{ width: '70%' }}>
-                  <Input
+                                 <div style={{ width: '80%' }}>
+                   <Input
                     placeholder="Enter credit limit"
                     value={vaultData.debtLtv || '90.00'}
                     onChange={(value: string) => setVaultData({ ...vaultData, debtLtv: value })}
                     error={validationErrors.debtLtv}
-                    type={vaultData.creditLimitType === '$' ? 'currency' : 'percentage'}
+                                         type={vaultData.creditLimitType === 'amount' ? 'currency' : 'percentage'}
                     style={{ height: '40px' }}
                   />
                 </div>
@@ -92,38 +96,47 @@ export const StepDebt: React.FC<{
 
           {/* Right Section - Summary Information */}
           <div style={{ flex: 1, maxWidth: 400 }}>
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#000' }}>$30,000.00</div>
-              <div style={{ fontSize: 14, color: '#666' }}>Equity</div>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <div style={{
-                border: '1px solid #ddd',
-                borderRadius: 8,
-                padding: 16,
-                backgroundColor: '#fff'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 16 }}>Cash Value</div>
-                    <div style={{ fontSize: 12, color: '#666' }}>Asset</div>
+            {/* Conteneur blanc unique pour Equity et les deux blocs */}
+            <div style={{
+              backgroundColor: '#fff',
+              borderRadius: 8,
+              padding: 16,
+              border: '1px solid #ddd'
+            }}>
+                             {/* Equity en haut à gauche */}
+               <div style={{ marginBottom: 16 }}>
+                 <div style={{ fontSize: 24, fontWeight: 700, color: '#000' }}>${equity.toLocaleString()}</div>
+                 <div style={{ fontSize: 12, color: '#666' }}>Equity</div>
+               </div>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  padding: 16,
+                  backgroundColor: '#fff'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 16 }}>Cash Value</div>
+                      <div style={{ fontSize: 12, color: '#666' }}>Asset</div>
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: 16 }}>$30,000.00</div>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: 16 }}>$30,000.00</div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <div style={{
-                border: '2px solid #008080',
-                borderRadius: 8,
-                padding: 16,
-                backgroundColor: '#f0f8f8'
-              }}>
-                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Line-of-Credit</div>
-                <div style={{ fontSize: 14, color: '#666' }}>
-                  i.e. home equity loan, margin loan, personal line of credit, etc.
+              <div>
+                <div style={{
+                  border: '2px solid #008080',
+                  borderRadius: 8,
+                  padding: 16,
+                  backgroundColor: '#f0f8f8',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8, textAlign: 'center' }}>Line-of-Credit</div>
+                  <div style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
+                    i.e. home equity loan, margin loan, personal line of credit, etc.
+                  </div>
                 </div>
               </div>
             </div>
