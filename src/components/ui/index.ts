@@ -1,2 +1,2 @@
-export { SegmentedControl } from './SegmentedControl';
-export type { SegmentedControlItem } from './SegmentedControl'; 
+export * from './SegmentedControl';
+export * from './TabNavigation'; 

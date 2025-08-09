@@ -263,7 +263,7 @@ const PersonalBankContent: React.FC = () => {
         onSignOut={handleSignOut}
         onToggleCollapse={handleToggleCollapse}
       />
-      <div className="content-container">
+      <div className="contentContainer">
         {currentPage === 'overview' && <Overview vaults={vaults} onAddVault={handleAddVault} onShowGatewayWizard={handleShowGatewayWizard} onAddLoan={() => setShowLoanWizard(true)} onVaultDetails={handleShowVaultDetails} />}
         {currentPage === 'loans' && (
           <Loans

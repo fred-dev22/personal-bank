@@ -1,8 +1,7 @@
 import React from 'react';
 import './addBorrower.css';
 import { Button, Input, CloseButton } from "@jbaluch/components";
-import { SegmentedControl } from '../ui';
-import type { SegmentedControlItem } from '../ui';
+import { TabNavigation } from '../ui/TabNavigation';
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
 import type { Borrower } from '../../types/types';
@@ -64,9 +63,9 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
   });
   const [selectedPhoto, setSelectedPhoto] = React.useState<string | null>(null);
 
-  const borrowerTypeItems: SegmentedControlItem[] = [
-    { id: 'person', label: 'Person', count: 0 },
-    { id: 'institution', label: 'Institution', count: 0 }
+  const borrowerTypeItems = [
+    { id: 'person', label: 'Person' },
+    { id: 'institution', label: 'Institution' }
   ];
 
   const handleInputChange = (field: keyof Borrower, value: string | number | string[]): void => {
@@ -196,10 +195,10 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
 
       {/* Person/Institution Toggle */}
       <div className="add-borrower__toggle-section">
-        <SegmentedControl
-          items={borrowerTypeItems}
-          activeItemId={borrowerType}
-          onItemClick={handleTypeChange}
+        <TabNavigation
+          tabs={borrowerTypeItems}
+          activeTabId={borrowerType}
+          onTabChange={handleTypeChange}
         />
       </div>
 
@@ -222,7 +221,18 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
               name="change-photo"
               form=""
               ariaLabel="Change photo"
-              width="106px"
+              style={{
+                width: '154px',
+                height: '36px',
+                borderRadius: '18px',
+                border: '1px solid #DFDFE6',
+                padding: '6px 16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                fontFamily: 'DM Sans, Arial, sans-serif',
+                color: '#23263B',
+                backgroundColor: '#FFFFFF'
+              }}
             >
               Change Photo
             </Button>
@@ -346,7 +356,51 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
             </div>
           </>
         )}
+
+        {/* Archive Section - Only show in edit mode */}
+        {mode === 'edit' && (
+          <div className="add-borrower__archive-section">
+            <div className="add-borrower__archive-content">
+              <div className="add-borrower__archive-text">
+                <h3 className="add-borrower__archive-title">Archive borrower</h3>
+                <p className="add-borrower__archive-description">
+                  Remove from view but keep historical data.
+                </p>
+              </div>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  // Handle archive functionality
+                  console.log('Archive borrower clicked');
+                }}
+                style={{
+                  border: '1px solid #DFDFE6',
+                  color: '#B50007',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '18px',
+                  padding: '6px 16px',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  fontFamily: 'DM Sans, Arial, sans-serif',
+                  lineHeight: '24px',
+                  letterSpacing: '0%',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  width: '99px',
+                  height: '36px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                Archive
+              </a>
+            </div>
+          </div>
+        )}
       </div>
+
       <div className="modal-footer">
         <Button
           icon="iconless"

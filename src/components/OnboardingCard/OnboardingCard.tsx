@@ -135,7 +135,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
       <div className="onboarding-card">
         <div className="onboarding-main-row onboarding-frame-row">
           {/* Progress column */}
-          <div className="onboarding-progress-col" style={{ width: 350, minWidth: 350, maxWidth: 350 }}>
+          <div className="onboarding-progress-col">
             <div className="onboarding-progress-title">Bank setup</div>
             <ul className="onboarding-progress-list">
               {steps.map((s, idx) => (
@@ -149,31 +149,33 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                     padding: '16px 12px',
                     background: idx === currentStepIdx ? '#EEEFF2' : 'transparent',
                     borderRadius: 8,
-                    marginBottom: 4
+                    marginBottom: 4,
+                    minWidth: 0, // Allow shrinking
+                    width: '100%'
                   }}
                 >
-                  <span className="onboarding-progress-icon" style={{ marginRight: 16, display: 'flex', alignItems: 'center' }}>
+                  <span className="onboarding-progress-icon" style={{ marginRight: 16, display: 'flex', alignItems: 'center', flexShrink: 0 }}>
                     <img src={s.icon} alt="" style={{ width: 20, height: 20 }} />
                   </span>
-                  <span className="onboarding-progress-label" style={{ flex: 1, fontWeight: idx === currentStepIdx ? 700 : 500, color: idx < currentStepIdx ? '#b0b0b0' : '#23263B', textDecoration: idx < currentStepIdx ? 'line-through' : 'none' }}>
+                  <span className="onboarding-progress-label" style={{ flex: 1, fontWeight: idx === currentStepIdx ? 700 : 500, color: idx < currentStepIdx ? '#b0b0b0' : '#23263B', textDecoration: idx < currentStepIdx ? 'line-through' : 'none', minWidth: 0, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                     {s.label}
                   </span>
                   {idx < currentStepIdx && (
-                    <span className="onboarding-progress-check" style={{ marginLeft: 16 }}>
+                    <span className="onboarding-progress-check" style={{ marginLeft: 16, flexShrink: 0 }}>
                       <img src={doneIcon} alt="done" style={{ width: 20, height: 20 }} />
                     </span>
                   )}
                   {(idx === currentStepIdx || idx > currentStepIdx) && (
-                    <span style={{ marginLeft: 16, width: 20, height: 20, borderRadius: 10, background: '#DFDFE6', display: 'inline-block' }} />
+                    <span style={{ marginLeft: 16, width: 20, height: 20, borderRadius: 10, background: '#DFDFE6', display: 'inline-block', flexShrink: 0 }} />
                   )}
                 </li>
               ))}
             </ul>
           </div>
           {/* Step content */}
-          <div className="div onboarding-step-content">
+          <div className="onboarding-step-content">
             {step === 'bank-name' && (
-              <div>
+              <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                 <div className="step-title">Name your bank</div>
                 <div className="step-desc">Give your bank a name. You can change this later under Settings.</div>
                 <div className="step-input-container">
@@ -189,7 +191,6 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                     onMouseEnter={() => {}}
                     onMouseLeave={() => {}}
                     type="primary"
-                    style={{ minWidth: 120 }}
                     onClick={handleNextStep}
                     disabled={!bankName}
                   >
@@ -199,7 +200,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               </div>
             )}
             {step === 'setup-gateway' && (
-              <div>
+              <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                 <div className="step-title">Setup the gateway</div>
                 <div className="step-desc">The Gateway is a bank account that acts as the entrance to the bank. All money flows into and out of it. No account yet? No problem, we can proceed as if you do.</div>
                 <Button
@@ -214,7 +215,6 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                   onMouseEnter={() => {}}
                   onMouseLeave={() => {}}
                   type="primary"
-                  style={{ minWidth: 120 }}
                   onClick={onShowGatewayWizard}
                 >
                   Setup Gateway
@@ -222,7 +222,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               </div>
             )}
             {step === 'add-vault' && (
-              <div>
+              <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                 <div className="step-title">Add your vaults</div>
                 <div className="step-desc">A vault is a secure space for both storing and leveraging your money. This allows the same dollars to be in two places at once. You must add a vault before you can add or upload loans.</div>
                 <Button
@@ -237,7 +237,6 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                   onMouseEnter={() => {}}
                   onMouseLeave={() => {}}
                   type="primary"
-                  style={{ minWidth: 120 }}
                   onClick={handleAddVaultClick}
                 >
                   Add Vault
@@ -254,7 +253,6 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                   onMouseEnter={() => {}}
                   onMouseLeave={() => {}}
                   type="secondary"
-                  style={{ minWidth: 120 }}
                   onClick={nextStep}
                 >
                   Next Step
@@ -262,7 +260,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               </div>
             )}
             {step === 'add-loan' && (
-              <div>
+              <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                 <div className="step-title">Upload your loans</div>
                 <div className="step-desc">Loans make income for your bank. You re-lend the payments to build wealth. Funding loans with the right kind of vault builds it faster.</div>
                 <Button
@@ -277,7 +275,6 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                   onMouseEnter={() => {}}
                   onMouseLeave={() => {}}
                   type="primary"
-                  style={{ minWidth: 120 }}
                   onClick={() => { }}
                 >
                   Bulk Upload
@@ -294,7 +291,6 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                   onMouseEnter={() => {}}
                   onMouseLeave={() => {}}
                   type="secondary"
-                  style={{ minWidth: 120 }}
                   onClick={onAddLoan}
                 >
                   Add New Loan

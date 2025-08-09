@@ -3,6 +3,9 @@
   background-color: white;
   font-family: "DM Sans", Arial, sans-serif;
   min-width: 413px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 /* Header */
@@ -124,7 +127,8 @@
 /* Form */
 .add-borrower__form {
   padding: 48px 24px 0 24px;
-  padding-bottom: 84px; /* 36px (hauteur) + 24px (padding) + 24px (padding) */
+  flex: 1;
+  overflow-y: auto;
 }
 
 .add-borrower__input-group {
@@ -200,21 +204,7 @@
   box-shadow: 0 0 0 3px rgba(0, 181, 174, 0.1);
 }
 
-/* Buttons */
-.add-borrower__buttons {
-  border-top: 1px solid #f0f0f1;
-  padding: 24px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: white;
-  height: 36px;
-  z-index: 10;
-}
+/* Buttons - Removed old fixed positioning styles */
 
 .add-borrower__btn {
   padding: 12px 24px;
@@ -261,4 +251,42 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* Archive Section */
+.add-borrower__archive-section {
+  margin: 32px 0 0 0;
+  padding: 16px 20px;
+  background-color: #F8F9FA;
+  border-radius: 8px;
+  box-shadow: 
+    0px -0.5px 0px 0px rgba(255, 255, 255, 0.5),
+    0px 0px 0px 0.5px rgba(0, 0, 0, 0.05);
+}
+
+.add-borrower__archive-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.add-borrower__archive-text {
+  flex: 1;
+}
+
+.add-borrower__archive-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0D1728;
+  font-family: "DM Sans", Arial, sans-serif;
+}
+
+.add-borrower__archive-description {
+  margin: 0;
+  font-size: 14px;
+  color: #595959;
+  font-family: "DM Sans", Arial, sans-serif;
+  line-height: 1.4;
 }
