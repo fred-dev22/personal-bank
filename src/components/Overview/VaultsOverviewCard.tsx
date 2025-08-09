@@ -69,6 +69,16 @@ export const VaultsOverviewCard: React.FC<VaultsOverviewCardProps> = ({
     );
   }
 
+  // Trier les vaults par date (plus récent en premier)
+  const sortedVaults = [...vaults].sort((a, b) => {
+    // Utiliser modified_date en priorité, sinon created_date
+    const dateA = new Date(a.modified_date || a.created_date || '1970-01-01');
+    const dateB = new Date(b.modified_date || b.created_date || '1970-01-01');
+    
+    // Tri décroissant (plus récent en premier)
+    return dateB.getTime() - dateA.getTime();
+  });
+
   return (
     <div className="vaults-overview-container">
       <h3 className="vaults-overview-card__title">Vaults</h3>
@@ -77,7 +87,7 @@ export const VaultsOverviewCard: React.FC<VaultsOverviewCardProps> = ({
         <div className="vaults-overview-card__content">
           {/* Vaults List */}
           <div className="vaults-overview-card__list">
-            {vaults.map((vault) => (
+            {sortedVaults.map((vault) => (
               <div 
                 key={vault.id}
                 className={`vaults-overview-card__vault-item ${selectedVaultId === vault.id ? 'selected' : ''}`}
@@ -87,9 +97,9 @@ export const VaultsOverviewCard: React.FC<VaultsOverviewCardProps> = ({
                   <span className="vaults-overview-card__vault-name">
                     {vault.name || vault.nickname || 'Unnamed Vault'}
                   </span>
-                  {vault.issues > 0 && (
+                  {(vault.issues || 0) > 0 && (
                     <span className="vaults-overview-card__vault-issues">
-                      {vault.issues} issue{vault.issues > 1 ? 's' : ''}
+                      {vault.issues} issue{(vault.issues || 0) > 1 ? 's' : ''}
                     </span>
                   )}
                 </div>

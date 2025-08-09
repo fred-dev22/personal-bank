@@ -51,6 +51,8 @@ interface VaultDetailsProps {
   onBack: () => void;
   onShowLoanDetails?: (loanId: string) => void;
   onAddLoan?: () => void;
+  onVaultUpdate?: (updatedVault: Vault) => void;
+  onEditVault?: (vault: Vault) => void;
 }
 
 export const VaultDetails: React.FC<VaultDetailsProps> = ({
@@ -60,10 +62,18 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   activities,
   onBack,
   onShowLoanDetails,
-  onAddLoan
+  onAddLoan,
+  onVaultUpdate,
+  onEditVault
 }) => {
   const [activeTab, setActiveTab] = useState("summary");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleSetupVault = (vault: Vault) => {
+    if (onEditVault) {
+      onEditVault(vault);
+    }
+  };
 
   const vaultLoans = loans.filter(
     (loan) => loan.vault_id === vault.id || loan.vaultId === vault.id
@@ -98,9 +108,57 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
     type: a.type,
   }));
 
+  // Fonction pour obtenir le vrai balance depuis l'account associé
+  const getRealBalance = () => {
+    // Pour Cash Vault et Gateway, utiliser le balance de l'account associé
+    if ((vault.type === 'cash vault' || vault.is_gateway) && vault.accounts_json && vault.accounts_json.length > 0) {
+      const cashAccount = vault.accounts_json.find(acc => 
+        acc.type === 'Savings' || acc.type === 'Cash' || vault.accounts_json!.length === 1
+      ) || vault.accounts_json[0];
+      
+      return cashAccount?.balance || 0;
+    }
+    
+    // Pour Super Vault, calculer le credit limit
+    if (vault.type === 'super vault' && vault.accounts_json && vault.accounts_json.length > 0) {
+      const assetAccount = vault.accounts_json.find(acc => acc.nickname === 'Asset super vault');
+      const debtAccount = vault.accounts_json.find(acc => acc.nickname === 'Debt');
+      
+      const assetValue = assetAccount?.balance || 0;
+      const creditLimitValue = debtAccount?.credit_limit || 0;
+      const creditLimitType = debtAccount?.credit_limit_type || 'percentage';
+      
+      let creditLimit = 0;
+      if (creditLimitType === 'percentage') {
+        creditLimit = (creditLimitValue / 100) * assetValue;
+      } else {
+        creditLimit = creditLimitValue;
+      }
+      
+      console.log('Super Vault Credit Limit calculation:', {
+        assetValue,
+        creditLimitValue,
+        creditLimitType,
+        creditLimit
+      });
+      
+      return creditLimit;
+    }
+    
+    // Fallback sur vault.balance
+    return vault.balance ?? 0;
+  };
+
   const renderSummaryContent = () => {
     // Debug: afficher le type du vault
     console.log('Vault type:', vault.type, 'Is gateway:', vault.is_gateway, 'Vault:', vault);
+    
+    const realBalance = getRealBalance();
+    console.log('Real balance calculation:', {
+      vaultBalance: vault.balance,
+      realBalance,
+      accountsJson: vault.accounts_json
+    });
     
     // Gateway : Transfers + VaultFinancials
     if (vault.is_gateway) {
@@ -108,11 +166,12 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
         <>
           <Transfers />
           <VaultFinancials
-            balance={vault.balance ?? 0}
+            balance={realBalance}
             held={vault.hold ?? 0}
             reserve={vault.reserve ?? 0}
             pending={0}
             available={availableToLend}
+            balanceLabel="Balance" // Label par défaut pour Gateway
           />
         </>
       );
@@ -122,11 +181,12 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
     if (vault.type === 'cash vault' || !vault.type) {
       return (
         <VaultFinancials
-          balance={vault.balance ?? 0}
+          balance={realBalance}
           held={vault.hold ?? 0}
           reserve={vault.reserve ?? 0}
           pending={0}
           available={availableToLend}
+          balanceLabel="Balance" // Label par défaut pour Cash Vault
         />
       );
     }
@@ -364,11 +424,12 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
           </div>
 
           <VaultFinancials
-            balance={vault.balance ?? 0}
+            balance={realBalance}
             held={vault.hold ?? 0}
             reserve={vault.reserve ?? 0}
             pending={0}
             available={availableToLend}
+            balanceLabel="Credit limit" // Label spécifique pour Super Vault
           />
         </div>
       );
@@ -549,7 +610,14 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
         open={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         vault={vault}
+        onSetupVault={handleSetupVault}
+        onSave={(updatedData) => {
+          if (onVaultUpdate) {
+            onVaultUpdate({ ...vault, ...updatedData });
+          }
+        }}
       />
+      
     </div>
   );
 };
