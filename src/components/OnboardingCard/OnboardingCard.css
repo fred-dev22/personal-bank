@@ -5,34 +5,52 @@
   background: #ffffffa6;
   border-radius: 8px;
   box-shadow: 0 2px 8px #eeeef2;
+  overflow: hidden; /* Prevent horizontal overflow */
 }
 .onboarding-main-row {
   display: flex;
   flex-direction: row;
   gap: 32px;
+  min-width: 0; /* Allow flex items to shrink below content size */
+  width: 100%;
 }
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+  .onboarding-main-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .onboarding-progress-col {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    padding: 24px 16px;
+  }
+  
+  .onboarding-step-content {
+    padding: 24px 20px;
+  }
+}
+
 .page-toolbar .title {
   font-size: 2rem;
   font-weight: bold;
   color: #0d1728;
 }
-.div {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
 .step-title {
   color: var(--text-primary, #0D1728);
-
-/* Subtitles/Subtitle 1 */
-font-family: "DM Sans";
-font-size: 22px;
-font-style: normal;
-font-weight: 600;
-line-height: 30px; /* 136.364% */
-max-width: 100%;
-overflow-wrap: break-word;
-word-break: break-word;
+  font-family: "DM Sans";
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 30px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin-bottom: 8px; /* Add spacing */
 }
 .step-desc {
   color: var(--text-secondary, #595959);
@@ -40,47 +58,55 @@ word-break: break-word;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 20px; /* 142.857% */
-  padding-top: 36px;
-  padding-bottom: 28px;
-  /* Prevent text overflow */
-  max-width: 350px;
+  line-height: 20px;
+  padding-top: 16px; /* Reduced from 36px */
+  padding-bottom: 24px; /* Reduced from 28px */
+  max-width: 100%;
   overflow-wrap: break-word;
   word-break: break-word;
   white-space: normal;
   width: 100%;
   box-sizing: border-box;
+  margin-bottom: 16px; /* Add bottom margin */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .step-desc {
+    padding-top: 12px;
+    padding-bottom: 20px;
+  }
 }
 
 @media (max-width: 600px) {
+  .onboarding-step-content {
+    padding: 20px 16px; /* Further reduced padding */
+  }
+  
   .step-desc {
     max-width: 100%;
+    padding-top: 12px;
+    padding-bottom: 16px;
+    font-size: 13px; /* Slightly smaller font */
+    line-height: 18px;
+  }
+  
+  .step-title {
+    font-size: 20px;
+    line-height: 28px;
   }
 }
-.step-input {
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  max-width: 200px;
-}
-.step-btn {
-  background: #00b5ae;
-  color: #fff;
-  border: none;
-  border-radius: 18px;
-  padding: 8px 24px;
-  margin-right: 8px;
-  cursor: pointer;
-  font-weight: 500;
-}
+
 .onboarding-frame-row {
   display: flex;
   flex-direction: row;
   width: 100%;
+  min-width: 0; /* Allow shrinking */
 }
 .onboarding-progress-col {
-  flex: 0 0 200px;
-  max-width: 240px;
+  flex: none !important;
+  min-width: 0; /* Allow shrinking */
+  max-width: 320px; /* Increased to accommodate longer text */
   background: #fff;
   border-radius: 8px 0 0 8px;
   padding: 32px 16px 32px 24px;
@@ -89,10 +115,33 @@ word-break: break-word;
   align-items: flex-start;
   box-shadow: 1px 0 0 #eeeef2;
 }
+
+/* Progress list styles */
+.onboarding-progress-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.onboarding-progress-item {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onboarding-progress-label {
+  /* Remove text truncation, allow full text display */
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
 .onboarding-step-content {
   flex: 1 1 0;
-  min-width: 0;
-  width: 100%;
+  min-width: 0; /* Allow shrinking */
   flex-shrink: 1;
   padding: 32px 32px 32px 40px;
   display: flex;
@@ -100,26 +149,58 @@ word-break: break-word;
   justify-content: center;
   overflow-wrap: break-word;
   word-break: break-word;
-  max-width: 100%;
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to visible */
+  box-sizing: border-box;
 }
-.fit-content-btn {
-  width: fit-content;
-  min-width: 0;
+
+/* Ensure content doesn't get cut off */
+.onboarding-step-content > div {
+  width: 100%;
   max-width: 100%;
-} 
+  box-sizing: border-box;
+}
+
+/* Override any global .div styles that might be causing issues */
+.onboarding-step-content .div {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
+  align-items: stretch !important; /* Override flex-start */
+  position: static !important; /* Override relative */
+}
+
+.step-title {
+  color: var(--text-primary, #0D1728);
+  font-family: "DM Sans";
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 30px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin-bottom: 8px; /* Add spacing */
+}
+
 .step-input-container {
   display: flex;
   flex-direction: row;
   gap: 28px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
+
+@media (max-width: 600px) {
+  .step-input-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
 .onboarding-progress-title{
   color: var(--text-text, #000);
-
-/* Subtitles/Subtitle 2 */
-font-family: "DM Sans";
-font-size: 16px;
-font-style: normal;
-font-weight: 600;
-line-height: 21px; /* 131.25% */
+  font-family: "DM Sans";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 21px; /* 131.25% */
 }

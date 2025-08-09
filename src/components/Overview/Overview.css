@@ -8,6 +8,7 @@
   max-width: 100%;
   box-sizing: border-box;
 }
+
 .page-toolbar {
   align-items: center;
   align-self: stretch;
@@ -17,13 +18,15 @@
   position: relative;
   width: 100%;
 }
+
 .title-parent {
   align-items: flex-start;
-  display: inline-flex;
-  flex: 0 0 auto;
+  display: flex;
   flex-direction: column;
   position: relative;
+  width: 100%;
 }
+
 .title {
   color: #0d1728;
   font-size: 2rem;
@@ -33,6 +36,7 @@
   white-space: nowrap;
   width: fit-content;
 }
+
 .subtitle {
   color: #595959;
   font-size: 1rem;
@@ -40,6 +44,7 @@
   white-space: nowrap;
   width: fit-content;
 }
+
 .div {
   display: flex;
   flex-direction: column;
@@ -48,6 +53,7 @@
   max-width: 100%;
   box-sizing: border-box;
 }
+
 .upcoming {
   display: flex;
   flex-direction: column;
@@ -56,14 +62,18 @@
   max-width: 100%;
   box-sizing: border-box;
 }
+
 .div-wrapper {
   padding: 8px 16px;
   border-radius: 4px;
+  width: 100%;
 }
+
 .text-wrapper {
   font-weight: bold;
   color: #0d1728;
 }
+
 .row {
   display: flex;
   gap: 24px;
@@ -71,34 +81,43 @@
   max-width: 100%;
   box-sizing: border-box;
 }
+
 .overview-actions {
   flex: 1;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px;
+  width: 100%;
 }
+
 .text-wrapper-2 {
   font-weight: bold;
   margin-bottom: 16px;
 }
+
 .div-2 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 }
+
 .overview-actions-row,
 .overview-actions-row-2,
 .overview-actions-row-3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
+
 .div-3 {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .notification-badge {
   background-color: #00b894;
   color: white;
@@ -120,6 +139,7 @@
 .text-wrapper-3 {
   color: #595959;
 }
+
 .tag {
   background-color: #fff2f0;
   color: #ff4d4f;
@@ -127,6 +147,7 @@
   border-radius: 4px;
   font-size: 0.875rem;
 }
+
 .button {
   background-color: #1890ff;
   color: white;
@@ -135,25 +156,32 @@
   padding: 8px 16px;
   cursor: pointer;
 }
+
 .action-button {
   font-weight: 500;
 }
+
 .upcoming-tasks {
   flex: 1;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px;
+  width: 100%;
 }
+
 .top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  width: 100%;
 }
+
 .title-2 {
   font-weight: bold;
 }
+
 .icon-button {
   width: 32px;
   height: 32px;
@@ -164,38 +192,46 @@
   border-radius: 50%;
   cursor: pointer;
 }
+
 .add-wrapper {
   width: 16px;
   height: 16px;
   position: relative;
 }
+
 .add::before,
 .add::after {
   content: '';
   position: absolute;
   background-color: #595959;
 }
+
 .add::before {
   width: 16px;
   height: 2px;
   top: 7px;
   left: 0;
 }
+
 .add::after {
   width: 2px;
   height: 16px;
   top: 0;
   left: 7px;
 }
+
 .text-wrapper-5 {
   color: #8c8c8c;
   font-style: italic;
 }
+
 .vault-summary {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
+
 .row-2 {
   display: flex;
   gap: 24px;
@@ -203,32 +239,42 @@
   max-width: 100%;
   box-sizing: border-box;
 }
+
 .vault-financials {
   flex: 1;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px;
+  width: 100%;
 }
+
 .vault-card-row-wrapper {
   margin-bottom: 16px;
+  width: 100%;
 }
+
 .vault-card-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #e0e0e0;
+  width: 100%;
 }
+
 .table-cell {
   flex: 1;
 }
+
 .label-2 {
   font-weight: 500;
 }
+
 .metric-tag-wrapper {
   margin: 0 16px;
 }
+
 .metric-tag {
   background-color: #fff2f0;
   color: #ff4d4f;
@@ -236,19 +282,24 @@
   border-radius: 4px;
   font-size: 0.875rem;
 }
+
 .table-cell-2 {
   text-align: right;
 }
+
 .label-3 {
   font-weight: 500;
   color: #0d1728;
 }
+
 .vault-financials-2 {
   background: transparent;
   border: none;
   box-shadow: none;
   padding: 0;
+  width: 100%;
 }
+
 .button-2 {
   display: flex;
   align-items: center;
@@ -261,6 +312,7 @@
   padding: 0;
   margin-bottom: 16px;
 }
+
 .button-2.tab-selected {
   border: 2px solid #fff;
   border-radius: 20px;
@@ -270,6 +322,7 @@
   font-size: 1rem;
   padding: 6px 24px;
 }
+
 .arrow-back-ios {
   width: 16px;
   height: 16px;
@@ -277,40 +330,52 @@
   border-width: 0 2px 2px 0;
   transform: rotate(135deg);
 }
+
 .div-4 {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
 }
+
 .div-5,
 .div-8 {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
+
 .text-wrapper-6 {
   font-weight: bold;
   color: #0d1728;
 }
+
 .div-6,
 .div-9 {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
+
 .div-7 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
+
 .text-wrapper-7 {
   font-weight: 500;
   color: #0d1728;
 }
+
 .text-wrapper-8 {
   font-weight: 500;
   color: #52c41a;
 }
+
 .action-btn {
   min-width: 120px;
   max-width: 120px;
@@ -319,31 +384,38 @@
   align-items: center;
   box-sizing: border-box;
 }
+
 .vault-financials-amount {
   color: #23305e;
   font-weight: 500;
   font-size: 1.1rem;
 }
+
 .vault-financials-label {
   color: #b5b5b5;
   font-size: 0.95rem;
 }
+
 .vault-health-reserves {
   color: #00b894;
   font-weight: 700;
 }
+
 .vault-health-loan {
   color: #00baff;
   font-weight: 700;
 }
+
 .vault-health-dscr {
   color: #b50007;
   font-weight: 700;
 }
+
 .vault-health-label {
   color: #b5b5b5;
   font-size: 0.95rem;
 }
+
 .vault-summary-block {
   background: #fff;
   border-radius: 12px;
@@ -405,28 +477,34 @@
   color: #23305e;
   margin-right: 8px;
 }
+
 .vault-list-row.selected {
   background: #f7f8fa;
   color: #23305e;
   box-shadow: 0 0 0 2px #b5b5b5;
 }
+
 .vault-list-main {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+
 .vault-list-name {
   font-weight: 600;
   color: #23305e;
 }
+
 .vault-list-row.selected .vault-list-name {
   font-weight: 700;
 }
+
 .vault-list-issues {
   color: #b50007;
   font-weight: 700;
   margin-left: 8px;
 }
+
 .vault-list-balance {
   color: #23305e;
   font-weight: 500;
@@ -434,6 +512,7 @@
   min-width: 110px;
   text-align: right;
 }
+
 .vault-arrow {
   font-size: 1.2rem;
   color: #b5b5b5;
@@ -469,9 +548,10 @@
 
 .frame-overview .page-header {
   align-items: flex-start;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   position: relative;
+  width: 100%;
 }
 
 .frame-overview .page-header__title {
