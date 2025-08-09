@@ -15,6 +15,8 @@ interface VaultsProps {
   onShowLoanDetails?: (loanId: string) => void;
   onAddVault?: () => void;
   onAddLoan?: () => void;
+  onVaultUpdate?: (updatedVault: Vault) => void;
+  onEditVault?: (vault: Vault) => void;
 }
 
 function getIssues(vault: Vault) {
@@ -54,20 +56,32 @@ function getTotalSpread(vault: Vault) {
   return 'n/a';
 }
 
-export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault, onShowLoanDetails, onAddVault, onAddLoan }) => {
+export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activities = [], selectedVaultId, onBackToList, onSelectVault, onShowLoanDetails, onAddVault, onAddLoan, onVaultUpdate, onEditVault }) => {
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', dateOptions);
 
-  // Séparation des vaults par type (mock pour l'instant)
-  const gateways = vaults.filter(v => v.is_gateway);
-  const otherVaults = vaults.filter(v => !v.is_gateway);
+  // Fonction pour trier les vaults par date (plus récent en premier)
+  const sortVaultsByDate = (vaultList: Vault[]) => {
+    return vaultList.sort((a, b) => {
+      // Utiliser modified_date en priorité, sinon created_date
+      const dateA = new Date(a.modified_date || a.created_date || '1970-01-01');
+      const dateB = new Date(b.modified_date || b.created_date || '1970-01-01');
+      
+      // Tri décroissant (plus récent en premier)
+      return dateB.getTime() - dateA.getTime();
+    });
+  };
+
+  // Séparation des vaults par type et tri par date
+  const gateways = sortVaultsByDate(vaults.filter(v => v.is_gateway));
+  const otherVaults = sortVaultsByDate(vaults.filter(v => !v.is_gateway));
 
   if (selectedVaultId) {
     const vault = vaults.find(v => v.id === selectedVaultId);
     if (vault) {
-      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} activities={activities} onBack={onBackToList || (() => {})} onShowLoanDetails={onShowLoanDetails} onAddLoan={onAddLoan} />;
+      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} activities={activities} onBack={onBackToList || (() => {})} onShowLoanDetails={onShowLoanDetails} onAddLoan={onAddLoan} onVaultUpdate={onVaultUpdate} onEditVault={onEditVault} />;
     }
   }
 

@@ -14,13 +14,13 @@ import { fetchVaults } from '../controllers/vaultController';
 import { fetchBorrowers } from '../controllers/borrowerController';
 import { fetchAllUserActivities } from '../controllers/activityController';
 import { Settings } from '../components/Settings/Settings';
+import { VaultWizard } from '../components/wizards/vault-wizard';
+import { LoanWizard } from '../components/wizards/loan-wizard';
 import { Snackbar } from '@jbaluch/components';
 import borrowerIcon from '../assets/borrower.svg';
 import loanIcon from '../assets/loan.svg';
 import vaultIcon from '../assets/vault.svg';
 import './PersonalBank.css';
-import { VaultWizard } from '../components/wizards/vault-wizard';
-import { LoanWizard } from '../components/wizards/loan-wizard';
 
 const PersonalBankContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('overview');
@@ -40,6 +40,7 @@ const PersonalBankContent: React.FC = () => {
   const [showVaultWizard, setShowVaultWizard] = useState(false);
   const [showGatewayWizard, setShowGatewayWizard] = useState(false);
   const [showLoanWizard, setShowLoanWizard] = useState(false);
+  const [vaultToEdit, setVaultToEdit] = useState<Vault | undefined>(undefined);
 
   // Fonction pour déterminer l'icône selon le type d'activité
   const getActivityIcon = (message: string) => {
@@ -189,6 +190,11 @@ const PersonalBankContent: React.FC = () => {
 
   const handleAddVault = () => setShowVaultWizard(true);
 
+  const handleEditVault = (vault: Vault) => {
+    setVaultToEdit(vault);
+    setShowVaultWizard(true);
+  };
+
   const handleShowGatewayWizard = () => setShowGatewayWizard(true);
 
   const handleGatewayCreated = (vault: Vault) => {
@@ -211,6 +217,14 @@ const PersonalBankContent: React.FC = () => {
     }
   };
 
+  const handleVaultUpdated = (updatedVault: Vault) => {
+    setVaults(prev => 
+      prev.map(vault => 
+        vault.id === updatedVault.id ? { ...vault, ...updatedVault } : vault
+      )
+    );
+  };
+
   const handleLoanCreated = (loan: Loan) => {
     // Le loan est déjà ajouté à la liste par setLoans dans le wizard
     
@@ -227,7 +241,24 @@ const PersonalBankContent: React.FC = () => {
   };
 
   if (showVaultWizard) {
-    return <VaultWizard onClose={() => setShowVaultWizard(false)} onVaultCreated={handleVaultCreated} />;
+    return (
+      <VaultWizard 
+        vaultToEdit={vaultToEdit}
+        onClose={() => {
+          setShowVaultWizard(false);
+          setVaultToEdit(undefined);
+        }} 
+        onVaultCreated={(vault) => {
+          if (vaultToEdit) {
+            // Mode edit : mettre à jour le vault existant
+            handleVaultUpdated(vault);
+          } else {
+            // Mode création : ajouter le nouveau vault
+            handleVaultCreated(vault);
+          }
+        }} 
+      />
+    );
   }
   if (showGatewayWizard) {
     return (
@@ -291,7 +322,7 @@ const PersonalBankContent: React.FC = () => {
           setSelectedVaultId(vaultId);
           // Scroll vers le haut de la page
           window.scrollTo({ top: 0, behavior: 'smooth' });
-        }} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} onAddLoan={() => setShowLoanWizard(true)} />}
+        }} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} onAddLoan={() => setShowLoanWizard(true)} onVaultUpdate={handleVaultUpdated} onEditVault={handleEditVault} />}
         {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
         {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={(loanId) => {
           setSelectedLoanId(loanId);

@@ -11,7 +11,9 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
   // Détermine le type d'account
   const accountTypeLabel = vaultData.accountType === 'savings' ? 'Savings' : 'Checking';
   // Taux d'intérêt
-  const appreciation = vaultData.interestRate ? `${String(vaultData.interestRate).replace(/%$/, '')}%` : '0.00%';
+  const appreciation = isSuperVault 
+    ? (vaultData.annualGrowthRate ? `${vaultData.annualGrowthRate}%` : '7.00%')
+    : (vaultData.interestRate ? `${String(vaultData.interestRate).replace(/%$/, '')}%` : '0.00%');
   // Montant
   const accountAmount = Number(vaultData.amount ?? vaultData.balance ?? 0);
 
@@ -176,32 +178,50 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
             }}>
               <div style={{ color: '#595959', fontWeight: 600, fontSize: 16, marginBottom: 16 }}>Accounts</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {/* Cash Value */}
-                <div style={{
-                  background: '#fff',
-                  border: '1px solid #00b5ae',
-                  borderRadius: 8,
-                  padding: 16,
-                  textAlign: 'center',
-                }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>Cash Value</div>
-                  <div style={{ color: '#595959', fontSize: 14, marginBottom: 4 }}>Asset</div>
-                  <div style={{ color: '#595959', fontSize: 14, marginBottom: 4 }}>Appreciation: {appreciation}</div>
-                  <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${cashValue.toLocaleString()}</div>
-                </div>
-                {/* Line-of-Credit */}
-                <div style={{
-                  background: '#fff',
-                  border: '1px solid #00b5ae',
-                  borderRadius: 8,
-                  padding: 16,
-                  textAlign: 'center',
-                }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>Line-of-Credit</div>
-                  <div style={{ color: '#595959', fontSize: 14, marginBottom: 4 }}>Strategic debt</div>
-                  <div style={{ color: '#595959', fontSize: 14, marginBottom: 4 }}>Interest rate: {vaultData.debtCeilingRate || '0.00%'}</div>
-                  <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${debtBalance.toLocaleString()}</div>
-                </div>
+                                 {/* Cash Value */}
+                 <div style={{
+                   background: '#fff',
+                   border: '1px solid #00b5ae',
+                   borderRadius: 8,
+                   padding: 16,
+                   display: 'flex',
+                   justifyContent: 'space-between',
+                   alignItems: 'center',
+                 }}>
+                   <div style={{ textAlign: 'left' }}>
+                     <div style={{ fontWeight: 600, marginBottom: 4 }}>Cash Value</div>
+                     <div style={{ color: '#595959', fontSize: 14 }}>Asset</div>
+                   </div>
+                   <div style={{ textAlign: 'center' }}>
+                     <div style={{ color: '#595959', fontSize: 14 }}>Appreciation</div>
+                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
+                   </div>
+                   <div style={{ textAlign: 'right' }}>
+                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${cashValue.toLocaleString()}</div>
+                   </div>
+                 </div>
+                                 {/* Line-of-Credit */}
+                 <div style={{
+                   background: '#fff',
+                   border: '1px solid #00b5ae',
+                   borderRadius: 8,
+                   padding: 16,
+                   display: 'flex',
+                   justifyContent: 'space-between',
+                   alignItems: 'center',
+                 }}>
+                   <div style={{ textAlign: 'left' }}>
+                     <div style={{ fontWeight: 600, marginBottom: 4 }}>Line-of-Credit</div>
+                     <div style={{ color: '#595959', fontSize: 14 }}>Strategic debt</div>
+                   </div>
+                   <div style={{ textAlign: 'center' }}>
+                     <div style={{ color: '#595959', fontSize: 14 }}>Interest rate</div>
+                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{vaultData.debtCeilingRate || '0.00%'}</div>
+                   </div>
+                   <div style={{ textAlign: 'right' }}>
+                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${debtBalance.toLocaleString()}</div>
+                   </div>
+                 </div>
               </div>
             </div>
             {/* Section Equity */}

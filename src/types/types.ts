@@ -100,6 +100,8 @@ export type AnnualFeesType = 'Percentage' | 'Amount';
 export type CreditLimitType = 'amount' | 'percentage';
 export type HoldReserveType = 'amount' | 'percentage';
 export type VaultType = 'cash vault' | 'super vault';
+
+
 export type FinancialClass = 'Assets' | 'Liabilities';
 export type InterestRateType = 'fixed' | 'variable';
 export type LoanType = 'Revolving' | 'Amortized: Due-Date' | 'Interest-only';
@@ -288,50 +290,29 @@ export interface Activity {
 }
 
 export interface Vault {
+    // Champs essentiels du vault (gardés)
     id: string;
-    name: string;
-    issues: number;
-    balance: number;
-    financials: {
-        paidIn: number;
-        paidOut: number;
-    };
-    health: {
+    nickname?: string; 
+    hold?: number;
+    hold_type?: HoldReserveType;
+    reserve?: number;
+    reserve_type?: HoldReserveType;
+    is_gateway?: boolean;
+    holding_id?: string; 
+    type?: VaultType;
+    available_for_lending_amount?: number | string;
+    accounts_json?: Account[]; // Détails des accounts associés
+    
+    // Champs pour l'affichage/calculs
+    health?: {
         reserves: number;
         loanToValue: number;
         incomeDSCR: number;
         growthDSCR: number;
     };
-    nickname?: string;
-    hold?: number;
-    hold_type?: HoldReserveType;
-    reserve?: number;
-    reserve_type?: HoldReserveType;
-    comments?: string;
-    liquidity_source_id?: string;
-    is_gateway?: boolean;
-    userId?: string;
-    bankId?: string;
-    accountId?: string;
-    initial_balance?: number;
-    notes?: string[];
-    activities?: string[];
-    holding_id?: string;
-    holdingId?: string;
-    asset_account_id?: string;
-    debt_account_id?: string;
-    growth_issue_count?: number;
-    income_issue_count?: number;
-    is_ltv_issue_count?: 'yes' | 'no';
-    arbitrary_text?: string;
-    type?: VaultType;
-    payment_projection?: PaymentProjection;
-    available_for_lending_amount?: number | string;
-    spread?: number | string;
-    liquidity_source?: {
-        appreciation?: number;
-    };
-    // Champs dynamiques pour le wizard
+    
+    // Champs temporaires pour le wizard seulement (ne sont pas stockés dans la DB)
+    name?: string; // Nom temporaire pour le wizard
     assetType?: string;
     assetName?: string;
     assetStartDate?: string;
@@ -347,8 +328,30 @@ export interface Vault {
     accountType?: string;
     expenseRate?: string;
     creditLimitType?: CreditLimitType;
+    
+    // Métadonnées
     created_date?: string;
     modified_date?: string;
+    
+    // ⚠️ CHAMPS LEGACY (À SUPPRIMER PROGRESSIVEMENT) ⚠️
+    // Gardés temporairement pour éviter les erreurs de build
+    balance?: number; // TODO: Remplacer par accounts_json
+    issues?: number; // TODO: Supprimer si non utilisé
+    financials?: { // TODO: Remplacer par accounts_json
+        paidIn: number;
+        paidOut: number;
+    };
+    activities?: string[]; // TODO: Gérer différemment
+    holdingId?: string; // TODO: Utiliser seulement holding_id
+    payment_projection?: PaymentProjection; // TODO: Calculer dynamiquement
+    spread?: number | string; // TODO: Calculer depuis accounts
+    liquidity_source?: { // TODO: Calculer depuis accounts
+        appreciation?: number;
+    };
+    growth_issue_count?: number; // TODO: Supprimer
+    income_issue_count?: number; // TODO: Supprimer
+    is_ltv_issue_count?: 'yes' | 'no'; // TODO: Supprimer
+    arbitrary_text?: string; // TODO: Supprimer
 }
 
 export interface BankCreateInput {

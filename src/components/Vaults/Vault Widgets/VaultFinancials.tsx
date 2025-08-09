@@ -8,6 +8,7 @@ export interface VaultFinancialsProps {
   reserve: number;
   pending: number;
   available: number;
+  balanceLabel?: string; // Label personnalisé pour le balance
 }
 
 export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
@@ -16,6 +17,7 @@ export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
   reserve,
   pending,
   available,
+  balanceLabel = "Balance", // Valeur par défaut
 }) => {
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("en-US", {
@@ -54,7 +56,7 @@ export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
             <div className="financials-row">
               <div className="row-left">
                 <div className="indicator-dot balance-dot" />
-                <div className="row-label">Balance</div>
+                <div className="row-label">{balanceLabel}</div>
               </div>
               <div className="row-value">{formatCurrency(balance)}</div>
             </div>
