@@ -247,6 +247,7 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
               iconComponent={undefined}
               interaction="default"
               justified="center"
+              size="medium"
               onClick={onAddVault}
               onMouseEnter={() => {}}
               onMouseLeave={() => {}}

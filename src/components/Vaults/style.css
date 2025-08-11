@@ -700,6 +700,7 @@
   border: 1px solid #eeeef2;
   text-align: center;
   min-height: 280px;
+  width: 100%;
 }
 
 .empty-vault-icon {
@@ -728,6 +729,11 @@
 
 .empty-vault-button {
   min-width: 120px;
+  max-width: 200px;
   height: 40px;
   font-weight: 600;
+  width: fit-content !important;
+  align-self: center;
+  flex-shrink: 0;
+  flex-grow: 0;
 }

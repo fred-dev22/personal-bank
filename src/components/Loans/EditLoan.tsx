@@ -120,7 +120,7 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
             onMouseLeave={() => {}}
             type="dark"
             interaction=""
-            style={{ width: 36, height: 36 }}
+            className="custom-close-button"
           />
         </div>
         <div className="edit-loan__form-block">

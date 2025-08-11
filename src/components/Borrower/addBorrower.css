@@ -42,6 +42,38 @@
   background-color: #e9ecef;
 }
 
+/* Custom close button styles */
+.custom-close-button {
+  width: 36px !important;
+  height: 36px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 20px !important;
+  color: #595959 !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+}
+
+.custom-close-button:hover {
+  background: #f0f0f0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  color: #666 !important;
+  transform: scale(1.05) !important;
+}
+
+.custom-close-button:focus {
+  outline: 2px solid #00b5ae !important;
+  outline-offset: 2px !important;
+}
+
 /* Toggle Section */
 .add-borrower__toggle-section {
   padding: 32px 24px 0 24px;
@@ -255,7 +287,7 @@
 
 /* Archive Section */
 .add-borrower__archive-section {
-  margin: 32px 0 0 0;
+  margin: 16px 24px 0 24px;
   padding: 16px 20px;
   background-color: #F8F9FA;
   border-radius: 8px;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tabs, Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
+import { Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
 import { Transfers } from "./Vault Widgets/Transfers";
 import { VaultFinancials } from "./Vault Widgets/VaultFinancials";
 import { SuperVaultGraphIframe } from "./Vault Widgets/SuperVaultGraphIframe";
@@ -10,6 +10,7 @@ import "./VaultDetails.css";
 import summaryIcon from "../../assets/summary.svg";
 import activityIcon from "../../assets/activity.svg";
 import loansIcon from "../../assets/leverage-loans.svg";
+import { TabNavigation } from "../ui/TabNavigation";
 
 const SummaryIcon = () => <img src={summaryIcon} alt="Summary" style={{ width: 16, height: 16 }} />;
 const ActivityIcon = () => <img src={activityIcon} alt="Activity" style={{ width: 16, height: 16 }} />;
@@ -594,13 +595,13 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
         </Button>
       </div>
 
-      <Tabs
+      <TabNavigation
         activeTabId={activeTab}
         onTabChange={setActiveTab}
         tabs={[
-            { id: 'summary', label: 'Summary', iconComponent: SummaryIcon },
-            { id: 'activity', label: 'Activity', iconComponent: ActivityIcon },
-            { id: 'loans', label: 'Loans', iconComponent: LoansIcon },
+            { id: 'summary', label: 'Summary', icon: <SummaryIcon /> },
+            { id: 'activity', label: 'Activity', icon: <ActivityIcon /> },
+            { id: 'loans', label: 'Loans', icon: <LoansIcon /> },
         ]}
       />
 

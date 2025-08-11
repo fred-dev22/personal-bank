@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Tabs, Table, TextCell, TagCell } from '@jbaluch/components';
+import { Button, Table, TextCell, TagCell } from '@jbaluch/components';
 import './LoanDetails.css';
 import vaultIcon from '../../assets/vault.svg';
 import borrowerIcon from '../../assets/borrower.svg';
@@ -18,6 +18,7 @@ import { Modal } from '../Modal/Modal';
 import { fetchLoanById } from '../../controllers/loanController';
 import { EmptyState } from '@jbaluch/components';
 import { useActivity } from '../../contexts/ActivityContext';
+import { TabNavigation } from '../ui/TabNavigation';
 
 interface LoanDetailsProps {
   loan: Loan;
@@ -224,27 +225,27 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         </Button>
       </div>
       {/* Tabs */}
-      <Tabs
+      <TabNavigation
         activeTabId={activeTab}
         onTabChange={setActiveTab}
         tabs={[
           {
-            iconComponent: SummaryIcon,
+            icon: <SummaryIcon />,
             id: 'summary',
             label: 'Summary',
           },
           {
-            iconComponent: ActivityIcon,
+            icon: <ActivityIcon />,
             id: 'activity',
             label: 'Activity',
           },
           {
-            iconComponent: ScheduleIcon,
+            icon: <ScheduleIcon />,
             id: 'schedule',
             label: 'Schedule',
           },
           {
-            iconComponent: DocumentIcon,
+            icon: <DocumentIcon />,
             id: 'documents',
             label: 'Documents',
           },

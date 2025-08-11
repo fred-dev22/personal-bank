@@ -1,11 +1,12 @@
 .cash-flow-card {
   align-items: flex-start;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   gap: 12px;
   position: relative;
-  width: 370px;
+  width: 100%;
   vertical-align: top;
+  min-width: 200px;
 }
 
 .cash-flow-card .card {

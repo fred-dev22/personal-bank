@@ -3,12 +3,14 @@
   background-color: #fdfdfd;
   border-radius: 8px;
   box-shadow: var(--grey-shadows-tertiary-grey-shadow);
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   height: 381px;
   justify-content: space-between;
   padding: 32px;
   position: relative;
+  width: 100%;
+  min-width: 400px;
 }
 
 .income-DSCR-card .frame {

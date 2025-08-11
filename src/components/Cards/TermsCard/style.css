@@ -1,10 +1,11 @@
 .terms-card {
   align-items: flex-start;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   gap: 12px;
   position: relative;
-  width: 370px;
+  width: 45%;
+  max-width: none;
   vertical-align: top;
 }
 
@@ -19,6 +20,7 @@
   padding: 32px;
   position: relative;
   width: 100%;
+  min-width: 250px;
 }
 
 .terms-card .frame {

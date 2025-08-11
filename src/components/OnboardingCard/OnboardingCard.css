@@ -185,12 +185,38 @@
 .step-input-container {
   display: flex;
   flex-direction: row;
-  gap: 28px;
+  gap: 16px;
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* New container for input and button horizontal layout */
+.step-input-button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
+/* Responsive layout for screens 1000px and below */
+@media (max-width: 1000px) {
+  .step-input-button-container {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 600px) {
   .step-input-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .step-input-button-container {
     flex-direction: column;
     gap: 16px;
   }
@@ -203,4 +229,72 @@
   font-style: normal;
   font-weight: 600;
   line-height: 21px; /* 131.25% */
+}
+
+/* Step button styles to match Figma design */
+.step-btn {
+  width: fit-content !important;
+  min-width: fit-content !important;
+  max-width: fit-content !important;
+  align-self: flex-start !important;
+  margin-top: 0 !important;
+}
+
+.fit-content-btn {
+  width: fit-content !important;
+  min-width: fit-content !important;
+  max-width: fit-content !important;
+}
+
+/* Input field styles to match Figma design */
+.step-input-container input,
+.step-input-container .jbaluch-input {
+  width: 300px !important;
+  max-width: 300px !important;
+  min-width: 300px !important;
+}
+
+/* Fix text alignment for all inputs and selects */
+.step-input-container input,
+.step-input-container .jbaluch-input,
+.step-input-button-container input,
+.step-input-button-container .jbaluch-input,
+input,
+select,
+.jbaluch-input,
+.jbaluch-select {
+  text-align: left !important;
+  text-align-last: left !important;
+}
+
+/* Specific fix for select dropdowns */
+select,
+.jbaluch-select {
+  text-align: left !important;
+  text-align-last: left !important;
+}
+
+/* Fix for dropdown options */
+select option,
+.jbaluch-select option {
+  text-align: left !important;
+}
+
+/* Responsive input sizing */
+@media (max-width: 768px) {
+  .step-input-container input,
+  .step-input-container .jbaluch-input {
+    width: 280px !important;
+    max-width: 280px !important;
+    min-width: 280px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .step-input-container input,
+  .step-input-container .jbaluch-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
 }

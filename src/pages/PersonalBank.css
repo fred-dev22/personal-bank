@@ -41,18 +41,24 @@
 
 /* Surcharge spécifique pour la classe .content du Snackbar */
 .snackbar-fixed-bottom-right .content {
-  padding: 8px 16px !important; /* Réduit le padding de 24px à 8px/16px */
+  padding: 3px !important; /* Réduit le padding de 24px à 8px/16px */
   box-shadow: none !important; /* Supprime l'ombre sur le contenu */
   background: transparent !important; /* Au cas où il y aurait un background */
+  gap: 8px !important; /* Reduce gap between icon and text */
+  justify-content: flex-start !important; /* Align content to the left */
 }
 
 /* Surcharge pour tous les éléments internes */
 .snackbar-fixed-bottom-right > div {
-  padding: 8px 16px !important;
+  padding: 2px !important;
   box-shadow: none !important;
 }
+
+
 
 /* Si le Snackbar a une ombre sur l'élément racine */
 .snackbar-fixed-bottom-right * {
   box-shadow: none !important;
-} 
+}
+
+ 

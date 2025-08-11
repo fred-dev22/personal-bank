@@ -45,7 +45,7 @@ export const HeaderWizard: React.FC<{
       onMouseLeave={() => {}}
       type="dark"
       interaction=""
-      className="edit-vault__close-button"
+      className="custom-close-button"
     />
   </div>
 );

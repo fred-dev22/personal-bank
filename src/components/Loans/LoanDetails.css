@@ -118,22 +118,45 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  align-items: center;
+  align-items: stretch;
   background-color: #00000005;
   border-radius: 8px;
-  padding: 24px;
+  padding: 24px 60px;
+  width: 100%;
 }
 
 .row {
   display: flex;
   flex-direction: row;
   gap: 24px;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .row:last-child {
   justify-content: center;
+  width: 100%;
+}
+
+.row:last-child .terms-card {
+  width: 45%;
+  max-width: none;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* Ensure the first row cards have proper sizing - Income DSCR card 55%, Payment card 45% */
+.row:first-child .income-DSCR-card {
+  flex: 0 0 55%;
+  width: 55%;
+}
+
+.row:first-child .cash-flow-card {
+  flex: 0 0 45%;
+  width: 45%;
 }
 
 .left-col {

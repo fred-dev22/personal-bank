@@ -189,7 +189,7 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
           onMouseLeave={() => {}}
           type="dark"
           interaction=""
-          style={{ width: 36, height: 36 }}
+          className="custom-close-button"
         />
       </div>
 
@@ -356,50 +356,50 @@ export const AddBorrower: React.FC<AddBorrowerProps> = ({
             </div>
           </>
         )}
-
-        {/* Archive Section - Only show in edit mode */}
-        {mode === 'edit' && (
-          <div className="add-borrower__archive-section">
-            <div className="add-borrower__archive-content">
-              <div className="add-borrower__archive-text">
-                <h3 className="add-borrower__archive-title">Archive borrower</h3>
-                <p className="add-borrower__archive-description">
-                  Remove from view but keep historical data.
-                </p>
-              </div>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  // Handle archive functionality
-                  console.log('Archive borrower clicked');
-                }}
-                style={{
-                  border: '1px solid #DFDFE6',
-                  color: '#B50007',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '18px',
-                  padding: '6px 16px',
-                  fontSize: '16px',
-                  fontWeight: '500',
-                  fontFamily: 'DM Sans, Arial, sans-serif',
-                  lineHeight: '24px',
-                  letterSpacing: '0%',
-                  textDecoration: 'none',
-                  cursor: 'pointer',
-                  width: '99px',
-                  height: '36px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                Archive
-              </a>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Archive Section - Only show in edit mode */}
+      {mode === 'edit' && (
+        <div className="add-borrower__archive-section">
+          <div className="add-borrower__archive-content">
+            <div className="add-borrower__archive-text">
+              <h3 className="add-borrower__archive-title">Archive borrower</h3>
+              <p className="add-borrower__archive-description">
+                Remove from view but keep historical data.
+              </p>
+            </div>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                // Handle archive functionality
+                console.log('Archive borrower clicked');
+              }}
+              style={{
+                border: '1px solid #DFDFE6',
+                color: '#B50007',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '18px',
+                padding: '6px 16px',
+                fontSize: '16px',
+                fontWeight: '500',
+                fontFamily: 'DM Sans, Arial, sans-serif',
+                lineHeight: '24px',
+                letterSpacing: '0%',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                width: '99px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              Archive
+            </a>
+          </div>
+        </div>
+      )}
 
       <div className="modal-footer">
         <Button

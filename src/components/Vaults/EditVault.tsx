@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Modal } from '../Modal/Modal';
 import { Button, Input, CloseButton } from '@jbaluch/components';
+import type { Vault } from '../../types/types';
+import { Modal } from '../Modal/Modal';
 import './EditVault.css';
 import { useActivity } from '../../contexts/ActivityContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { updateVault } from '../../controllers/vaultController';
 import { updateAccount } from '../../controllers/accountController';
-import type { Vault } from '../../types/types';
 
 interface EditVaultProps {
   open: boolean;
@@ -284,7 +284,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
               onMouseLeave={() => {}}
               type="dark"
               interaction=""
-              className="edit-vault__close-button"
+              className="custom-close-button"
             />
           </div>
           

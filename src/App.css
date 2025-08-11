@@ -10,3 +10,12 @@
   width: max-content !important;
   background-color: red !important;
 }
+.snackbar-fixed-bottom-right .content {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.snackbar-fixed-bottom-right > div {
+  box-shadow: none !important;
+  padding: 2px !Important ;
+}

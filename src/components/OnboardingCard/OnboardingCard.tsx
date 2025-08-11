@@ -178,9 +178,10 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
               <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
                 <div className="step-title">Name your bank</div>
                 <div className="step-desc">Give your bank a name. You can change this later under Settings.</div>
-                <div className="step-input-container">
+                <div className="step-input-button-container">
                   <Input placeholder="bank name" value={bankName} onChange={handleBankNameChange} />
                   <Button
+                    className="step-btn fit-content-btn"
                     icon="iconless"
                     iconComponent={undefined}
                     interaction="default"
