@@ -1,5 +1,7 @@
 import React from "react";
 import "./style.css";
+import { DottedUnderline } from "../../ui/DottedUnderline";
+import { HelpTooltip } from "../../ui/HelpTooltip";
 
 interface CashFlowCardProps {
   amount: number;
@@ -11,7 +13,7 @@ interface CashFlowCardProps {
 
 export const CashFlowCard: React.FC<CashFlowCardProps> = ({ amount, paid, nextDue, rate, balance }) => {
   return (
-    <div className="cash-flow-card">
+    <div className="payment-card">
       <div className="card">
         <div className="frame">
           <div className="title-3">Payment</div>
@@ -56,7 +58,15 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({ amount, paid, nextDu
 
           <div className="row-4">
             <div className="data-table-row">
-              <div className="label-2">Rate</div>
+              <div className="label-2">
+                <HelpTooltip 
+                  term="Loan constant" 
+                  definition="The loan constant is the percentage of the original loan amount that must be paid annually, including both principal and interest. It represents the total annual payment as a percentage of the loan balance."
+                  position="top"
+                >
+                  <DottedUnderline>Loan constant</DottedUnderline>
+                </HelpTooltip>
+              </div>
             </div>
             <div className="frame-wrapper">
               <div className="label-wrapper">
@@ -67,7 +77,14 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({ amount, paid, nextDu
 
           <div className="row-5">
             <div className="data-table-row">
-              <div className="label-2">Balance</div>
+              <div className="label-2">
+                <HelpTooltip 
+                  term="Unpaid" 
+                  definition="The unpaid balance is the remaining amount of the loan that still needs to be repaid. This includes any outstanding principal and accrued interest that has not yet been paid."
+                  position="top">
+                  <DottedUnderline>Unpaid</DottedUnderline>
+                </HelpTooltip>
+              </div>
             </div>
             <div className="frame-wrapper">
               <div className="label-wrapper">

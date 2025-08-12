@@ -249,6 +249,7 @@
   align-self: stretch;
   margin-top: auto;
   margin-bottom: auto;
+  white-space: normal;
 }
 
 .row-label.dashed {
@@ -259,6 +260,7 @@
 .row-label-dashed {
   border-bottom: 1px dotted #595959;
   padding-bottom: 2px;
+  white-space: normal;
 }
 
 @media (max-width: 991px) {

@@ -1,5 +1,7 @@
 import React from "react";
 import "./style.css";
+import { DottedUnderline } from "../../ui/DottedUnderline";
+import checkIcon from "../../../assets/Wavy_Check.svg";
 
 type DscrStatus = "no-DSCR" | "bad" | "mediocre" | "good";
 
@@ -57,12 +59,15 @@ export const IncomeDscrCard: React.FC<IncomeDscrCardProps> = ({
         <div className="frame-wrapper">
           <div className="frame-2">
             <div className={`frame-3 ${status}`}>
+              <img src={checkIcon} alt="Check" className="check-icon" />
               <div className="title">{getDscrValue()}</div>
             </div>
           </div>
         </div>
 
-        <div className="rectangle" />
+        <div className="title-section">
+          <DottedUnderline>Income DSCR</DottedUnderline>
+        </div>
 
         <div className={`income-DSCR property-1-${status}`}>
           <div className="overlap-group">

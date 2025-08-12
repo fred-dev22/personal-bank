@@ -1,6 +1,7 @@
 import React from "react";
 import "./VaultFinancials.css";
 import checkIcon from "../../../assets/Wavy_Check.svg";
+import { HelpTooltip } from "../../ui/HelpTooltip";
 
 export interface VaultFinancialsProps {
   balance: number;
@@ -56,7 +57,13 @@ export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
             <div className="financials-row">
               <div className="row-left">
                 <div className="indicator-dot balance-dot" />
-                <div className="row-label">{balanceLabel}</div>
+                <HelpTooltip 
+                  term="Balance" 
+                  definition="Balance is the current amount of money in your vault, reflecting all credits and debits. It includes the amounts set aside as reserves and holds, as well as the available funds after accounting for all transactions."
+                  position="top"
+                >
+                  <div className="row-label">{balanceLabel}</div>
+                </HelpTooltip>
               </div>
               <div className="row-value">{formatCurrency(balance)}</div>
             </div>
@@ -64,7 +71,13 @@ export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
             <div className="financials-row">
               <div className="row-left">
                 <div className="indicator-dot hold-dot" />
-                <div className="row-label row-label-dashed">Hold</div>
+                <HelpTooltip 
+                  term="Hold" 
+                  definition="A hold is money that can't be lent. You might set it to keep a minimum balance. Or, you might set it to preserve some liquidity for another strategy."
+                  position="top"
+                >
+                  <div className="row-label row-label-dashed">Hold</div>
+                </HelpTooltip>
               </div>
               <div className="row-value">-{formatCurrency(held)}</div>
             </div>
@@ -72,7 +85,13 @@ export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
             <div className="financials-row">
               <div className="row-left">
                 <div className="indicator-dot reserve-dot" />
-                <div className="row-label row-label-dashed">Reserve</div>
+                <HelpTooltip 
+                  term="Safety buffer" 
+                  definition="A safety buffer is extra cash. It helps you cover the unexpected. For example, you might use it to cover the debt service of another line of credit. You are using some of this vault's liquidity as a safety buffer."
+                  position="top"
+                >
+                  <div className="row-label row-label-dashed">Reserve</div>
+                </HelpTooltip>
               </div>
               <div className="row-value">-{formatCurrency(reserve)}</div>
             </div>
@@ -80,7 +99,13 @@ export const VaultFinancials: React.FC<VaultFinancialsProps> = ({
             <div className="financials-row">
               <div className="row-left">
                 <div className="indicator-dot pending-dot" />
-                <div className="row-label row-label-dashed">Pending loan funding</div>
+                <HelpTooltip 
+                  term="Loan funding" 
+                  definition="is the process of transferring approved loan funds to the borrower. The pending loan funding is the amount that still needs to be transferred to the borrower."
+                  position="top"
+                >
+                  <div className="row-label row-label-dashed">Pending loan funding</div>
+                </HelpTooltip>
               </div>
               <div className="row-value">-{formatCurrency(pending)}</div>
             </div>

@@ -19,7 +19,7 @@
   display: flex;
   flex: 0 0 auto;
   flex-direction: column;
-  gap: 24px;
+  gap: 0px;
   position: relative;
   width: 100%;
   z-index: 1;
@@ -53,6 +53,20 @@
   gap: 8px;
 }
 
+.income-DSCR-card .check-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.income-DSCR-card .title-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 4px;
+  margin-left: 32px;
+}
+
 .income-DSCR-card .title {
   color: #0d1728;
   font-family: var(--subtitles-subtitle-1-font-family);
@@ -69,12 +83,7 @@
 }
 
 .income-DSCR-card .rectangle {
-  align-self: stretch;
-  height: 1px;
-  position: relative;
-  width: 100%;
-  z-index: 1;
-  background-color: #eeeef2;
+  display: none;
 }
 
 .income-DSCR-card .income-DSCR {
