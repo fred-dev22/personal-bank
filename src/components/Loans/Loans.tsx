@@ -51,11 +51,29 @@ export const Loans: React.FC<LoansProps> = ({
   const [appliedFilters, setAppliedFilters] = useState<Record<string, FilterValue>>({ amount: { min: '', max: '' }, date: { min: '', max: '' } });
   const filterAnchorEl = useRef<HTMLButtonElement>(null);
 
+  // Calculer dynamiquement les compteurs pour chaque statut
+  const getStatusCount = (status: string) => {
+    return loans.filter(loan => {
+      switch (status) {
+        case 'Funded':
+          return loan.status === 'Funded';
+        case 'To Fund':
+          return loan.status === 'Funding';
+        case 'behind':
+          return loan.status !== 'Funding' && (loan.sub_state === 'Late' || loan.sub_state === 'Behind');
+        case 'Complete':
+          return loan.status !== 'Funding' && loan.sub_state === 'Paid Off';
+        default:
+          return false;
+      }
+    }).length;
+  };
+
   const statusItems: SegmentedControlItem[] = [
-    { id: 'Funded', label: 'On Track', count: 2 },
-    { id: 'To Fund', label: 'To Fund', count: 2 },
-    { id: 'behind', label: 'Late', count: 0 },
-    { id: 'Complete', label: 'Complete', count: 0 }
+    { id: 'Funded', label: 'On Track', count: getStatusCount('Funded') },
+    { id: 'To Fund', label: 'To Fund', count: getStatusCount('To Fund') },
+    { id: 'behind', label: 'Late', count: getStatusCount('behind') },
+    { id: 'Complete', label: 'Complete', count: getStatusCount('Complete') }
   ];
   const filterCount = Object.values(appliedFilters).filter(v => {
     if (typeof v === 'string') return v.length > 0;

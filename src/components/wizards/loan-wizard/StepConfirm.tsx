@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Loan, Vault } from '../../../types/types';
+import { formatCurrency } from '../../../utils/currencyUtils';
 
 export const StepConfirm: React.FC<{
   loanData: Partial<Loan>;
@@ -76,13 +77,13 @@ export const StepConfirm: React.FC<{
               }}>
                 <div>
                   <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>
-                    ${loanData.initial_balance?.toFixed(2) || '12.00'}
+                    {formatCurrency(loanData.initial_balance || 0)}
                   </div>
                   <div style={{ fontSize: '14px', color: '#666' }}>funding amount</div>
                 </div>
                 <div>
                   <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>
-                    ${((loanData.initial_balance || 0) / (loanData.initial_number_of_payments || 1)).toFixed(2) || '12.01'}
+                    {formatCurrency((loanData.initial_balance || 0) / (loanData.initial_number_of_payments || 1))}
                   </div>
                   <div style={{ fontSize: '14px', color: '#666' }}>1 month</div>
                 </div>
@@ -116,7 +117,7 @@ export const StepConfirm: React.FC<{
                   </div>
                 </div>
                 <div style={{ fontSize: '18px', fontWeight: '700' }}>
-                  ${selectedVault.available_for_lending_amount || selectedVault.balance || 0}
+                  {formatCurrency(selectedVault.available_for_lending_amount || selectedVault.balance || 0)}
                 </div>
               </div>
             )}
@@ -167,7 +168,7 @@ export const StepConfirm: React.FC<{
               <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.6' }}>
                 <li style={{ marginBottom: '8px' }}>Send fred the new Promissory Note and have them sign it.</li>
                 <li style={{ marginBottom: '8px' }}>Store the signed Note for your records.</li>
-                <li style={{ marginBottom: '8px' }}>Disburse ${loanData.initial_balance || 0} to {loanData.borrower_id} from {selectedVault?.nickname || selectedVault?.name || 'the selected vault'}.</li>
+                <li style={{ marginBottom: '8px' }}>Disburse {formatCurrency(loanData.initial_balance || 0)} to {loanData.borrower_id} from {selectedVault?.nickname || selectedVault?.name || 'the selected vault'}.</li>
                 <li>We will automatically record the disbursement in {selectedVault?.nickname || selectedVault?.name || 'the selected vault'} ledger after completing this wizard.</li>
               </ul>
             </div>
@@ -181,7 +182,7 @@ export const StepConfirm: React.FC<{
             }}>
               <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#666' }}>Receiving Payments</h3>
               <ul style={{ margin: 0, paddingLeft: '20px', lineHeight: '1.6' }}>
-                <li>You will get a ${loanData.initial_payment_amount || 0} payment from {loanData.borrower_id} every month in your {selectedVault?.nickname || selectedVault?.name || 'selected vault'}.</li>
+                <li>You will get a {formatCurrency(loanData.initial_payment_amount || 0)} payment from {loanData.borrower_id} every month in your {selectedVault?.nickname || selectedVault?.name || 'selected vault'}.</li>
               </ul>
             </div>
 

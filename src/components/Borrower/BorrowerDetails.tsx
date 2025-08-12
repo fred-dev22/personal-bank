@@ -223,7 +223,7 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                 {/* Left: total unpaid */}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span style={{ color: '#1A314B', fontWeight: 600, fontSize: 18, marginRight: 4 }}>
-                    {totalUnpaid.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                    {totalUnpaid.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                   <span style={{ color: '#7B7B93', fontWeight: 400, fontSize: 15 }}>total unpaid</span>
                 </div>
@@ -635,7 +635,7 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
               {/* Left: total unpaid */}
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{ color: '#1A314B', fontWeight: 600, fontSize: 18, marginRight: 4 }}>
-                  {totalUnpaid.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                  {totalUnpaid.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
                 <span style={{ color: '#7B7B93', fontWeight: 400, fontSize: 15 }}>total unpaid</span>
               </div>

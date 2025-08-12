@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Input } from '@jbaluch/components';
 import type { Loan, Vault } from '../../../types/types';
 import { calculateMonthlyPayment, formatCurrency, calculateCashFlowRate } from './utils';
+import { formatCurrency as formatCurrencyGlobal } from '../../../utils/currencyUtils';
 
 export const StepFunding: React.FC<{
   loanData: Partial<Loan>;
-  setLoanData: (data: Partial<Loan>) => void;
+  setLoanData: React.Dispatch<React.SetStateAction<Partial<Loan>>>;
   validationErrors?: {[key: string]: string};
   hideFundingInfo?: boolean;
   vaults: Vault[];
@@ -27,6 +28,22 @@ export const StepFunding: React.FC<{
     return 0;
   }, [monthlyPayment, loanData.initial_balance]);
 
+  // Filtrer les vaults qui ont un montant suffisant pour financer le prêt
+  const availableVaults = useMemo(() => {
+    const loanAmount = Number(loanData.initial_balance) || 0;
+    return vaults.filter(vault => {
+      const vaultAmount = Number(vault.available_for_lending_amount || vault.balance || 0);
+      return vaultAmount >= loanAmount;
+    });
+  }, [vaults, loanData.initial_balance]);
+
+  // Sélectionner automatiquement le premier vault disponible si aucun n'est sélectionné
+  useEffect(() => {
+    if (availableVaults.length > 0 && !loanData.vault_id) {
+      setLoanData(prev => ({ ...prev, vault_id: availableVaults[0].id }));
+    }
+  }, [availableVaults, loanData.vault_id, setLoanData]);
+
   return (
     <div style={{ padding: '32px 0' }}>
       <div style={{ maxWidth: 800, margin: '0 auto' }}>
@@ -42,11 +59,11 @@ export const StepFunding: React.FC<{
             How do you want to fund this loan? You can adjust the loan terms to meet a vault's minimum Income DSCR.
           </p>
           
-          {vaults.map((vault) => (
+                     {availableVaults.map((vault) => (
             <div 
               key={vault.id}
               className={`loan-wizard-funding-card ${loanData.vault_id === vault.id ? 'selected' : ''}`}
-              onClick={() => setLoanData({ ...loanData, vault_id: vault.id })}
+              onClick={() => setLoanData(prev => ({ ...prev, vault_id: vault.id }))}
               style={{
                 border: '1px solid #ddd',
                 borderRadius: '8px',
@@ -71,7 +88,7 @@ export const StepFunding: React.FC<{
                 <input
                   type="radio"
                   checked={loanData.vault_id === vault.id}
-                  onChange={() => setLoanData({ ...loanData, vault_id: vault.id })}
+                  onChange={() => setLoanData(prev => ({ ...prev, vault_id: vault.id }))}
                   style={{ pointerEvents: 'none' }}
                 />
                 <div>
@@ -79,7 +96,7 @@ export const StepFunding: React.FC<{
                                         <div className="loan-wizard-funding-card-subtitle">{vault.type || 'cash vault'}</div>
                 </div>
                 <div className="loan-wizard-funding-card-amount">
-                  ${vault.available_for_lending_amount || vault.balance || 0}
+                  {formatCurrencyGlobal(vault.available_for_lending_amount || vault.balance || 0)}
                 </div>
               </div>
             </div>
@@ -111,7 +128,7 @@ export const StepFunding: React.FC<{
                 placeholder="Enter term"
                 required
                 value={loanData.initial_number_of_payments?.toString() || ''}
-                onChange={(value: string) => setLoanData({ ...loanData, initial_number_of_payments: value ? parseInt(value) : undefined })}
+                onChange={(value: string) => setLoanData(prev => ({ ...prev, initial_number_of_payments: value ? parseInt(value) : undefined }))}
                 error={validationErrors.initial_number_of_payments}
               />
             </div>
@@ -123,7 +140,7 @@ export const StepFunding: React.FC<{
                 required
                 type="percentage"
                 value={loanData.initial_annual_rate?.toString() || ''}
-                onChange={(value: string) => setLoanData({ ...loanData, initial_annual_rate: value ? parseFloat(value) : undefined })}
+                onChange={(value: string) => setLoanData(prev => ({ ...prev, initial_annual_rate: value ? parseFloat(value) : undefined }))}
                 error={validationErrors.initial_annual_rate}
               />
             </div>

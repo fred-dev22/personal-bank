@@ -5,7 +5,7 @@ import VaultChart from './VaultChart';
 
 export const StepReserve: React.FC<{
   vaultData: Vault;
-  setVaultData: (data: Vault) => void;
+  setVaultData: React.Dispatch<React.SetStateAction<Vault>>;
   validationErrors?: {[key: string]: string};
 }> = ({ vaultData, setVaultData, validationErrors = {} }) => {
   const isSuperVault = vaultData.type === 'super vault';
@@ -56,7 +56,7 @@ export const StepReserve: React.FC<{
                 <div style={{ width: '20%' }}>
                   <select
                     value={vaultData.reserve_type || 'amount'}
-                    onChange={(e) => setVaultData({ ...vaultData, reserve_type: e.target.value as HoldReserveType })}
+                    onChange={(e) => setVaultData(prev => ({ ...prev, reserve_type: e.target.value as HoldReserveType }))}
                     style={{
                       width: '100%',
                       height: '40px',
@@ -74,7 +74,7 @@ export const StepReserve: React.FC<{
                 <div style={{ width: '80%' }}>
                   <Input
                     value={vaultData.reserve ?? ''}
-                    onChange={(value: string) => setVaultData({ ...vaultData, reserve: value === '' ? undefined : Number(value) })}
+                    onChange={(value: string) => setVaultData(prev => ({ ...prev, reserve: value === '' ? undefined : Number(value) }))}
                     placeholder="10.00"
                     style={{ height: '40px' }}
                     required
@@ -86,7 +86,7 @@ export const StepReserve: React.FC<{
             ) : (
               <Input
                 value={vaultData.reserve ?? ''}
-                onChange={(value: string) => setVaultData({ ...vaultData, reserve: value === '' ? undefined : Number(value) })}
+                onChange={(value: string) => setVaultData(prev => ({ ...prev, reserve: value === '' ? undefined : Number(value) }))}
                 placeholder="$1,000.00"
                 style={{ width: '100%' }}
                 required

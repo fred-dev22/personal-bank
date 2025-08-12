@@ -5,7 +5,7 @@ import type { Vault } from '../../../types/types';
 
 export const StepAsset: React.FC<{
   vaultData: Vault;
-  setVaultData: (data: Vault) => void;
+  setVaultData: React.Dispatch<React.SetStateAction<Vault>>;
   validationErrors?: {[key: string]: string};
 }> = ({ vaultData, setVaultData, validationErrors = {} }) => {
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
@@ -41,7 +41,7 @@ export const StepAsset: React.FC<{
               label="Asset Type"
               menuStyle="text"
                              onSelect={(selectedId: string) => {
-                 setVaultData({ ...vaultData, assetType: selectedId });
+                 setVaultData(prev => ({ ...prev, assetType: selectedId }));
                }}
               width="100%"
               menuMaxHeight="200px"
@@ -60,7 +60,7 @@ export const StepAsset: React.FC<{
                 placeholder="Enter accumulated value"
              required
                 value={vaultData.amount?.toString() || '30000.00'}
-             onChange={(value: string) => setVaultData({ ...vaultData, amount: parseFloat(value) || 0 })}
+             onChange={(value: string) => setVaultData(prev => ({ ...prev, amount: parseFloat(value) || 0 }))}
              error={validationErrors.amount}
              type="currency"
                 style={{ height: '40px' }}
@@ -96,7 +96,7 @@ export const StepAsset: React.FC<{
                     label="Start date"
                     placeholder="Select start date"
                     value={vaultData.assetStartDate || '2025-01-01'}
-             onChange={(value: string) => setVaultData({ ...vaultData, assetStartDate: value })}
+             onChange={(value: string) => setVaultData(prev => ({ ...prev, assetStartDate: value }))}
                     style={{ height: '40px' }}
                   />
                 </div>
@@ -107,7 +107,7 @@ export const StepAsset: React.FC<{
                     placeholder="Enter annual non-MEC limit"
                     required
                     value={vaultData.annualNonMecLimit || '39000.00'}
-                    onChange={(value: string) => setVaultData({ ...vaultData, annualNonMecLimit: value })}
+                    onChange={(value: string) => setVaultData(prev => ({ ...prev, annualNonMecLimit: value }))}
                     error={validationErrors.annualNonMecLimit}
                     type="currency"
                     style={{ height: '40px' }}
@@ -123,7 +123,7 @@ export const StepAsset: React.FC<{
                     placeholder="Enter annual guideline"
                     required
                     value={vaultData.annualGuidelineAmount || '15000.00'}
-                    onChange={(value: string) => setVaultData({ ...vaultData, annualGuidelineAmount: value })}
+                    onChange={(value: string) => setVaultData(prev => ({ ...prev, annualGuidelineAmount: value }))}
                     error={validationErrors.annualGuidelineAmount}
                     type="currency"
                     style={{ height: '40px' }}
@@ -136,7 +136,7 @@ export const StepAsset: React.FC<{
                     placeholder="Enter growth rate"
                     required
                     value={vaultData.annualGrowthRate || '7.00'}
-                    onChange={(value: string) => setVaultData({ ...vaultData, annualGrowthRate: value })}
+                    onChange={(value: string) => setVaultData(prev => ({ ...prev, annualGrowthRate: value }))}
                     error={validationErrors.annualGrowthRate}
                     type="percentage"
                     style={{ height: '40px' }}
@@ -149,7 +149,7 @@ export const StepAsset: React.FC<{
                     placeholder="Enter expense rate"
                     required
                     value={vaultData.expenseRate || '12.00'}
-                    onChange={(value: string) => setVaultData({ ...vaultData, expenseRate: value })}
+                    onChange={(value: string) => setVaultData(prev => ({ ...prev, expenseRate: value }))}
                     error={validationErrors.expenseRate}
                     type="percentage"
                     style={{ height: '40px' }}
@@ -162,7 +162,7 @@ export const StepAsset: React.FC<{
                     placeholder="Enter premium paid"
                     required
                     value={vaultData.premiumPaidThisYear || '30000.00'}
-                    onChange={(value: string) => setVaultData({ ...vaultData, premiumPaidThisYear: value })}
+                    onChange={(value: string) => setVaultData(prev => ({ ...prev, premiumPaidThisYear: value }))}
                     error={validationErrors.premiumPaidThisYear}
                     type="currency"
                     style={{ height: '40px' }}

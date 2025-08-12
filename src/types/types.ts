@@ -98,6 +98,17 @@ export type AccountCategory =
 
 export type AnnualFeesType = 'Percentage' | 'Amount';
 export type CreditLimitType = 'amount' | 'percentage';
+
+// Types pour les paiements
+export interface Payment {
+    id: string;
+    amount: number;
+    date: string;
+    balloon?: boolean;
+    note_id?: string;
+    created_date?: string;
+    modified_date?: string;
+}
 export type HoldReserveType = 'amount' | 'percentage';
 export type VaultType = 'cash vault' | 'super vault';
 
@@ -276,6 +287,12 @@ export interface Loan {
     is_funded?: boolean;
     created_date?: string;
     modified_date?: string;
+    pendingPayments?: Array<{
+        amount: number;
+        date: string;
+        balloon: boolean;
+        status: string;
+    }>;
 }
 
 export interface Activity {

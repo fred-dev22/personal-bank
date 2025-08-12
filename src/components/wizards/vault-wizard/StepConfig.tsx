@@ -4,7 +4,7 @@ import type { Vault } from '../../../types/types';
 
 export const StepConfig: React.FC<{
   vaultData: Vault;
-  setVaultData: (data: Vault) => void;
+  setVaultData: React.Dispatch<React.SetStateAction<Vault>>;
   onNext?: () => void;
   onPrev?: () => void;
   gatewayMode?: boolean;
@@ -27,7 +27,7 @@ export const StepConfig: React.FC<{
             placeholder="Enter vault name"
             required
             value={vaultData.name || ''}
-            onChange={(value: string) => setVaultData({ ...vaultData, name: value })}
+            onChange={(value: string) => setVaultData(prev => ({ ...prev, name: value }))}
             error={validationErrors.name}
             disabled={gatewayMode}
           />
@@ -42,7 +42,7 @@ export const StepConfig: React.FC<{
                 placeholder="Enter amount"
                 required
                 value={vaultData.amount?.toString() || ''}
-                onChange={(value: string) => setVaultData({ ...vaultData, amount: parseFloat(value) || 0 })}
+                onChange={(value: string) => setVaultData(prev => ({ ...prev, amount: parseFloat(value) || 0 }))}
                 error={validationErrors.amount}
                 type="currency"
               />
@@ -53,16 +53,13 @@ export const StepConfig: React.FC<{
                 label="Account Interest Rate"
                 placeholder="Enter interest rate"
                 value={vaultData.interestRate || ''}
-                onChange={(value: string) => setVaultData({ ...vaultData, interestRate: value })}
+                onChange={(value: string) => setVaultData(prev => ({ ...prev, interestRate: value }))}
                 error={validationErrors.interestRate}
                 type="percentage"
               />
             </div>
            
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
-                Account Type <span style={{ color: 'red' }}>*</span>
-              </label>
               <PopupButton
                 defaultValue={vaultData.accountType || ''}
                 items={[
@@ -78,7 +75,7 @@ export const StepConfig: React.FC<{
                 label="Account Type"
                 menuStyle="text"
                 onSelect={(selectedId: string) => {
-                  setVaultData({ ...vaultData, accountType: selectedId });
+                  setVaultData(prev => ({ ...prev, accountType: selectedId }));
                 }}
                 width="100%"
                 menuMaxHeight="200px"

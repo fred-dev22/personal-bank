@@ -10,6 +10,7 @@ interface SelectDateProps {
   required?: boolean;
   error?: string;
   style?: React.CSSProperties;
+  maxDate?: string; // Format YYYY-MM-DD
 }
 
 export const SelectDate: React.FC<SelectDateProps> = ({
@@ -19,7 +20,8 @@ export const SelectDate: React.FC<SelectDateProps> = ({
   onChange,
   required = false,
   error,
-  style
+  style,
+  maxDate
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -65,8 +67,16 @@ export const SelectDate: React.FC<SelectDateProps> = ({
     return `${year}-${month}-${day}`;
   };
 
+  // Check if a date is selectable (not in the future)
+  const isDateSelectable = (date: Date): boolean => {
+    if (!maxDate) return true;
+    const maxDateObj = new Date(maxDate);
+    return date <= maxDateObj;
+  };
+
   // Handle date selection
   const handleDateSelect = (date: Date) => {
+    if (!isDateSelectable(date)) return; // Prevent selection of future dates
     const formattedDate = formatDateForValue(date);
     onChange?.(formattedDate);
     setShowCalendar(false);
@@ -219,13 +229,15 @@ export const SelectDate: React.FC<SelectDateProps> = ({
                 day.getDate() === today.getDate() &&
                 day.getMonth() === today.getMonth() &&
                 day.getFullYear() === today.getFullYear();
+              const isSelectable = isDateSelectable(day);
               
               return (
                 <button
                   key={index}
                   type="button"
-                  className={`calendar-day ${isCurrentMonth ? 'current-month' : 'other-month'} ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
+                  className={`calendar-day ${isCurrentMonth ? 'current-month' : 'other-month'} ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${!isSelectable ? 'disabled' : ''}`}
                   onClick={() => handleDateSelect(day)}
+                  disabled={!isSelectable}
                 >
                   {day.getDate()}
                 </button>

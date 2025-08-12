@@ -136,7 +136,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
               padding: 32,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 24 }}>${availableToLend.toLocaleString()}</div>
+                <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 24 }}>${availableToLend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               </div>
               <div style={{ color: '#595959', fontSize: 14, marginBottom: 16 }}>Available to lend</div>
               <div style={{ height: 1, background: '#eeeef2', width: 200, margin: '16px 0' }} />
@@ -144,27 +144,27 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#297598', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#595959', flex: 1 }}>Credit limit</div>
-                  <div style={{ color: '#595959' }}>${creditLimit.toLocaleString()}</div>
+                  <div style={{ color: '#595959' }}>${creditLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#b49d47', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#595959', flex: 1 }}>Hold</div>
-                  <div style={{ color: '#595959' }}>-${holdValue.toLocaleString()}</div>
+                  <div style={{ color: '#595959' }}>-${holdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#ff7f50', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#595959', flex: 1 }}>Safety buffer</div>
-                  <div style={{ color: '#595959' }}>-${reserveValue.toLocaleString()}</div>
+                  <div style={{ color: '#595959' }}>-${reserveValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#595959', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#595959', flex: 1 }}>LOC outstanding balance</div>
-                  <div style={{ color: '#595959' }}>-${debtBalance.toLocaleString()}</div>
+                  <div style={{ color: '#595959' }}>-${debtBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px solid #0d1728', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#00b5ae', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#0d1728', fontWeight: 700, flex: 1 }}>Available to lend</div>
-                  <div style={{ color: '#0d1728', fontWeight: 700 }}>${availableToLend.toLocaleString()}</div>
+                  <div style={{ color: '#0d1728', fontWeight: 700 }}>${availableToLend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
               </div>
             </div>
@@ -197,7 +197,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
                      <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
                    </div>
                    <div style={{ textAlign: 'right' }}>
-                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${cashValue.toLocaleString()}</div>
+                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${cashValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                    </div>
                  </div>
                                  {/* Line-of-Credit */}
@@ -219,7 +219,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
                      <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{vaultData.debtCeilingRate || '0.00%'}</div>
                    </div>
                    <div style={{ textAlign: 'right' }}>
-                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${debtBalance.toLocaleString()}</div>
+                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${debtBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                    </div>
                  </div>
               </div>
@@ -234,22 +234,22 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
             }}>
               <div style={{ color: '#595959', fontWeight: 600, fontSize: 16, marginBottom: 16 }}>Equity</div>
               <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 4 }}>${equity.toLocaleString()}</div>
+                <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 4 }}>${equity.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 <div style={{ color: '#595959', fontSize: 14 }}>Equity</div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ color: '#595959' }}>Cash Value</div>
-                  <div style={{ color: '#0d1728', fontWeight: 600 }}>${cashValue.toLocaleString()}</div>
+                  <div style={{ color: '#0d1728', fontWeight: 600 }}>${cashValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ color: '#595959' }}>Line of credit</div>
-                  <div style={{ color: '#0d1728', fontWeight: 600 }}>-${debtBalance.toLocaleString()}</div>
+                  <div style={{ color: '#0d1728', fontWeight: 600 }}>-${debtBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ height: 1, background: '#eeeef2', margin: '8px 0' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ color: '#0d1728', fontWeight: 700 }}>Equity</div>
-                  <div style={{ color: '#0d1728', fontWeight: 700 }}>${equity.toLocaleString()}</div>
+                  <div style={{ color: '#0d1728', fontWeight: 700 }}>${equity.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
               </div>
             </div>
@@ -358,7 +358,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
               <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ color: '#000', fontWeight: 700, fontSize: 18 }}>${accountAmount.toLocaleString()}</div>
+              <div style={{ color: '#000', fontWeight: 700, fontSize: 18 }}>${accountAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
           </div>
         </div>

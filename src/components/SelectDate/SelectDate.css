@@ -129,6 +129,16 @@
   background-color: #1e3a73;
 }
 
+.calendar-day.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: #f9f9f9;
+}
+
+.calendar-day.disabled:hover {
+  background-color: #f9f9f9;
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .select-date-calendar {

@@ -8,6 +8,7 @@ import type { Loan, Borrower, Vault } from '../../../types/types';
 import { addBorrower } from '../../../controllers/borrowerController';
 import { createLoan } from '../../../controllers/loanController';
 import { updateBankField } from '../../../controllers/bankController';
+import { createPayment } from '../../../controllers/paymentController';
 import { StepPurpose } from './StepPurpose';
 import { StepTerms } from './StepTerms';
 import { StepContext } from './StepContext';
@@ -67,11 +68,12 @@ export const LoanWizard: React.FC<{
   loanToEdit?: Loan;
   borrowers: Borrower[];
   onBorrowersUpdate: (borrowers: Borrower[]) => void;
+  onBorrowersRefresh?: () => Promise<void>;
   loans: Loan[];
   setLoans: (loans: Loan[]) => void;
   vaults: Vault[];
   onVaultsUpdate?: () => void;
-}> = ({ onClose, onLoanCreated, loanToEdit, borrowers, onBorrowersUpdate, loans, setLoans, vaults, onVaultsUpdate }) => {
+}> = ({ onClose, onLoanCreated, loanToEdit, borrowers, onBorrowersUpdate, onBorrowersRefresh, loans, setLoans, vaults, onVaultsUpdate }) => {
   const [step, setStep] = useState(0);
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   const [loanData, setLoanData] = useState<Partial<Loan>>(loanToEdit || {
@@ -93,7 +95,7 @@ export const LoanWizard: React.FC<{
   const { showActivity, hideActivity } = useActivity();
   
   // Obtenir les étapes dynamiques basées sur la date (par défaut: étapes futures)
-  const steps = getDynamicSteps(loanData.start_date || '');
+  const steps = React.useMemo(() => getDynamicSteps(loanData.start_date || ''), [loanData.start_date]);
 
   const handleCreateBorrower = async (borrowerData: Partial<Borrower>) => {
     const token = localStorage.getItem('authToken');
@@ -111,12 +113,23 @@ export const LoanWizard: React.FC<{
       
       const newBorrower = await addBorrower(token, user.current_pb, borrowerDataWithFullName);
       
-      // Update the borrowers list
+      // Mettre à jour immédiatement la liste locale pour que le composant BorrowerSelector voit le nouveau borrower
       const updatedBorrowers = [...borrowers, newBorrower];
       onBorrowersUpdate(updatedBorrowers);
+      console.log('✅ Borrowers list updated immediately with new borrower:', newBorrower);
+      
+      // En parallèle, recharger depuis l'API pour s'assurer de la synchronisation
+      if (onBorrowersRefresh) {
+        // Ne pas attendre cette opération pour ne pas bloquer l'interface
+        onBorrowersRefresh().then(() => {
+          console.log('✅ Borrowers list refreshed from API in background');
+        }).catch(error => {
+          console.warn('Failed to refresh borrowers from API:', error);
+        });
+      }
       
       // Auto-select the new borrower
-      setLoanData({ ...loanData, borrower_id: newBorrower.id });
+      setLoanData(prev => ({ ...prev, borrower_id: newBorrower.id }));
       
       // Clear any validation errors
       setValidationErrors({});
@@ -256,23 +269,36 @@ export const LoanWizard: React.FC<{
       }
 
       try {
-        // Déterminer le statut selon la date de début et is_funded
-        const today = new Date();
-        const startDate = new Date(loanData.start_date || '');
-        const isStartDatePastOrToday = startDate <= today;
+        // Déterminer le statut selon la date ET le choix de financement
+        let loanStatus: string;
         
-        // Si la date est dans le passé ou aujourd'hui ET que le loan est financé → "Funded" (On Track)
-        // Si la date est dans le passé ou aujourd'hui mais pas encore financé → "Funded" (On Track) quand même
-        // Si la date est dans le futur → "Funding" (To Fund)
-        const loanStatus = isStartDatePastOrToday ? 'Funded' : 'Funding';
+        // Vérifier si la date est dans le passé/présent
+        const startDate = new Date(loanData.start_date || '');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        startDate.setHours(0, 0, 0, 0);
+        const isPastOrPresent = startDate <= today;
+        
+        if (isPastOrPresent) {
+          // Date passée/présente → "Funded" (On Track) - le prêt est déjà actif
+          loanStatus = 'Funded';
+        } else {
+          // Date future → statut selon le choix de financement
+          if (loanData.is_funded === true) {
+            // Si l'utilisateur a choisi "Yes" (déjà financé) → "Funded" (On Track)
+            loanStatus = 'Funded';
+          } else {
+            // Si l'utilisateur a choisi "No" (pas encore financé) → "Funding" (To Fund)
+            loanStatus = 'Funding';
+          }
+        }
         
         // Préparer les données pour l'API
         const loanPayload = {
           loan_request_azure_id: `loan_${Date.now()}`, // Générer un ID temporaire
           nickname: loanData.nickname || '',
-          borrower_azure_id: loanData.borrower_id || '',
-          borrower_id: loanData.borrower_id || '', // Ajouter aussi ce champ
-          vault_id: loanData.vault_id || '', // Ajouter le vault_id
+          borrower_id: loanData.borrower_id || '', // Seulement borrower_id
+          vault_id: loanData.vault_id || '',
           start_date: loanData.start_date || '',
           status: loanStatus,
           loan_type: 'amortized',
@@ -296,8 +322,38 @@ export const LoanWizard: React.FC<{
           vault_id: loanData.vault_id || newLoan.vault_id || newLoan.vaultId
         };
         
-        // Ajouter le nouveau loan au tableau
-        setLoans([...loans, correctedLoan]);
+        // Créer les paiements historiques APRÈS la création du prêt si ils existent
+        let finalLoan = correctedLoan;
+        
+        if (loanData.pendingPayments && loanData.pendingPayments.length > 0) {
+          try {
+            console.log('📝 Creating historical payments AFTER loan creation...');
+            const createdPaymentIds: string[] = [];
+            
+            for (const paymentData of loanData.pendingPayments) {
+              const createdPayment = await createPayment(token, newLoan.id, {
+                amount: paymentData.amount,
+                date: paymentData.date,
+                balloon: paymentData.balloon
+              });
+              createdPaymentIds.push(createdPayment.id);
+            }
+            
+            // Mettre à jour le prêt avec les IDs des paiements créés
+            finalLoan = {
+              ...correctedLoan,
+              payments: [...(correctedLoan.payments || []), ...createdPaymentIds]
+            };
+            
+            console.log('✅ Historical payments created:', createdPaymentIds);
+          } catch (error) {
+            console.error('❌ Error creating historical payments:', error);
+          }
+        }
+
+        // Ajouter le prêt final à la liste
+        setLoans([...loans, finalLoan]);
+        console.log('✅ Loan added to list:', finalLoan);
 
         // Gérer l'onboarding si on est dans ce contexte
         if (current_pb_onboarding_state === 'add-loan') {
@@ -309,10 +365,12 @@ export const LoanWizard: React.FC<{
           }
         }
 
-        // Callback optionnel
-        if (onLoanCreated) {
-          onLoanCreated(newLoan);
-        }
+        // Callback optionnel avec un petit délai pour s'assurer que la liste est mise à jour
+        setTimeout(() => {
+          if (onLoanCreated) {
+            onLoanCreated(finalLoan);
+          }
+        }, 100);
 
         // Mettre à jour les vaults pour l'affichage dans la section loans
         if (onVaultsUpdate) {

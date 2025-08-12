@@ -30,8 +30,7 @@ export const createLoan = async (
   loanData: {
     loan_request_azure_id: string;
     nickname: string;
-    borrower_azure_id: string;
-    borrower_id?: string;
+    borrower_id: string;
     vault_id?: string;
     start_date: string;
     status: string;

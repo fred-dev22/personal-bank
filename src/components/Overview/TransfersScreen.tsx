@@ -37,7 +37,7 @@ export const TransfersScreen: React.FC<TransfersScreenProps> = ({ onBack }) => {
     {
       id: '1',
       date: 'Jul 1 - Jul 31, 2024',
-      amount: '$600',
+              amount: '$600.00',
       source: 'from Gateway 3',
       destination: 'to Vault ABC',
       gateway: 'Gateway 3'
@@ -45,7 +45,7 @@ export const TransfersScreen: React.FC<TransfersScreenProps> = ({ onBack }) => {
     {
       id: '2',
       date: 'Jul 1 - Jul 31, 2024',
-      amount: '$225',
+              amount: '$225.00',
       source: 'from Gateway 3',
       destination: 'to Vault 123',
       gateway: 'Gateway 3'
