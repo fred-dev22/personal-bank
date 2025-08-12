@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Table, TextCell, MetricCell, TagCell } from "@jbaluch/components";
-import { Transfers } from "./Vault Widgets/Transfers";
+// import { Transfers } from "./Vault Widgets/Transfers"; // Commented out - Transfers section hidden
 import { VaultFinancials } from "./Vault Widgets/VaultFinancials";
 import { SuperVaultGraphIframe } from "./Vault Widgets/SuperVaultGraphIframe";
 import { DSCRCard, MonthlyPaymentCard } from "./Vault Widgets";
