@@ -6,6 +6,7 @@ import { SuperVaultGraphIframe } from "./Vault Widgets/SuperVaultGraphIframe";
 import { DSCRCard, MonthlyPaymentCard } from "./Vault Widgets";
 import type { Vault, Loan, Borrower, Activity } from "../../types/types";
 import { EditVault } from "./EditVault";
+import { DottedUnderline } from "../ui/DottedUnderline";
 import "./VaultDetails.css";
 import summaryIcon from "../../assets/summary.svg";
 import activityIcon from "../../assets/activity.svg";
@@ -101,13 +102,27 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   console.log('vault.activities:', vaultActivityIds);
   console.log('activities ids:', activities.map(a => a.id));
   const vaultActivities = activities.filter(a => vaultActivityIds.includes(a.id));
-  const activityRows = vaultActivities.map(a => ({
-    name: a.name,
-    category: a.tag || '',
-    date: a.date ? new Date(a.date).toLocaleString('en-US', { month: 'short', day: 'numeric' }) : '',
-    amount: a.amount,
-    type: a.type,
-  }));
+  
+  // Sample activity data for demonstration (similar to Documents tab)
+  const sampleActivityRows = [
+    {
+      name: 'Loan name',
+      category: 'Loan funding',
+      date: 'Aug 11',
+      amount: 2000,
+      type: 'loan'
+    }
+  ];
+  
+  const activityRows = vaultActivities.length > 0 
+    ? vaultActivities.map(a => ({
+        name: a.name,
+        category: a.tag || '',
+        date: a.date ? new Date(a.date).toLocaleString('en-US', { month: 'short', day: 'numeric' }) : '',
+        amount: a.amount,
+        type: a.type,
+      }))
+    : sampleActivityRows;
 
   // Fonction pour obtenir le vrai balance depuis l'account associé
   const getRealBalance = () => {
@@ -452,10 +467,12 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
       case "activity":
         return (
           <section className="all-activities-table">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
               <div style={{ fontWeight: 600, fontSize: 16 }}>
-                ${vaultActivities.reduce((sum, a) => sum + (a.amount || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                <span style={{ color: '#6b6b70', fontWeight: 400, fontSize: 14, marginLeft: 8 }}>payoff amount</span>
+                ${getRealBalance().toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                <span style={{ color: '#6b6b70', fontWeight: 400, fontSize: 14, marginLeft: 8 }}>
+                  <DottedUnderline>balance</DottedUnderline>
+                </span>
               </div>
               <Button
                 icon="iconless"
@@ -469,18 +486,60 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
                 style={{ width: 120, height: 40, fontWeight: 600 }}
                 onClick={() => {}}
               >
-                Add
+                Add Activity
               </Button>
             </div>
             <Table
               columns={[
-                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: typeof activityRows[0]) => ({ text: row.name }) },
-                { key: 'category', label: 'Category', width: '100%', cellComponent: TagCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.category }) },
-                { key: 'date', label: 'Date', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.date }) },
-                { key: 'amount', label: 'Amount', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: typeof activityRows[0]) => ({ text: row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }) }) },
+                { 
+                  key: 'name', 
+                  label: 'Name', 
+                  width: '100%', 
+                  cellComponent: TextCell, 
+                  alignment: 'left', 
+                  getCellProps: (row: typeof activityRows[0]) => ({ text: row.name }) 
+                },
+                { 
+                  key: 'category', 
+                  label: 'Category', 
+                  width: '100%', 
+                  cellComponent: TagCell, 
+                  alignment: 'center', 
+                  getCellProps: (row: typeof activityRows[0]) => ({ 
+                    label: row.category,
+                    emoji: '💰',
+                    size: 'small',
+                    backgroundColor: 'rgb(221, 229, 245)',
+                    textColor: '#1976D2',
+                    severity: 'info'
+                  }) 
+                },
+                { 
+                  key: 'date', 
+                  label: 'Date', 
+                  width: '100%', 
+                  cellComponent: TextCell, 
+                  alignment: 'center', 
+                  getCellProps: (row: typeof activityRows[0]) => ({ text: row.date }) 
+                },
+                { 
+                  key: 'amount', 
+                  label: 'Amount', 
+                  width: '100%', 
+                  cellComponent: TextCell, 
+                  alignment: 'right', 
+                  getCellProps: (row: typeof activityRows[0]) => ({ 
+                    text: row.amount.toLocaleString('en-US', { 
+                      style: 'currency', 
+                      currency: 'USD', 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    }) 
+                  }) 
+                },
               ]}
               data={activityRows}
-              className="activities-table-fullwidth"
+              className="activities-table"
             />
           </section>
         );

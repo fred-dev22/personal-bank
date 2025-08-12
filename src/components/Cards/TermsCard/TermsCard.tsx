@@ -1,4 +1,6 @@
 import React from "react";
+import { DottedUnderline } from "../../ui/DottedUnderline";
+import { HelpTooltip } from "../../ui/HelpTooltip";
 import "./style.css";
 
 interface TermsCardProps {
@@ -32,7 +34,15 @@ export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startD
             </div>
             <div className="row-2">
               <div className="data-table-row">
-                <div className="label-2">Rate</div>
+                <div className="label-2">
+                  <HelpTooltip
+                    term="Rate"
+                    definition="This is the interest rate of the loan. It is an annual number. The rate and term (length) of the loan are the levers for adjusting its profit."
+                    position="top"
+                  >
+                    <DottedUnderline>Rate</DottedUnderline>
+                  </HelpTooltip>
+                </div>
               </div>
               <div className="frame-wrapper">
                 <div className="label-wrapper">
@@ -42,7 +52,15 @@ export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startD
             </div>
             <div className="row-3">
               <div className="data-table-row">
-                <div className="label-2">Type</div>
+                <div className="label-2">
+                  <HelpTooltip
+                    term="Type"
+                    definition="This loan type is amortized: due-date based. Interest accrues daily based on the current loan balance. It accrues through the due date, regardless of when the payment is made."
+                    position="top"
+                  >
+                    <DottedUnderline>Type</DottedUnderline>
+                  </HelpTooltip>
+                </div>
               </div>
               <div className="frame-wrapper">
                 <div className="label-wrapper">

@@ -80,7 +80,7 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({ amount, paid, nextDu
               <div className="label-2">
                 <HelpTooltip 
                   term="Unpaid" 
-                  definition="The unpaid balance is the remaining amount of the loan that still needs to be repaid. This includes any outstanding principal and accrued interest that has not yet been paid."
+                  definition="This is the amount that still needs to be paid to the loan. It is not the payoff amount, which includes interest that will be due at the end of the period."
                   position="top">
                   <DottedUnderline>Unpaid</DottedUnderline>
                 </HelpTooltip>
