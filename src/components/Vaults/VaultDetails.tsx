@@ -161,20 +161,17 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
       accountsJson: vault.accounts_json
     });
     
-    // Gateway : Transfers + VaultFinancials
+    // Gateway : VaultFinancials only (Transfers section hidden)
     if (vault.is_gateway) {
       return (
-        <>
-          <Transfers />
-          <VaultFinancials
-            balance={realBalance}
-            held={vault.hold ?? 0}
-            reserve={vault.reserve ?? 0}
-            pending={0}
-            available={availableToLend}
-            balanceLabel="Balance" // Label par défaut pour Gateway
-          />
-        </>
+        <VaultFinancials
+          balance={realBalance}
+          held={vault.hold ?? 0}
+          reserve={vault.reserve ?? 0}
+          pending={0}
+          available={availableToLend}
+          balanceLabel="Balance" // Label par défaut pour Gateway
+        />
       );
     }
 
