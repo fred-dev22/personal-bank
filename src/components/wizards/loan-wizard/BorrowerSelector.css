@@ -58,9 +58,10 @@
 }
 
 .borrower-name {
-  font-weight: 600;
-  color: #333;
+  font-weight: 400;
+  color: #666666;
   margin-bottom: 4px;
+  font-size: 11px;
 }
 
 .borrower-details {

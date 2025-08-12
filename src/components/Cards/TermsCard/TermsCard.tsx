@@ -26,7 +26,7 @@ export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startD
               </div>
               <div className="frame-wrapper">
                 <div className="label-wrapper">
-                  <div className="label-3">{amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</div>
+                  <div className="label-3">{amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
               </div>
             </div>

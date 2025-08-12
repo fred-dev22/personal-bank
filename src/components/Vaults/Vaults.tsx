@@ -46,12 +46,12 @@ function getAvailable(vault: Vault) {
 function getTotalSpread(vault: Vault) {
   if (vault.type === 'super vault') {
     if (vault.spread !== undefined && vault.spread !== null && vault.spread !== '') {
-      return `${Number(vault.spread).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+      return `${Number(vault.spread).toFixed(2)}%`;
     }
     return 'TBD';
   }
   if (vault.liquidity_source && typeof vault.liquidity_source.appreciation === 'number') {
-    return `${vault.liquidity_source.appreciation.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+    return `${vault.liquidity_source.appreciation.toFixed(2)}%`;
   }
   return 'n/a';
 }

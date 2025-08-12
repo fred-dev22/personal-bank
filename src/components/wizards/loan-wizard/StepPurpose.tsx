@@ -6,7 +6,7 @@ import '@jbaluch/components/styles';
 
 export const StepPurpose: React.FC<{
   loanData: Partial<Loan>;
-  setLoanData: (data: Partial<Loan>) => void;
+  setLoanData: React.Dispatch<React.SetStateAction<Partial<Loan>>>;
   validationErrors?: {[key: string]: string};
 }> = ({ loanData, setLoanData, validationErrors = {} }) => {
   return (
@@ -21,8 +21,9 @@ export const StepPurpose: React.FC<{
             placeholder="Enter loan name or ID"
             required
             value={loanData.nickname || ''}
-            onChange={(value: string) => setLoanData({ ...loanData, nickname: value })}
+            onChange={(value: string) => setLoanData(prev => ({ ...prev, nickname: value }))}
             error={validationErrors.nickname}
+            style={{ width: '350px' }}
           />
         </div>
         
@@ -31,12 +32,13 @@ export const StepPurpose: React.FC<{
             label="Purpose"
             placeholder="Type here..."
             value={loanData.comments || ''}
-            onChange={(value: string) => setLoanData({ ...loanData, comments: value })}
+            onChange={(value: string) => setLoanData(prev => ({ ...prev, comments: value }))}
             type="multiline"
             multiline={{
-              maxHeight: 300,
+              maxHeight: 150,
               maxLength: 500,
             }}
+            style={{ width: '350px', height: '150px' }}
           />
         </div>
       </div>

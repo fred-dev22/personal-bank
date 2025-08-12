@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Button } from '@jbaluch/components';
 import type { Borrower } from '../../../types/types';
+import { formatCurrency } from '../../../utils/currencyUtils';
 import './BorrowerSelector.css';
 
 interface BorrowerSelectorProps {
@@ -38,7 +39,7 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
         console.log('🔍 Found borrower:', borrower);
         // L'API utilise first_name et last_name (avec underscore)
         const fullName = `${borrower.firstName || borrower.first_name || ''} ${borrower.lastName || borrower.last_name || ''}`.trim();
-        setInputValue(fullName);
+        setInputValue(fullName || '');
         setSelectedBorrower(borrower);
         setShowNewBorrowerPopup(false); // Fermer le popup si ouvert
       }
@@ -52,31 +53,37 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
 
   // Update filtered borrowers when borrowers list changes
   useEffect(() => {
+    console.log('🔍 BorrowerSelector - borrowers list updated:', borrowers);
     setFilteredBorrowers(borrowers);
   }, [borrowers]);
 
   // Filter borrowers based on input
   useEffect(() => {
-    if (inputValue.trim()) {
+    console.log('🔍 BorrowerSelector - filtering borrowers. inputValue:', inputValue, 'borrowers count:', borrowers.length);
+    if (inputValue && inputValue.trim()) {
       const filtered = borrowers.filter(borrower => {
         // L'API utilise first_name et last_name (avec underscore)
         const fullName = `${borrower.firstName || borrower.first_name || ''} ${borrower.lastName || borrower.last_name || ''}`.toLowerCase();
         return fullName.includes(inputValue.toLowerCase());
       });
+      console.log('🔍 BorrowerSelector - filtered borrowers:', filtered);
       setFilteredBorrowers(filtered);
     } else {
+      console.log('🔍 BorrowerSelector - showing all borrowers:', borrowers);
       setFilteredBorrowers(borrowers);
     }
   }, [inputValue, borrowers]);
 
-  const handleInputChange = (newValue: string) => {
+  const handleInputChange = (newValue: string | null) => {
     console.log('handleInputChange called with:', newValue);
-    setInputValue(newValue);
+    // Gérer le cas où newValue est null
+    const safeValue = newValue || '';
+    setInputValue(safeValue);
     setSelectedBorrower(null);
     setAutofillStatus('off');
     
     // If user clears the input, reset everything
-    if (!newValue.trim()) {
+    if (!safeValue.trim()) {
       onChange('');
     }
   };
@@ -85,7 +92,7 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
     // L'API utilise first_name et last_name (avec underscore)
     const fullName = `${borrower.firstName || borrower.first_name || ''} ${borrower.lastName || borrower.last_name || ''}`.trim();
     console.log('Selecting borrower:', borrower, 'Full name:', fullName);
-    setInputValue(fullName);
+    setInputValue(fullName || '');
     setSelectedBorrower(borrower);
     setShowDropdown(false);
     setAutofillStatus('filled');
@@ -108,7 +115,7 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
 
   // Fonction exposée pour vérifier et ouvrir le popup depuis l'extérieur
   const checkAndOpenPopup = () => {
-    if (inputValue.trim() && !selectedBorrower && filteredBorrowers.length === 0) {
+    if (inputValue && inputValue.trim() && !selectedBorrower && filteredBorrowers.length === 0) {
       setShowNewBorrowerPopup(true);
       return true;
     }
@@ -186,7 +193,7 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
              label="Borrower"
              placeholder="Type borrower name"
              required
-             value={inputValue}
+             value={inputValue || ''}
              onChange={handleInputChange}
              onFocus={() => {
                setShowDropdown(true);
@@ -227,18 +234,16 @@ export const BorrowerSelector: React.FC<BorrowerSelectorProps> = ({
                  e.preventDefault(); // Prevent input blur
                  handleBorrowerSelect(borrower);
                }}
-               style={{ 
-                 cursor: 'pointer', 
-                 padding: '5px', 
-                 border: 'none',
-                 borderBottom: '1px solid #f0f0f0',
-                 fontSize: '12px',
-                 color: '#666',
-                 textAlign: 'left',
-                 transition: 'background-color 0.2s ease',
-                 backgroundColor: 'transparent',
-                 width: '100%'
-               }}
+                               style={{ 
+                  cursor: 'pointer', 
+                  padding: '5px', 
+                  border: 'none',
+                  borderBottom: '1px solid #f0f0f0',
+                  textAlign: 'left',
+                  transition: 'background-color 0.2s ease',
+                  backgroundColor: 'transparent',
+                  width: '100%'
+                }}
                onMouseEnter={(e) => {
                  e.currentTarget.style.backgroundColor = '#f5f5f5';
                }}
@@ -344,7 +349,7 @@ const NewBorrowerPopup: React.FC<{
                  placeholder="First name"
                  required
                  value={formData.firstName}
-                 onChange={(value: string) => setFormData({ ...formData, firstName: value })}
+                 onChange={(value: string) => setFormData(prev => ({ ...prev, firstName: value }))}
                />
              </div>
              <div className="borrower-form-group">
@@ -352,7 +357,7 @@ const NewBorrowerPopup: React.FC<{
                  label="Email"
                  placeholder="name@email.com"
                  value={formData.email}
-                 onChange={(value: string) => setFormData({ ...formData, email: value })}
+                 onChange={(value: string) => setFormData(prev => ({ ...prev, email: value }))}
                />
              </div>
            </div>
@@ -363,7 +368,7 @@ const NewBorrowerPopup: React.FC<{
                  label="Last Name"
                  placeholder="Last name"
                  value={formData.lastName}
-                 onChange={(value: string) => setFormData({ ...formData, lastName: value })}
+                 onChange={(value: string) => setFormData(prev => ({ ...prev, lastName: value }))}
                />
              </div>
              <div className="borrower-form-group">
@@ -371,7 +376,7 @@ const NewBorrowerPopup: React.FC<{
                  label="Phone Number"
                  placeholder="(123) 123-4567"
                  value={formData.phone}
-                 onChange={(value: string) => setFormData({ ...formData, phone: value })}
+                 onChange={(value: string) => setFormData(prev => ({ ...prev, phone: value }))}
                />
              </div>
            </div>
@@ -380,9 +385,9 @@ const NewBorrowerPopup: React.FC<{
              <div className="borrower-form-group">
                <Input
                  label="Annual Income"
-                 placeholder="$50,000"
-                 value={formData.grossIncome}
-                 onChange={(value: string) => setFormData({ ...formData, grossIncome: value })}
+                 placeholder="$50,000.00"
+                 value={formData.grossIncome ? formatCurrency(parseFloat(formData.grossIncome.replace(/[$,]/g, '')) || 0) : ''}
+                 onChange={(value: string) => setFormData(prev => ({ ...prev, grossIncome: value.replace(/[$,]/g, '') }))}
                />
              </div>
            </div>

@@ -27,7 +27,7 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({ amount, paid, nextDu
             </div>
             <div className="frame-wrapper">
               <div className="label-wrapper">
-                <div className="label-3">{amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</div>
+                <div className="label-3">{amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               </div>
             </div>
           </div>
@@ -71,7 +71,7 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({ amount, paid, nextDu
             </div>
             <div className="frame-wrapper">
               <div className="label-wrapper">
-                <div className="label-3">{balance.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</div>
+                <div className="label-3">{balance.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               </div>
             </div>
           </div>

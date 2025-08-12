@@ -8,7 +8,7 @@ import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
 import { Modal } from '../Modal/Modal';
 import { AddBorrower } from './AddBorrower';
-import { fetchBorrowers, addBorrower } from '../../controllers/borrowerController';
+import { addBorrower } from '../../controllers/borrowerController';
 import { useAuth } from '../../contexts/AuthContext';
 import { useActivity } from '../../contexts/ActivityContext';
 import { BorrowerDetails } from './BorrowerDetails';
@@ -25,6 +25,7 @@ interface BorrowerProps {
   onBackToList?: () => void;
   className?: string;
   onShowLoanDetails?: (loanId: string) => void;
+  onBorrowersUpdate?: (borrowers: BorrowerType[]) => void;
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -60,7 +61,8 @@ export const Borrower: React.FC<BorrowerProps> = ({
   selectedBorrowerId,
   onBackToList,
   className = "",
-  onShowLoanDetails
+  onShowLoanDetails,
+  onBorrowersUpdate
 }) => {
   console.log('!!! Borrower ACTIF !!!');
   const { user } = useAuth();
@@ -156,20 +158,7 @@ export const Borrower: React.FC<BorrowerProps> = ({
     setIsModalOpen(false);
   };
 
-  const refreshBorrowers = async () => {
-    const token = localStorage.getItem('authToken');
-    const bankId = user?.current_pb;
-    if (!token || !bankId) return;
-    try {
-      showActivity('Loading borrowers...');
-      const data = await fetchBorrowers(token, bankId);
-      setBorrowers(data);
-      hideActivity();
-    } catch {
-      hideActivity();
-      // Optionally handle error
-    }
-  };
+
 
   const handleAddBorrowerApi = async (data: Partial<BorrowerType>) => {
     const token = localStorage.getItem('authToken');
@@ -177,12 +166,22 @@ export const Borrower: React.FC<BorrowerProps> = ({
     if (!token || !bankId) return;
     try {
       showActivity('Creating borrower...');
-      await addBorrower(token, bankId, {
+      const newBorrower = await addBorrower(token, bankId, {
         ...data,
         userId: user?.id,
         bankId: bankId,
       });
-      await refreshBorrowers();
+      
+      // Mettre à jour la liste locale immédiatement
+      const updatedBorrowers = [...borrowers, newBorrower];
+      setBorrowers(updatedBorrowers);
+      
+      // Mettre à jour la liste globale si la fonction est fournie
+      if (onBorrowersUpdate) {
+        onBorrowersUpdate(updatedBorrowers);
+        console.log('✅ Global borrowers list updated from Borrower component');
+      }
+      
       hideActivity();
       setIsModalOpen(false);
     } catch {

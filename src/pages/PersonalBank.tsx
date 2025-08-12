@@ -100,8 +100,17 @@ const PersonalBankContent: React.FC = () => {
       const data = await fetchBorrowers(token, bankId);
       setBorrowers(data);
       console.log('Borrowers fetched via API:', data);
+      return data; // Retourner les données pour confirmer que l'opération est terminée
     } catch (error) {
       console.error('Error fetching borrowers:', error);
+      throw error; // Propager l'erreur
+    }
+  };
+
+  // Fonction pour recharger les borrowers (exposée pour d'autres composants)
+  const refreshBorrowers = async () => {
+    if (user?.current_pb) {
+      await getBorrowers(user, setBorrowers);
     }
   };
 
@@ -228,9 +237,11 @@ const PersonalBankContent: React.FC = () => {
   const handleLoanCreated = (loan: Loan) => {
     // Le loan est déjà ajouté à la liste par setLoans dans le wizard
     
-    // Si on n'est pas en onboarding, rediriger vers les détails du loan
+    // Fermer le wizard
+    setShowLoanWizard(false);
+    
+    // Si on n'est pas en onboarding, rediriger vers les détails du prêt créé
     if (current_pb_onboarding_state === 'done' || !current_pb_onboarding_state) {
-      setShowLoanWizard(false);
       setTimeout(() => {
         setSelectedLoanId(loan.id);
         setCurrentPage('loans');
@@ -276,6 +287,7 @@ const PersonalBankContent: React.FC = () => {
         onLoanCreated={handleLoanCreated}
         borrowers={borrowers}
         onBorrowersUpdate={setBorrowers}
+        onBorrowersRefresh={refreshBorrowers}
         loans={loans}
         setLoans={setLoans}
         vaults={vaults}
@@ -324,12 +336,12 @@ const PersonalBankContent: React.FC = () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} onAddLoan={() => setShowLoanWizard(true)} onVaultUpdate={handleVaultUpdated} onEditVault={handleEditVault} />}
         {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
-        {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={(loanId) => {
-          setSelectedLoanId(loanId);
-          setCurrentPage('loans');
-          // Scroll vers le haut de la page
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }} />}
+                 {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={(loanId) => {
+           setSelectedLoanId(loanId);
+           setCurrentPage('loans');
+           // Scroll vers le haut de la page
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+         }} onBorrowersUpdate={setBorrowers} />}
         {currentPage === 'settings' && <Settings />}
       </div>
       {isVisible && (

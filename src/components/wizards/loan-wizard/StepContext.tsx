@@ -5,7 +5,7 @@ import type { Loan } from '../../../types/types';
 
 interface StepContextProps {
   loanData: Partial<Loan>;
-  setLoanData: (data: Partial<Loan>) => void;
+  setLoanData: React.Dispatch<React.SetStateAction<Partial<Loan>>>;
   validationErrors?: {[key: string]: string};
   onNext: () => void; // Fonction pour avancer automatiquement
 }
@@ -22,11 +22,11 @@ export const StepContext: React.FC<StepContextProps> = ({
   const handleChoice = (choice: boolean) => {
     if (choice) {
       // Si "Yes", ouvrir le popup pour la date
-      setLoanData({ ...loanData, is_funded: true });
+      setLoanData(prev => ({ ...prev, is_funded: true }));
       setShowDatePopup(true);
     } else {
       // Si "No", avancer directement
-      setLoanData({ ...loanData, is_funded: false });
+      setLoanData(prev => ({ ...prev, is_funded: false }));
       setTimeout(() => {
         onNext();
       }, 300);
@@ -36,7 +36,7 @@ export const StepContext: React.FC<StepContextProps> = ({
   const handleConfirmDate = () => {
     if (fundingDate) {
       // Stocker la date de financement dans les commentaires ou un autre champ existant
-      setLoanData({ ...loanData, is_funded: true, comments: (loanData.comments || '') + `Funding date: ${fundingDate}` });
+      setLoanData(prev => ({ ...prev, is_funded: true, comments: (prev.comments || '') + `Funding date: ${fundingDate}` }));
       setShowDatePopup(false);
       setTimeout(() => {
         onNext();
@@ -46,7 +46,7 @@ export const StepContext: React.FC<StepContextProps> = ({
 
   const handleCancelDate = () => {
     setShowDatePopup(false);
-    setLoanData({ ...loanData, is_funded: undefined });
+    setLoanData(prev => ({ ...prev, is_funded: undefined }));
   };
 
 
@@ -191,6 +191,7 @@ export const StepContext: React.FC<StepContextProps> = ({
                 value={fundingDate}
                 onChange={(value: string) => setFundingDate(value)}
                 style={{ width: '100%' }}
+                maxDate={new Date().toISOString().split('T')[0]}
               />
             </div>
              

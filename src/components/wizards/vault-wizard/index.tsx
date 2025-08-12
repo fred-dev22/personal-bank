@@ -51,6 +51,7 @@ export const VaultWizard: React.FC<{
   vaultToEdit?: Vault;
   vaultType?: 'cash' | 'super';
   gatewayMode?: boolean;
+
 }> = ({ onClose, onVaultCreated, onGatewayCreated, vaultToEdit, vaultType, gatewayMode }) => {
   // En mode édition, déterminer le type depuis vaultToEdit
   const editingType = vaultToEdit ? (vaultToEdit.type === 'super vault' ? 'super' : 'cash') : undefined;
@@ -171,40 +172,40 @@ export const VaultWizard: React.FC<{
     }
   }, [vaultToEdit, type]);
 
-  // Mettre à jour les valeurs par défaut quand le type change
+  // Mettre à jour les valeurs par défaut quand le type change (seulement si les valeurs n'existent pas)
   React.useEffect(() => {
     if (type === 'cash' && !gatewayMode) {
       setVaultData(prev => ({
         ...prev,
-        name: prev.name || 'Cash Vault',
-        nickname: prev.nickname || 'Cash Vault',
-        amount: prev.amount || 0,
-        interestRate: prev.interestRate || '5.00%',
-        accountType: prev.accountType || 'Savings',
-        reserve: prev.reserve || 1000,
+        name: prev.name !== undefined && prev.name !== '' ? prev.name : 'Cash Vault',
+        nickname: prev.nickname !== undefined && prev.nickname !== '' ? prev.nickname : 'Cash Vault',
+        amount: prev.amount !== undefined && prev.amount !== 0 ? prev.amount : 0,
+        interestRate: prev.interestRate !== undefined && prev.interestRate !== '' ? prev.interestRate : '5.00%',
+        accountType: prev.accountType !== undefined && prev.accountType !== '' ? prev.accountType : 'Savings',
+        reserve: prev.reserve !== undefined && prev.reserve !== 0 ? prev.reserve : 1000,
         reserve_type: prev.reserve_type || ('amount' as HoldReserveType),
-        hold: prev.hold || 500,
+        hold: prev.hold !== undefined && prev.hold !== 0 ? prev.hold : 500,
         hold_type: prev.hold_type || ('amount' as HoldReserveType),
       }));
     } else if (type === 'super' && !gatewayMode) {
       setVaultData(prev => ({
         ...prev,
-        name: prev.name || 'Super Vault',
-        nickname: prev.nickname || 'Super Vault',
-        amount: prev.amount || 30000,
-        assetType: prev.assetType || 'Indexed Universal Life',
-        assetStartDate: prev.assetStartDate || '2025-01-01',
-        annualNonMecLimit: prev.annualNonMecLimit || '39000.00',
-        annualGuidelineAmount: prev.annualGuidelineAmount || '15000.00',
-        annualGrowthRate: prev.annualGrowthRate || '7.00',
-        premiumPaidThisYear: prev.premiumPaidThisYear || '30000.00',
-        debtBalance: prev.debtBalance || '0.00',
-        debtCeilingRate: prev.debtCeilingRate || '5.00',
-        debtLtv: prev.debtLtv || '90.00',
+        name: prev.name !== undefined && prev.name !== '' ? prev.name : 'Super Vault',
+        nickname: prev.nickname !== undefined && prev.nickname !== '' ? prev.nickname : 'Super Vault',
+        amount: prev.amount !== undefined && prev.amount !== 0 ? prev.amount : 30000,
+        assetType: prev.assetType !== undefined && prev.assetType !== '' ? prev.assetType : 'Indexed Universal Life',
+        assetStartDate: prev.assetStartDate !== undefined && prev.assetStartDate !== '' ? prev.assetStartDate : '2025-01-01',
+        annualNonMecLimit: prev.annualNonMecLimit !== undefined && prev.annualNonMecLimit !== '' ? prev.annualNonMecLimit : '39000.00',
+        annualGuidelineAmount: prev.annualGuidelineAmount !== undefined && prev.annualGuidelineAmount !== '' ? prev.annualGuidelineAmount : '15000.00',
+        annualGrowthRate: prev.annualGrowthRate !== undefined && prev.annualGrowthRate !== '' ? prev.annualGrowthRate : '7.00',
+        premiumPaidThisYear: prev.premiumPaidThisYear !== undefined && prev.premiumPaidThisYear !== '' ? prev.premiumPaidThisYear : '30000.00',
+        debtBalance: prev.debtBalance !== undefined && prev.debtBalance !== '' ? prev.debtBalance : '0.00',
+        debtCeilingRate: prev.debtCeilingRate !== undefined && prev.debtCeilingRate !== '' ? prev.debtCeilingRate : '5.00',
+        debtLtv: prev.debtLtv !== undefined && prev.debtLtv !== '' ? prev.debtLtv : '90.00',
         creditLimitType: prev.creditLimitType || ('percentage' as CreditLimitType),
-        reserve: prev.reserve || 10,
+        reserve: prev.reserve !== undefined && prev.reserve !== 0 ? prev.reserve : 10,
         reserve_type: prev.reserve_type || ('percentage' as HoldReserveType),
-        hold: prev.hold || 10,
+        hold: prev.hold !== undefined && prev.hold !== 0 ? prev.hold : 10,
         hold_type: prev.hold_type || ('percentage' as HoldReserveType),
       }));
     }
@@ -698,7 +699,7 @@ export const VaultWizard: React.FC<{
           selectedType={type || ''}
           onSelect={t => {
             setType(t as 'cash' | 'super');
-                         setVaultData({ ...vaultData, type: t === 'cash' ? ('cash vault' as VaultType) : ('super vault' as VaultType) });
+                         setVaultData(prev => ({ ...prev, type: t === 'cash' ? ('cash vault' as VaultType) : ('super vault' as VaultType) }));
           }}
           onTypeSelected={() => setStep(1)}
         />

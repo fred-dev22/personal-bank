@@ -4,7 +4,7 @@ import type { Vault, CreditLimitType } from '../../../types/types';
 
 export const StepDebt: React.FC<{
   vaultData: Vault;
-  setVaultData: (data: Vault) => void;
+  setVaultData: React.Dispatch<React.SetStateAction<Vault>>;
   validationErrors?: {[key: string]: string};
 }> = ({ vaultData, setVaultData, validationErrors = {} }) => {
   // Calculer l'Equity en soustrayant le debt balance de la valeur totale de l'asset
@@ -28,7 +28,7 @@ export const StepDebt: React.FC<{
                 placeholder="Enter outstanding balance"
                 required
                 value={vaultData.debtBalance || '0.00'}
-                onChange={(value: string) => setVaultData({ ...vaultData, debtBalance: value })}
+                onChange={(value: string) => setVaultData(prev => ({ ...prev, debtBalance: value }))}
                 error={validationErrors.debtBalance}
                 type="currency"
                 style={{ height: '40px' }}
@@ -44,7 +44,7 @@ export const StepDebt: React.FC<{
                 placeholder="Enter interest rate"
                 required
                 value={vaultData.debtCeilingRate || '5.00'}
-                onChange={(value: string) => setVaultData({ ...vaultData, debtCeilingRate: value })}
+                onChange={(value: string) => setVaultData(prev => ({ ...prev, debtCeilingRate: value }))}
                 error={validationErrors.debtCeilingRate}
                 type="percentage"
                 style={{ height: '40px' }}
@@ -62,7 +62,7 @@ export const StepDebt: React.FC<{
                  <div style={{ width: '20%' }}>
                    <select
                                          value={vaultData.creditLimitType || 'percentage'}
-                    onChange={(e) => setVaultData({ ...vaultData, creditLimitType: e.target.value as CreditLimitType })}
+                    onChange={(e) => setVaultData(prev => ({ ...prev, creditLimitType: e.target.value as CreditLimitType }))}
                     style={{
                       width: '100%',
                       height: '40px',
@@ -81,7 +81,7 @@ export const StepDebt: React.FC<{
                    <Input
                     placeholder="Enter credit limit"
                     value={vaultData.debtLtv || '90.00'}
-                    onChange={(value: string) => setVaultData({ ...vaultData, debtLtv: value })}
+                    onChange={(value: string) => setVaultData(prev => ({ ...prev, debtLtv: value }))}
                     error={validationErrors.debtLtv}
                                          type={vaultData.creditLimitType === 'amount' ? 'currency' : 'percentage'}
                     style={{ height: '40px' }}
@@ -105,7 +105,7 @@ export const StepDebt: React.FC<{
             }}>
                              {/* Equity en haut à gauche */}
                <div style={{ marginBottom: 16 }}>
-                 <div style={{ fontSize: 24, fontWeight: 700, color: '#000' }}>${equity.toLocaleString()}</div>
+                 <div style={{ fontSize: 24, fontWeight: 700, color: '#000' }}>${equity.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                  <div style={{ fontSize: 12, color: '#666' }}>Equity</div>
                </div>
               <div style={{ marginBottom: 16 }}>

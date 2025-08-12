@@ -107,7 +107,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
             const value = context.parsed;
             const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
             const percentage = ((value / total) * 100).toFixed(1);
-            return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+            return `${label}: $${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${percentage}%)`;
           },
         },
       },
@@ -129,7 +129,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
       textAlign: 'center',
     }}>
       <div style={{ fontWeight: 700, fontSize: 24, marginBottom: 8 }}>
-        ${isSuperVault ? creditLimit.toLocaleString() : totalAmount.toLocaleString()}
+        ${isSuperVault ? creditLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
       <div style={{ color: '#595959', fontSize: 14, marginBottom: 16 }}>
         {isSuperVault ? 'Credit limit' : title}
@@ -146,7 +146,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
           pointerEvents: 'none',
         }}>
           <div style={{ fontWeight: 700, fontSize: 22, color: '#0d1728' }}>
-            ${available.toLocaleString()}
+            ${available.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ fontSize: 13, color: '#595959' }}>
             Available to lend
@@ -170,7 +170,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
             backgroundColor: '#00B5AE' 
           }} />
           <span style={{ fontSize: 12, color: '#595959' }}>
-            Available: ${available.toLocaleString()}
+            Available: ${available.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', width: '100%' }}>
@@ -181,7 +181,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
             backgroundColor: '#1B4A7B' 
           }} />
           <span style={{ fontSize: 12, color: '#595959' }}>
-            {isSuperVault ? 'Safety buffer' : 'Reserve'}: ${isSuperVault ? reserveValue.toLocaleString() : reserve.toLocaleString()}
+            {isSuperVault ? 'Safety buffer' : 'Reserve'}: ${isSuperVault ? reserveValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : reserve.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
                  {isSuperVault ? (
@@ -194,7 +194,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
                          backgroundColor: '#808080' 
                        }} />
                        <span style={{ fontSize: 12, color: '#595959' }}>
-                         Debt balance: ${Math.max(0, debtBalance).toLocaleString()}
+                         Debt balance: ${Math.max(0, debtBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                        </span>
                      </div>
                      {holdValue > 0 && (
@@ -206,7 +206,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
                            backgroundColor: '#B49D47' 
                          }} />
                          <span style={{ fontSize: 12, color: '#595959' }}>
-                           Hold: ${holdValue.toLocaleString()}
+                           Hold: ${holdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                          </span>
                        </div>
                      )}
@@ -221,7 +221,7 @@ export const VaultChart: React.FC<VaultChartProps> = ({
                         backgroundColor: '#B49D47' 
                       }} />
                       <span style={{ fontSize: 12, color: '#595959' }}>
-                        Hold: ${hold.toLocaleString()}
+                        Hold: ${hold.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                   )

@@ -4,16 +4,17 @@ import { Input, PopupButton } from '@jbaluch/components';
 import { BorrowerSelector } from './BorrowerSelector';
 import { SelectDate } from '../../SelectDate';
 import { calculateMonthlyPayment, formatCurrency } from './utils';
+import { formatCurrency as formatCurrencyGlobal } from '../../../utils/currencyUtils';
 
 export const StepTerms: React.FC<{
   loanData: Partial<Loan>;
-  setLoanData: (data: Partial<Loan>) => void;
+  setLoanData: React.Dispatch<React.SetStateAction<Partial<Loan>>>;
   borrowers: Borrower[];
   onCreateBorrower: (borrowerData: Partial<Borrower>) => void;
   validationErrors?: {[key: string]: string};
 }> = ({ loanData, setLoanData, borrowers, onCreateBorrower, validationErrors = {} }) => {
   const handleBorrowerChange = (borrowerId: string) => {
-    setLoanData({ ...loanData, borrower_id: borrowerId });
+    setLoanData(prev => ({ ...prev, borrower_id: borrowerId }));
   };
 
   // Calculer le paiement mensuel quand les 3 champs sont remplis
@@ -48,7 +49,7 @@ export const StepTerms: React.FC<{
             placeholder="Enter term"
             required
             value={loanData.initial_number_of_payments?.toString() || ''}
-            onChange={(value: string) => setLoanData({ ...loanData, initial_number_of_payments: value ? parseInt(value) : undefined })}
+            onChange={(value: string) => setLoanData(prev => ({ ...prev, initial_number_of_payments: value ? parseInt(value) : undefined }))}
             error={validationErrors.initial_number_of_payments}
           />
         </div>
@@ -58,7 +59,7 @@ export const StepTerms: React.FC<{
              label="First payment date"
              placeholder="Select first payment date"
              value={loanData.start_date || ''}
-             onChange={(value: string) => setLoanData({ ...loanData, start_date: value })}
+             onChange={(value: string) => setLoanData(prev => ({ ...prev, start_date: value }))}
              required
              error={validationErrors.start_date}
            />
@@ -71,7 +72,7 @@ export const StepTerms: React.FC<{
              required
              type="percentage"
              value={loanData.initial_annual_rate?.toString() || ''}
-             onChange={(value: string) => setLoanData({ ...loanData, initial_annual_rate: value ? parseFloat(value) : undefined })}
+             onChange={(value: string) => setLoanData(prev => ({ ...prev, initial_annual_rate: value ? parseFloat(value) : undefined }))}
              error={validationErrors.initial_annual_rate}
            />
          </div>
@@ -82,8 +83,8 @@ export const StepTerms: React.FC<{
              placeholder="Enter amount"
              required
              type="currency"
-             value={loanData.initial_balance?.toString() || ''}
-             onChange={(value: string) => setLoanData({ ...loanData, initial_balance: value ? parseFloat(value) : undefined })}
+             value={loanData.initial_balance ? formatCurrencyGlobal(loanData.initial_balance) : ''}
+             onChange={(value: string) => setLoanData(prev => ({ ...prev, initial_balance: value ? parseFloat(value.replace(/[$,]/g, '')) : undefined }))}
              error={validationErrors.initial_balance}
            />
          </div>
@@ -108,7 +109,7 @@ export const StepTerms: React.FC<{
             label="Type"
             menuStyle="text"
             onSelect={(selectedId: string) => {
-              setLoanData({ ...loanData, loan_type: selectedId });
+              setLoanData(prev => ({ ...prev, loan_type: selectedId }));
             }}
             width="100%"
             menuMaxHeight="200px"
