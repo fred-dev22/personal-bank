@@ -81,7 +81,26 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
   if (selectedVaultId) {
     const vault = vaults.find(v => v.id === selectedVaultId);
     if (vault) {
-      return <VaultDetails vault={vault} loans={loans} borrowers={borrowers} activities={activities} onBack={onBackToList || (() => {})} onShowLoanDetails={onShowLoanDetails} onAddLoan={onAddLoan} onVaultUpdate={onVaultUpdate} onEditVault={onEditVault} />;
+      return <VaultDetails 
+        vault={vault} 
+        loans={loans} 
+        borrowers={borrowers} 
+        activities={activities} 
+        onBack={onBackToList || (() => {})} 
+        onShowLoanDetails={onShowLoanDetails} 
+        onAddLoan={onAddLoan} 
+        onVaultUpdate={onVaultUpdate} 
+        onEditVault={onEditVault}
+        onAddActivity={(data) => {
+          console.log('Activity added:', data);
+          // TODO: Implement activity creation logic
+        }}
+        accounts={[
+          { value: 'line_of_credit', label: 'Line of Credit' },
+          { value: 'checking', label: 'Checking Account' },
+          { value: 'savings', label: 'Savings Account' },
+        ]}
+      />;
     }
   }
 

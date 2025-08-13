@@ -5,9 +5,10 @@ import '@jbaluch/components/styles';
 import "./activities.css";
 import { Header } from "./Header";
 import { AddEditActivity } from "./AddEditActivity";
+import { createGeneralActivityConfig } from "./activityConfigs";
 import { FilterPopover } from "../FilterPopover/FilterPopover";
 import type { FilterField } from "../FilterPopover/FilterPopover";
-import type { Activity } from '../../types/types';
+import type { Activity, Vault, Loan } from '../../types/types';
 import type { FilterValue } from '../FilterPopover/FilterPopover';
 
 const SearchIcon = () => <img src={"/search.svg"} alt="search" />;
@@ -17,6 +18,9 @@ interface ActivitiesProps {
   activities: Activity[];
   loading: boolean;
   error: string | null;
+  vaults?: Vault[];
+  loans?: Loan[];
+  accounts?: Array<{ value: string; label: string }>;
 }
 
 function groupByMonth(activities: Activity[]) {
@@ -29,7 +33,7 @@ function groupByMonth(activities: Activity[]) {
   }, {} as Record<string, Activity[]>);
 }
 
-export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, error }) => {
+export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, error, vaults = [], loans = [], accounts = [] }) => {
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -48,6 +52,9 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
     if (typeof v === 'object') return v.min || v.max;
     return false;
   }).length;
+
+  // Create activity configuration for the general activities page
+  const activityConfig = createGeneralActivityConfig(vaults, loans, accounts);
 
   // Champs de filtre pour les activités
   const filterFields: FilterField[] = [
@@ -213,7 +220,12 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
   ];
 
   return (
-    <div style={{ display: 'flex', gap: '32px' }}>
+    <div style={{ 
+      display: 'flex', 
+      gap: '32px',
+      marginRight: selectedActivity ? '400px' : '0px',
+      transition: 'margin-right 0.3s ease'
+    }}>
       <section className="activities" style={{ flex: 1, minWidth: 0 }}>
         <header className="page-toolbar">
           <div className="page-header">
@@ -315,6 +327,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
         <AddEditActivity
           open={showAddModal}
           mode="add"
+          config={activityConfig}
           onClose={() => setShowAddModal(false)}
           onSubmit={() => {
             setShowAddModal(false);
@@ -373,6 +386,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
       <AddEditActivity
         open={!!selectedActivity}
         mode="edit"
+        config={activityConfig}
         initialData={selectedActivity || {}}
         onClose={() => setSelectedActivity(null)}
         onSubmit={() => {

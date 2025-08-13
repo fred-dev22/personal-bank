@@ -7,6 +7,8 @@ import { DSCRCard, MonthlyPaymentCard } from "./Vault Widgets";
 import type { Vault, Loan, Borrower, Activity } from "../../types/types";
 import { EditVault } from "./EditVault";
 import { DottedUnderline } from "../ui/DottedUnderline";
+import { AddEditActivity } from "../Activities/AddEditActivity";
+import { createSimpleVaultConfig } from "../Activities/activityConfigs";
 import "./VaultDetails.css";
 import summaryIcon from "../../assets/summary.svg";
 import activityIcon from "../../assets/activity.svg";
@@ -55,6 +57,8 @@ interface VaultDetailsProps {
   onAddLoan?: () => void;
   onVaultUpdate?: (updatedVault: Vault) => void;
   onEditVault?: (vault: Vault) => void;
+  onAddActivity?: (data: any) => void;
+  accounts?: Array<{ value: string; label: string }>;
 }
 
 export const VaultDetails: React.FC<VaultDetailsProps> = ({
@@ -66,10 +70,14 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   onShowLoanDetails,
   onAddLoan,
   onVaultUpdate,
-  onEditVault
+  onEditVault,
+  onAddActivity,
+  accounts = []
 }) => {
   const [activeTab, setActiveTab] = useState("summary");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [showAddActivityModal, setShowAddActivityModal] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
   const handleSetupVault = (vault: Vault) => {
     if (onEditVault) {
@@ -96,6 +104,17 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
       ? parseFloat(vault.available_for_lending_amount)
       : vault.available_for_lending_amount ?? 0;
 
+  // Create activity configuration for this vault
+  const activityConfig = createSimpleVaultConfig(vault, accounts);
+
+  // Handle activity submission
+  const handleAddActivity = (data: any) => {
+    if (onAddActivity) {
+      onAddActivity(data);
+    }
+    setShowAddActivityModal(false);
+  };
+
   // Filtrage des activités liées à ce vault
   const vaultActivityIds = vault.activities || [];
   // Log pour debug
@@ -106,6 +125,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   // Sample activity data for demonstration (similar to Documents tab)
   const sampleActivityRows = [
     {
+      id: 'sample-activity-1',
       name: 'Loan name',
       category: 'Loan funding',
       date: 'Aug 11',
@@ -116,6 +136,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   
   const activityRows = vaultActivities.length > 0 
     ? vaultActivities.map(a => ({
+        id: a.id, // Add the id property for click handling
         name: a.name,
         category: a.tag || '',
         date: a.date ? new Date(a.date).toLocaleString('en-US', { month: 'short', day: 'numeric' }) : '',
@@ -484,7 +505,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
                 ariaLabel="Add"
                 type="primary"
                 style={{ width: 120, height: 40, fontWeight: 600 }}
-                onClick={() => {}}
+                onClick={() => setShowAddActivityModal(true)}
               >
                 Add Activity
               </Button>
@@ -540,6 +561,29 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
               ]}
               data={activityRows}
               className="activities-table"
+              clickableRows
+              onRowClick={(row: any) => {
+                // Handle sample activities (for demonstration)
+                if (row.id === 'sample-activity-1') {
+                  // Create a sample activity object for the edit modal
+                  const sampleActivity: Activity = {
+                    id: 'sample-activity-1',
+                    name: 'Loan name',
+                    type: 'loan',
+                    date: new Date('2025-08-11'),
+                    amount: 2000,
+                    tag: 'Loan funding'
+                  };
+                  setSelectedActivity(sampleActivity);
+                  return;
+                }
+                
+                // Find the actual activity data from the activities array
+                const activity = activities.find(a => a.id === row.id);
+                if (activity) {
+                  setSelectedActivity(activity);
+                }
+              }}
             />
           </section>
         );
@@ -618,7 +662,10 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
 
 
   return (
-    <div className="vault-details-container">
+    <div className="vault-details-container" style={{ 
+      marginRight: selectedActivity ? '400px' : '0px',
+      transition: 'margin-right 0.3s ease'
+    }}>
       <style>
         {`
           .dscr-card, .monthly-payment-card {
@@ -672,6 +719,71 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
           if (onVaultUpdate) {
             onVaultUpdate({ ...vault, ...updatedData });
           }
+        }}
+      />
+
+      <AddEditActivity
+        open={showAddActivityModal}
+        mode="add"
+        config={activityConfig}
+        onClose={() => setShowAddActivityModal(false)}
+        onSubmit={handleAddActivity}
+      />
+
+      <AddEditActivity
+        open={!!selectedActivity}
+        mode="edit"
+        config={activityConfig}
+        initialData={selectedActivity ? {
+          ...selectedActivity,
+          borrowerId: (() => {
+            // Handle sample activity
+            if (selectedActivity.id === 'sample-activity-1') {
+              return loans[0]?.borrower_id || loans[0]?.borrowerId;
+            }
+            const loan = loans.find(l => l.activities?.includes(selectedActivity.id));
+            return loan?.borrower_id || loan?.borrowerId;
+          })(),
+          borrowerName: (() => {
+            // Handle sample activity
+            if (selectedActivity.id === 'sample-activity-1') {
+              const borrowerId = loans[0]?.borrower_id || loans[0]?.borrowerId;
+              return borrowers.find(b => b.id === borrowerId)?.fullName || 'My borrower';
+            }
+            const loan = loans.find(l => l.activities?.includes(selectedActivity.id));
+            const borrowerId = loan?.borrower_id || loan?.borrowerId;
+            return borrowers.find(b => b.id === borrowerId)?.fullName || 'My borrower';
+          })(),
+          loanId: (() => {
+            // Handle sample activity
+            if (selectedActivity.id === 'sample-activity-1') {
+              return loans[0]?.id;
+            }
+            const loan = loans.find(l => l.activities?.includes(selectedActivity.id));
+            return loan?.id;
+          })(),
+          loanName: (() => {
+            // Handle sample activity
+            if (selectedActivity.id === 'sample-activity-1') {
+              return loans[0]?.nickname || 'Loan name';
+            }
+            const loan = loans.find(l => l.activities?.includes(selectedActivity.id));
+            return loan?.nickname || 'Loan name';
+          })(),
+          vaultId: vault.id,
+          vaultName: vault.nickname || vault.name || 'Gateway',
+          accountName: (() => {
+            // Handle sample activity
+            if (selectedActivity.id === 'sample-activity-1') {
+              return accounts.find(a => a.value === loans[0]?.accountId)?.label || 'Savings';
+            }
+            const loan = loans.find(l => l.activities?.includes(selectedActivity.id));
+            return accounts.find(a => a.value === loan?.accountId)?.label || 'Savings';
+          })()
+        } : {}}
+        onClose={() => setSelectedActivity(null)}
+        onSubmit={() => {
+          setSelectedActivity(null);
         }}
       />
       

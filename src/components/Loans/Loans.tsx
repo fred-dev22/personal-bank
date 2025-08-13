@@ -5,7 +5,7 @@ import type { SegmentedControlItem } from '../ui';
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
-import type { Loan, Borrower as BorrowerType, Activity } from '../../types/types';
+import type { Loan, Borrower as BorrowerType, Activity, Vault } from '../../types/types';
 import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
 import LoanDetails from './LoanDetails';
@@ -28,6 +28,7 @@ interface LoansProps {
   selectedLoanId?: string | null;
   onShowLoanDetails?: (loanId: string) => void;
   onAddLoan?: () => void;
+  vaults?: Vault[];
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -42,6 +43,7 @@ export const Loans: React.FC<LoansProps> = ({
   selectedLoanId = null,
   onShowLoanDetails,
   onAddLoan,
+  vaults = [],
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
@@ -216,12 +218,30 @@ export const Loans: React.FC<LoansProps> = ({
       console.error('Borrower not found for loan:', selectedLoan);
       return null;
     }
-    return <LoanDetails loan={selectedLoan} borrower={borrower} onBack={() => setSelectedLoan(null)} onShowBorrowerDetails={() => {
-      setSelectedBorrower(borrower);
-      if (onShowBorrowerDetails) onShowBorrowerDetails(borrower.id);
-    }} onShowVaultDetails={(vaultId: string) => {
-      if (onShowVaultDetails) onShowVaultDetails(vaultId);
-    }} activities={activities} loans={loans} />;
+    return <LoanDetails 
+      loan={selectedLoan} 
+      borrower={borrower} 
+      onBack={() => setSelectedLoan(null)} 
+      onShowBorrowerDetails={() => {
+        setSelectedBorrower(borrower);
+        if (onShowBorrowerDetails) onShowBorrowerDetails(borrower.id);
+      }} 
+      onShowVaultDetails={(vaultId: string) => {
+        if (onShowVaultDetails) onShowVaultDetails(vaultId);
+      }} 
+      activities={activities} 
+      loans={loans}
+      onAddActivity={(data) => {
+        console.log('Loan activity added:', data);
+        // TODO: Implement loan activity creation logic
+      }}
+      vaults={vaults}
+      accounts={[
+        { value: 'line_of_credit', label: 'Line of Credit' },
+        { value: 'checking', label: 'Checking Account' },
+        { value: 'savings', label: 'Savings Account' },
+      ]}
+    />;
   }
 
   return (

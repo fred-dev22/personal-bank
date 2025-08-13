@@ -314,6 +314,7 @@ const PersonalBankContent: React.FC = () => {
             borrowers={borrowers}
             activities={activities}
             selectedLoanId={selectedLoanId}
+            vaults={vaults}
             onShowBorrowerDetails={(borrowerId: string) => {
               setSelectedBorrowerId(borrowerId);
               setCurrentPage('borrowers');
