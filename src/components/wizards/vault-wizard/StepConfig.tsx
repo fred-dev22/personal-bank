@@ -12,13 +12,15 @@ export const StepConfig: React.FC<{
   validationErrors?: {[key: string]: string};
 }> = ({ vaultData, setVaultData, gatewayMode, vaultType, validationErrors = {} }) => {
   return (
-    <div style={{ textAlign: 'center', padding: '32px 0' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
-        {gatewayMode ? 'Gateway Configuration' : 'Vault Configuration'}
-      </h2>
-      <p style={{ color: '#666', marginBottom: 32 }}>
-        {gatewayMode ? 'Configure your gateway vault settings.' : vaultType === 'cash' ? 'A Cash Vault uses a bank account. Let\'s define what that is.' : 'Give this vault a name'}
-      </p>
+    <div style={{ padding: '32px 0' }}>
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+          {gatewayMode ? 'Gateway Configuration' : 'Vault Configuration'}
+        </h2>
+        <p style={{ color: '#666' }}>
+          {gatewayMode ? 'Configure your gateway vault settings.' : vaultType === 'cash' ? 'A Cash Vault uses a bank account. Let\'s define what that is.' : 'Give this vault a name'}
+        </p>
+      </div>
       
       <div style={{ maxWidth: 400, margin: '0 auto' }}>
         <div className="vault-wizard-form-group" style={{ marginBottom: 16 }}>

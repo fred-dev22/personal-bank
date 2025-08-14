@@ -89,7 +89,7 @@ export const StepTerms: React.FC<{
            />
          </div>
         
-        <div className="loan-wizard-form-group">
+        <div className="loan-wizard-form">
           <PopupButton
             defaultValue={loanData.loan_type || 'Amortized: Due-Date'}
             items={[

@@ -982,8 +982,73 @@
   right: auto !important;
   z-index: 1001 !important;
   margin-top: 4px !important;
+  min-width: 200px !important;
+  overflow: visible !important;
+}
+
+/* Ensure the dropdown container doesn't clip the menu */
+.search-filter-action .add-loan-btn > div {
+  overflow: visible !important;
+}
+
+/* Override any parent overflow that might clip the dropdown */
+.loans .page-toolbar {
+  overflow: visible !important;
+}
+
+.search-filter-action {
+  overflow: visible !important;
 }
 
 /* Global overrides for library components */
 
 /* Override library's fixed positioning for dropdown menus */
+.dropdown-menu-portal, 
+.menu-top-level, 
+.menu-open-upward, 
+[role="menu"] {
+  position: absolute !important;
+  z-index: var(--table-dropdown-open-z-index) !important;
+  isolation: isolate !important;
+  will-change: transform !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  pointer-events: auto !important;
+  min-width: 200px !important;
+  width: max-content !important;
+  overflow: visible !important;
+}
+
+/* Ensure all parent containers allow overflow */
+.loans,
+.page-toolbar,
+.search-filter-action,
+.search-filter-action > div {
+  overflow: visible !important;
+}
+
+/* Specific fix for the Add button dropdown */
+.search-filter-action .add-loan-btn {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.search-filter-action .add-loan-btn > div {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Align dropdown to the right edge of the Add button */
+.search-filter-action .add-loan-btn .jbaluch-menu,
+.search-filter-action .add-loan-btn [role="menu"],
+.search-filter-action .add-loan-btn .dropdown-menu-portal {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  z-index: 1001 !important;
+  margin-top: 4px !important;
+  min-width: 200px !important;
+  width: max-content !important;
+  overflow: visible !important;
+  transform: translateX(0) !important;
+}

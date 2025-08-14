@@ -490,7 +490,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
           <section className="all-activities-table">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
               <div style={{ fontWeight: 600, fontSize: 16 }}>
-                ${getRealBalance().toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {getRealBalance().toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 <span style={{ color: '#6b6b70', fontWeight: 400, fontSize: 14, marginLeft: 8 }}>
                   <DottedUnderline>balance</DottedUnderline>
                 </span>

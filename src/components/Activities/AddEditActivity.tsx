@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Button, Input, DatePicker, TagCell, PopupButton } from "@jbaluch/components";
 import { Modal } from "../Modal/Modal";
 import type { Activity } from '../../types/types';
+import borrowerIcon from '../../assets/borrower.svg';
+import loanIcon from '../../assets/loan.svg';
+import vaultIcon from '../../assets/vault.svg';
+import walletIcon from '../../assets/wallet.svg';
 
 // Generic configuration for different activity contexts
 export interface ActivityConfig {
@@ -313,7 +317,6 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             id: opt.value, 
             label: opt.emoji ? `${opt.emoji} ${opt.label}` : opt.label 
           }))}
-          label="Category"
           menuStyle="text"
           onSelect={(selectedId: string) => {
             console.log('Category selected:', selectedId);
@@ -446,83 +449,141 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: '1fr 1fr', 
-            gap: 16,
-            padding: '16px',
-            backgroundColor: '#F8F9FA',
-            borderRadius: '8px',
-            border: '1px solid #E5E5E7'
+            gap: 20,
+            padding: '20px',
+            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+            borderRadius: '12px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '16px' }}>👤</span>
-              <div>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 2 }}>Borrower</div>
-                <button 
-                  onClick={() => window.location.href = `/borrowers/${initialData.borrowerId}`}
-                  style={{ 
-                    background: 'none', 
-                    border: 'none', 
-                    color: '#007AFF', 
-                    fontSize: '14px', 
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    padding: 0
-                  }}
-                >
+            <button 
+              onClick={() => window.location.href = `/borrowers/${initialData.borrowerId}`}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                gap: 12,
+                background: 'none',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                textAlign: 'left',
+                width: '100%'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center'
+              }}>
+                <img src={borrowerIcon} alt="Borrower" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Borrower</div>
+                <div style={{ 
+                  color: '#000000', 
+                  fontSize: '14px', 
+                  fontWeight: '700'
+                }}>
                   {initialData.borrowerName || 'My borrower'}
-                </button>
+                </div>
               </div>
-            </div>
+            </button>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '16px' }}>🔗</span>
-              <div>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 2 }}>Loan</div>
-                <button 
-                  onClick={() => window.location.href = `/loans/${initialData.loanId}`}
-                  style={{ 
-                    background: 'none', 
-                    border: 'none', 
-                    color: '#007AFF', 
-                    fontSize: '14px', 
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    padding: 0
-                  }}
-                >
+            <button 
+              onClick={() => window.location.href = `/loans/${initialData.loanId}`}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                gap: 12,
+                background: 'none',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                textAlign: 'left',
+                width: '100%'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center'
+              }}>
+                <img src={loanIcon} alt="Loan" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Loan</div>
+                <div style={{ 
+                  color: '#000000', 
+                  fontSize: '14px', 
+                  fontWeight: '700'
+                }}>
                   {initialData.loanName || 'Loan name'}
-                </button>
+                </div>
               </div>
-            </div>
+            </button>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '16px' }}>🏛️</span>
-              <div>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 2 }}>Vault</div>
-                <button 
-                  onClick={() => window.location.href = `/vaults/${initialData.vaultId}`}
-                  style={{ 
-                    background: 'none', 
-                    border: 'none', 
-                    color: '#007AFF', 
-                    fontSize: '14px', 
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    padding: 0
-                  }}
-                >
+            <button 
+              onClick={() => window.location.href = `/vaults/${initialData.vaultId}`}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                gap: 12,
+                background: 'none',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                textAlign: 'left',
+                width: '100%'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center'
+              }}>
+                <img src={vaultIcon} alt="Vault" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Vault</div>
+                <div style={{ 
+                  color: '#000000', 
+                  fontSize: '14px', 
+                  fontWeight: '700'
+                }}>
                   {initialData.vaultName || 'Gateway'}
-                </button>
+                </div>
               </div>
-            </div>
+            </button>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '16px' }}>🏢</span>
-              <div>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 2 }}>Account</div>
-                <div style={{ fontSize: '14px', fontWeight: '500', color: '#000000' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center'
+              }}>
+                <img src={walletIcon} alt="Account" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Account</div>
+                <div style={{ fontSize: '14px', fontWeight: '700', color: '#000000' }}>
                   {initialData.accountName || 'Savings'}
                 </div>
               </div>

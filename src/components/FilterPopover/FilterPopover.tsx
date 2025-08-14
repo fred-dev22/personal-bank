@@ -69,6 +69,16 @@ export const FilterPopover: React.FC<FilterPopoverProps> = ({
     });
   };
 
+  // Helper to get display value for PopupButton
+  const getDisplayValue = (fieldName: string, defaultValue: string) => {
+    const field = fields.find(f => f.name === fieldName);
+    const selectedValue = localFilters[fieldName] as string;
+    if (!selectedValue) return defaultValue;
+    
+    const option = field?.options?.find(opt => opt.value === selectedValue);
+    return option?.label || defaultValue;
+  };
+
   // Champs
   const dateRange = getRangeValue(localFilters['date']);
   const amountRange = getRangeValue(localFilters['amount']);
@@ -93,10 +103,8 @@ export const FilterPopover: React.FC<FilterPopoverProps> = ({
       <div className="filter-applied-label">Applied Filters</div>
       <div className="filter-applied-none">None.</div>
       <hr className="filter-separator" />
-      <div className="filter-section-title">Activity</div>
       <div className="filter-field-group">
         <div className="filter-label-row">
-          <label className="filter-label">Date range</label>
           <button className="filter-reset-btn" type="button" onClick={resetDate}>Reset</button>
         </div>
         <div className="filter-range-row">
@@ -119,7 +127,6 @@ export const FilterPopover: React.FC<FilterPopoverProps> = ({
       </div>
       <div className="filter-field-group">
         <div className="filter-label-row">
-          <label className="filter-label">Amount range</label>
           <button className="filter-reset-btn" type="button" onClick={resetAmount}>Reset</button>
         </div>
         <div className="filter-range-row">
@@ -141,9 +148,8 @@ export const FilterPopover: React.FC<FilterPopoverProps> = ({
         </div>
       </div>
       <div className="filter-field-group">
-        <label className="filter-label">Category</label>
         <PopupButton
-          defaultValue="Select category"
+          defaultValue={getDisplayValue('category', "Select category")}
           items={fields.find(f => f.name === 'category')?.options?.map(opt => ({ id: opt.value, label: opt.label })) || []}
           label="Category"
           menuStyle="text"
@@ -153,11 +159,9 @@ export const FilterPopover: React.FC<FilterPopoverProps> = ({
         />
       </div>
       <hr className="filter-separator" />
-      <div className="filter-section-title">Bank</div>
       <div className="filter-field-group">
-        <label className="filter-label">Vault</label>
         <PopupButton
-          defaultValue="Select vault"
+          defaultValue={getDisplayValue('vault', "Select vault")}
           items={fields.find(f => f.name === 'vault')?.options?.map(opt => ({ id: opt.value, label: opt.label })) || []}
           label="Vault"
           menuStyle="text"
@@ -167,9 +171,8 @@ export const FilterPopover: React.FC<FilterPopoverProps> = ({
         />
       </div>
       <div className="filter-field-group">
-        <label className="filter-label">Borrower</label>
         <PopupButton
-          defaultValue="Select borrower"
+          defaultValue={getDisplayValue('borrower', "Select borrower")}
           items={fields.find(f => f.name === 'borrower')?.options?.map(opt => ({ id: opt.value, label: opt.label })) || []}
           label="Borrower"
           menuStyle="text"

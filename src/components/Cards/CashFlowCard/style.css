@@ -34,6 +34,7 @@
   height: 48px;
   position: relative;
   width: 257px;
+  gap: 4px;
 }
 
 .payment-card .title-3 {
@@ -45,7 +46,6 @@
   font-weight: var(--subtitles-subtitle-1-font-weight);
   letter-spacing: var(--subtitles-subtitle-1-letter-spacing);
   line-height: var(--subtitles-subtitle-1-line-height);
-  margin-top: -1.00px;
   position: relative;
   text-align: center;
 }
@@ -58,7 +58,6 @@
   font-weight: var(--body-text-body-2-regular-font-weight);
   letter-spacing: var(--body-text-body-2-regular-letter-spacing);
   line-height: var(--body-text-body-2-regular-line-height);
-  margin-bottom: -1.00px;
   position: relative;
   white-space: nowrap;
   width: fit-content;
@@ -137,7 +136,7 @@
   align-items: center;
   display: flex;
   gap: 10px;
-  justify-content: center;
+  justify-content: flex-end;
   position: relative;
   width: 64px;
 }

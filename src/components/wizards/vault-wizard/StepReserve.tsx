@@ -73,7 +73,7 @@ export const StepReserve: React.FC<{
                 </div>
                 <div style={{ width: '80%' }}>
                   <Input
-                    value={vaultData.reserve ?? ''}
+                    value={String(vaultData.reserve ?? '')}
                     onChange={(value: string) => setVaultData(prev => ({ ...prev, reserve: value === '' ? undefined : Number(value) }))}
                     placeholder="10.00"
                     style={{ height: '40px' }}
@@ -85,7 +85,7 @@ export const StepReserve: React.FC<{
               </div>
             ) : (
               <Input
-                value={vaultData.reserve ?? ''}
+                value={String(vaultData.reserve ?? '')}
                 onChange={(value: string) => setVaultData(prev => ({ ...prev, reserve: value === '' ? undefined : Number(value) }))}
                 placeholder="$1,000.00"
                 style={{ width: '100%' }}

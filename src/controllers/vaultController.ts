@@ -81,7 +81,7 @@ export const createVault = async (token: string, bankId: string, data: VaultCrea
 
   // Si c'est un Super Vault, récupérer la projection AVANT la création
   if (dataWithDates.type === 'super vault') {
-    console.log('🚀 Super Vault detected, fetching projection before creation...', { 
+    console.log('🚀  detected, fetching projection before creation...', { 
       vaultType: dataWithDates.type,
       dataForProjection: dataWithDates 
     });

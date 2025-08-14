@@ -55,6 +55,12 @@
   height: 16px;
 }
 
+.custom-tab-nav-icon img {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1);
+}
+
 .custom-tab-nav-text {
   font-family: 'DM Sans', Arial, sans-serif;
   font-size: 16px;
@@ -74,7 +80,11 @@
 }
 
 .custom-tab-nav-btn.custom-tab-nav-active .custom-tab-nav-icon svg {
-  color: #00B5AE;
+  fill: #00B5AE;
+}
+
+.custom-tab-nav-btn.custom-tab-nav-active .custom-tab-nav-icon img {
+  filter: brightness(0) saturate(100%) invert(67%) sepia(85%) saturate(1000%) hue-rotate(160deg) brightness(0.9) contrast(1);
 }
 
 .custom-tab-nav-indicator {

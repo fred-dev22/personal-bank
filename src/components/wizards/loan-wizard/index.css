@@ -9,18 +9,20 @@
 }
 
 .loan-wizard-step {
-  text-align: center;
+  /* Remove global text-align center to prevent affecting form elements */
 }
 
 .loan-wizard-step h2 {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 8px;
+  text-align: center;
 }
 
 .loan-wizard-step p {
   color: #666;
   margin-bottom: 32px;
+  text-align: center;
 }
 
 .loan-wizard-form {
@@ -38,12 +40,26 @@
 
 .loan-wizard-form-group {
   margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .loan-wizard-form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   font-weight: 600;
+}
+
+/* Ensure consistent height for form components */
+.loan-wizard-form-group > * {
+  min-height: 40px;
+}
+
+/* Specific styling for PopupButton to match Input component alignment */
+.loan-wizard-form-group .jb-popup-button {
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 /* Styles pour les inputs natifs seulement (pas les composants Input de la bibliothèque) */
@@ -351,4 +367,7 @@
 
 .text-wrapper{
   font-size: 16px;
+}
+.bJVHgg {
+  gap: 15px !important;
 }
