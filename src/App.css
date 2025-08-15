@@ -19,3 +19,14 @@
   box-shadow: none !important;
   padding: 2px !Important ;
 }
+
+/* Hide problematic library element */
+.dkLgZH {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  z-index: -9999 !important;
+}

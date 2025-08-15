@@ -679,9 +679,12 @@ export const VaultWizard: React.FC<{
       <HeaderWizard
         title={gatewayMode ? 'Add Gateway' : (vaultToEdit ? 'Edit Vault' : 'Add Vault')}
         onExit={onClose}
-        showPreview={gatewayMode ? step > 1 : step > 0}
-        onPreview={step > 0 ? () => {
-          if (step === 1) {
+        showPrevious={true}
+        onPrevious={() => {
+          if (step === 0) {
+            // On first step, go back to close the wizard
+            onClose();
+          } else if (step === 1) {
             if (!gatewayMode) {
               setType(undefined);
               setStep(0);
@@ -692,7 +695,9 @@ export const VaultWizard: React.FC<{
           } else {
             handlePrevious();
           }
-        } : undefined}
+        }}
+        showPreview={false}
+        onPreview={undefined}
       />
       {(!gatewayMode && type === undefined) ? (
         <StepType

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { TabNavigation } from '../../ui/TabNavigation';
+import { DottedUnderline } from '../../ui/DottedUnderline';
+import { HelpTooltip } from '../../ui/HelpTooltip';
 import type { Vault } from '../../../types/types';
 
 export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> = ({ vaultData, gatewayMode }) => {
@@ -114,7 +116,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
       margin: '0 auto',
       display: 'flex',
       flexDirection: 'column',
-      gap: 32,
+      gap: 2,
       alignItems: 'center',
       padding: '0 0 32px 0',
     }}>
@@ -127,6 +129,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
         gap: 4,
         padding: '32px 24px 16px',
         width: '100%',
+        marginBottom: '2rem'
       }}>
         <div style={{
           color: '#0d1728',
@@ -145,8 +148,8 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
       <div style={{
         width: '100%',
         display: 'flex',
-        justifyContent: 'center',
-        marginBottom: 24
+        justifyContent: 'flex-start',
+        marginBottom: 0
       }}>
         <div style={{ minWidth: 320 }}>
           <TabNavigation
@@ -184,28 +187,68 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
               <div style={{ paddingLeft: 18 }}>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#297598', borderRadius: 5, marginRight: 8 }} />
-                  <div style={{ color: '#595959', flex: 1 }}>Credit limit</div>
+                  <div style={{ color: '#595959', flex: 1 }}>
+                    <HelpTooltip 
+                      term="Credit limit" 
+                      definition="refers to this vault's line of credit. It's the amount of money that your lender has given you access to."
+                    >
+                      Credit limit
+                    </HelpTooltip>
+                  </div>
                   <div style={{ color: '#595959' }}>${creditLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#b49d47', borderRadius: 5, marginRight: 8 }} />
-                  <div style={{ color: '#595959', flex: 1 }}>Hold</div>
+                  <div style={{ color: '#595959', flex: 1 }}>
+                    <HelpTooltip 
+                      term="Hold" 
+                      definition="is a restriction on your vault. It's an amount of money that you might set aside for other uses."
+                    >
+                      <DottedUnderline color="#8FA7DE">Hold</DottedUnderline>
+                    </HelpTooltip>
+                  </div>
                   <div style={{ color: '#595959' }}>-${holdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#ff7f50', borderRadius: 5, marginRight: 8 }} />
-                  <div style={{ color: '#595959', flex: 1 }}>Safety buffer</div>
+                  <div style={{ color: '#595959', flex: 1 }}>
+                    <HelpTooltip 
+                      term="Reserve" 
+                      definition="are extra money for emergencies. They protect you from volatility, which may occur in lending or the market."
+                    >
+                      <DottedUnderline color="#8FA7DE">Safety buffer</DottedUnderline>
+                    </HelpTooltip>
+                  </div>
                   <div style={{ color: '#595959' }}>-${reserveValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#595959', borderRadius: 5, marginRight: 8 }} />
-                  <div style={{ color: '#595959', flex: 1 }}>LOC outstanding balance</div>
-                  <div style={{ color: '#595959' }}>-${debtBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div style={{ color: '#595959', flex: 1 }}>
+                    <HelpTooltip 
+                      term="Outstanding balance" 
+                      definition="is the amount owed on the line of credit."
+                    >
+                      LOC outstanding balance
+                    </HelpTooltip>
+                  </div>
+                  <div style={{ color: '#595959', position: 'relative' }}>
+                    -${debtBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '-12px',
+                      left: '0',
+                      height: '1px',
+                      backgroundColor: '#0d1728',
+                      width: '120%'
+                    }} />
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px solid #0d1728', padding: '12px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px' }}>
                   <div style={{ width: 10, height: 10, background: '#00b5ae', borderRadius: 5, marginRight: 8 }} />
                   <div style={{ color: '#0d1728', fontWeight: 700, flex: 1 }}>Available to lend</div>
-                  <div style={{ color: '#0d1728', fontWeight: 700 }}>${availableToLend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  <div style={{ color: '#0d1728', fontWeight: 700 }}>
+                    ${availableToLend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -234,8 +277,13 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
                      <div style={{ color: '#595959', fontSize: 14 }}>Asset</div>
                    </div>
                    <div style={{ textAlign: 'center' }}>
-                     <div style={{ color: '#595959', fontSize: 14 }}>Appreciation</div>
-                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
+                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                         <span style={{ color: '#00B5AE', fontSize: '16px', fontWeight: '700', lineHeight: '1' }}>~</span>
+                         <div style={{ color: '#00B5AE', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
+                       </div>
+                       <div style={{ color: '#595959', fontSize: 14, marginTop: 2 }}>Appreciation</div>
+                     </div>
                    </div>
                    <div style={{ textAlign: 'right' }}>
                      <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${cashValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
@@ -256,8 +304,13 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
                      <div style={{ color: '#595959', fontSize: 14 }}>Strategic debt</div>
                    </div>
                    <div style={{ textAlign: 'center' }}>
-                     <div style={{ color: '#595959', fontSize: 14 }}>Interest rate</div>
-                     <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{vaultData.debtCeilingRate || '0.00%'}</div>
+                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                         <span style={{ color: '#00B5AE', fontSize: '16px', fontWeight: '700', lineHeight: '1' }}>~</span>
+                         <div style={{ color: '#00B5AE', fontWeight: 700, fontSize: 18 }}>{vaultData.debtCeilingRate || '0.00%'}</div>
+                       </div>
+                       <div style={{ color: '#595959', fontSize: 14, marginTop: 2 }}>Interest rate</div>
+                     </div>
                    </div>
                    <div style={{ textAlign: 'right' }}>
                      <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>${debtBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
@@ -314,23 +367,55 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
             <div style={{ paddingLeft: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                 <div style={{ width: 10, height: 10, background: '#297598', borderRadius: 5, marginRight: 8 }} />
-                <div style={{ color: '#595959', flex: 1 }}>Balance</div>
+                <div style={{ color: '#595959', flex: 1 }}>
+                  <HelpTooltip 
+                    term="Balance" 
+                    definition="is the current amount of money in your vault, reflecting all credits and debits. It includes the amounts set aside as reserves and holds, as well as the available funds after accounting for all transactions."
+                  >
+                    Balance
+                  </HelpTooltip>
+                </div>
                 <div style={{ color: '#595959' }}>${vaultData.amount || vaultData.balance || 0}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                 <div style={{ width: 10, height: 10, background: '#b49d47', borderRadius: 5, marginRight: 8 }} />
-                <div style={{ color: '#595959', flex: 1 }}>Hold</div>
+                <div style={{ color: '#595959', flex: 1 }}>
+                  <HelpTooltip 
+                    term="Hold" 
+                    definition="is a restriction on your vault. It's an amount of money that you might set aside for other uses."
+                  >
+                    <DottedUnderline color="#8FA7DE">Hold</DottedUnderline>
+                  </HelpTooltip>
+                </div>
                 <div style={{ color: '#595959' }}>-${vaultData.hold || 0}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
                 <div style={{ width: 10, height: 10, background: '#ff7f50', borderRadius: 5, marginRight: 8 }} />
-                <div style={{ color: '#595959', flex: 1 }}>Reserve</div>
+                <div style={{ color: '#595959', flex: 1 }}>
+                  <HelpTooltip 
+                    term="Reserve" 
+                    definition="are extra money for emergencies. They protect you from volatility, which may occur in lending or the market."
+                  >
+                    <DottedUnderline color="#8FA7DE">Reserve</DottedUnderline>
+                  </HelpTooltip>
+                </div>
                 <div style={{ color: '#595959' }}>-${vaultData.reserve || 0}</div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', borderTop: '1px solid #0d1728', padding: '12px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', position: 'relative' }}>
                 <div style={{ width: 10, height: 10, background: '#00b5ae', borderRadius: 5, marginRight: 8 }} />
                 <div style={{ color: '#0d1728', fontWeight: 700, flex: 1 }}>Available to lend</div>
-                <div style={{ color: '#0d1728', fontWeight: 700 }}>${Number(vaultData.amount ?? vaultData.balance ?? 0) - (Number(vaultData.reserve) || 0) - (Number(vaultData.hold) || 0)}</div>
+                <div style={{ color: '#0d1728', fontWeight: 700, position: 'relative' }}>
+                  ${Number(vaultData.amount ?? vaultData.balance ?? 0) - (Number(vaultData.reserve) || 0) - (Number(vaultData.hold) || 0)}
+                  <div style={{
+                    position: 'absolute',
+                    top: '-12px',
+                    left: '0',
+                    right: '0',
+                    height: '1px',
+                    backgroundColor: '#0d1728',
+                    width: '100%'
+                  }} />
+                </div>
               </div>
             </div>
           </div>
@@ -395,8 +480,11 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
           }}>
             <div style={{ color: '#0d1728', fontWeight: 600 }}>{accountTypeLabel}</div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ color: '#595959', fontSize: 14 }}>Appreciation</div>
-              <div style={{ color: '#0d1728', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ color: '#00B5AE', fontSize: '16px', fontWeight: '700', lineHeight: '1' }}>~</span>
+                <div style={{ color: '#00B5AE', fontWeight: 700, fontSize: 18 }}>{appreciation}</div>
+              </div>
+              <div style={{ color: '#595959', fontSize: 14, marginTop: 2 }}>Appreciation</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div style={{ color: '#000', fontWeight: 700, fontSize: 18 }}>${accountAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>

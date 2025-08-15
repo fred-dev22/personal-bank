@@ -978,8 +978,8 @@
 .search-filter-action .add-loan-btn .jbaluch-menu {
   position: absolute !important;
   top: 100% !important;
-  left: 0 !important;
-  right: auto !important;
+  right: 0 !important;
+  left: auto !important;
   z-index: 1001 !important;
   margin-top: 4px !important;
   min-width: 200px !important;
@@ -1018,6 +1018,8 @@
   overflow: visible !important;
 }
 
+
+
 /* Ensure all parent containers allow overflow */
 .loans,
 .page-toolbar,
@@ -1040,7 +1042,14 @@
 /* Align dropdown to the right edge of the Add button */
 .search-filter-action .add-loan-btn .jbaluch-menu,
 .search-filter-action .add-loan-btn [role="menu"],
-.search-filter-action .add-loan-btn .dropdown-menu-portal {
+.search-filter-action .add-loan-btn .dropdown-menu-portal,
+.search-filter-action .add-loan-btn .menu-wrapper,
+.search-filter-action .add-loan-btn .menu-container,
+.search-filter-action .add-loan-btn .dropdown-container,
+.search-filter-action .add-loan-btn .menu,
+.search-filter-action .add-loan-btn .dropdown,
+.search-filter-action .add-loan-btn div[style*="position: absolute"],
+.search-filter-action .add-loan-btn div[style*="position:fixed"] {
   position: absolute !important;
   top: 100% !important;
   right: 0 !important;
@@ -1051,4 +1060,49 @@
   width: max-content !important;
   overflow: visible !important;
   transform: translateX(0) !important;
+}
+
+/* Global dropdown menu fix - catch any dropdown that might be related to the Add button */
+body > div[role="menu"],
+body > div[class*="menu"],
+body > div[class*="dropdown"],
+body > div[style*="position: absolute"][style*="z-index"] {
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+/* Specific fix for jbaluch MenuButton dropdown */
+.jbaluch-menu,
+.jbaluch-menu-button,
+.jbaluch-menu-button [role="menu"],
+.jbaluch-menu-button .menu-wrapper,
+.jbaluch-menu-button .menu-container,
+.jbaluch-menu-button .dropdown-container,
+.jbaluch-menu-button .menu,
+.jbaluch-menu-button .dropdown,
+.jbaluch-menu-button div[style*="position: absolute"],
+.jbaluch-menu-button div[style*="position:fixed"] {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  z-index: 1001 !important;
+  margin-top: 4px !important;
+  min-width: 200px !important;
+  width: max-content !important;
+  overflow: visible !important;
+  transform: translateX(0) !important;
+}
+
+/* Force right alignment for any menu that appears near the Add button */
+.search-filter-action [role="menu"],
+.search-filter-action .menu-wrapper,
+.search-filter-action .menu-container,
+.search-filter-action .dropdown-container,
+.search-filter-action .menu,
+.search-filter-action .dropdown {
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
 }

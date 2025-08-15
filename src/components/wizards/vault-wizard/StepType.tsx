@@ -1,5 +1,4 @@
 import React from "react";
-import { TabNavigation } from "../../ui/TabNavigation";
 import "./StepType.css";
 
 interface StepTypeProps {
@@ -14,30 +13,12 @@ export const StepType: React.FC<StepTypeProps> = ({ onSelect, selectedType, onTy
     if (onTypeSelected) onTypeSelected();
   };
 
-  const tabs = [
-    {
-      id: "super",
-      label: "Super Vault",
-    },
-    {
-      id: "cash", 
-      label: "Cash Vault",
-    }
-  ];
-
   return (
     <div className="frame">
       <div className="step-title-instance">
         <div className="design-component-instance-node">Choose a Type</div>
         <div className="step-title-2">Which type of vault are you adding?</div>
       </div>
-      
-      <TabNavigation
-        tabs={tabs}
-        activeTabId={selectedType}
-        onTabChange={handleSelect}
-        className="vault-type-tabs"
-      />
       
       <div className="options">
         <div

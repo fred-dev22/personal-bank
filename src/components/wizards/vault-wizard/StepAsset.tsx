@@ -22,9 +22,6 @@ export const StepAsset: React.FC<{
           {/* Left Section - Asset Details Input */}
           <div style={{ width: 350 }}>
                                    <div style={{ marginBottom: 24 }}>
-            <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
-                Asset type <span style={{ color: 'red' }}>*</span>
-            </label>
             <PopupButton
                 defaultValue="Indexed Universal Life"
               items={[
@@ -38,7 +35,11 @@ export const StepAsset: React.FC<{
                   { id: 'Bonds', label: 'Bonds' },
                   { id: 'Other', label: 'Other' }
               ]}
-              label="Asset Type"
+              label={
+                <span>
+                  Asset type <span style={{ color: '#B50007' }}>*</span>
+                </span>
+              }
               menuStyle="text"
                              onSelect={(selectedId: string) => {
                  setVaultData(prev => ({ ...prev, assetType: selectedId }));
