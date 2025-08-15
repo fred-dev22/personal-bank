@@ -29,6 +29,12 @@ export const ActivityProvider: React.FC<ActivityProviderProps> = ({ children }) 
   const showActivity = (newMessage: string) => {
     setMessage(newMessage);
     setIsVisible(true);
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      setIsVisible(false);
+      setMessage('');
+    }, 3000);
   };
 
   const hideActivity = () => {

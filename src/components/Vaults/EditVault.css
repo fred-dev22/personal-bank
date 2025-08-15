@@ -159,11 +159,17 @@
   font-weight: 500;
 }
 
-.edit-vault__button--close {
+.edit-vault__button--archive {
   width: 90px;
   font-weight: 500;
+  color: #dc3545;
+  background: #fff;
+  border: 1px solid #dc3545;
+}
+
+.edit-vault__button--archive:hover {
+  background: #dc3545;
   color: #fff;
-  background: #FF5A5F;
 }
 
 .edit-vault__footer {
@@ -191,4 +197,74 @@
   width: 90px;
   font-weight: 500;
   background: #00B5AE;
+}
+
+/* Confirmation d'archivage inline */
+.edit-vault__archive-confirm-inline {
+  padding: 20px;
+  text-align: center;
+}
+
+.edit-vault__archive-confirm-inline-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.edit-vault__archive-confirm-inline-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #23272E;
+  margin: 0;
+}
+
+.edit-vault__archive-confirm-inline-message {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.edit-vault__archive-confirm-inline-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.edit-vault__archive-confirm-inline-button--cancel {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  color: #23272E;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 90px;
+  font-size: 14px;
+}
+
+.edit-vault__archive-confirm-inline-button--cancel:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.edit-vault__archive-confirm-inline-button--archive {
+  background: #dc3545;
+  border: 1px solid #dc3545;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 90px;
+  font-size: 14px;
+}
+
+.edit-vault__archive-confirm-inline-button--archive:hover {
+  background: #c82333;
+  border-color: #c82333;
 } 

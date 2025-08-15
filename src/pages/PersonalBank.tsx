@@ -342,7 +342,7 @@ const PersonalBankContent: React.FC = () => {
            // Scroll vers le haut de la page
            window.scrollTo({ top: 0, behavior: 'smooth' });
          }} onBorrowersUpdate={setBorrowers} />}
-        {currentPage === 'settings' && <Settings />}
+        {currentPage === 'settings' && <Settings vaults={vaults} loans={loans} onVaultUpdate={handleVaultUpdated} />}
       </div>
       {isVisible && (
         <Snackbar

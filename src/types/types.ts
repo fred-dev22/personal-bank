@@ -319,6 +319,7 @@ export interface Vault {
     type?: VaultType;
     available_for_lending_amount?: number | string;
     accounts_json?: Account[]; // Détails des accounts associés
+    archived?: boolean; // Champ pour archiver le vault
     
     // Champs pour l'affichage/calculs
     health?: {
