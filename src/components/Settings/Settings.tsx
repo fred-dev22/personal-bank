@@ -6,6 +6,7 @@ import { Loans } from "./Loans/Loans";
 import { Vaults } from "./Vaults/Vaults";
 import { Activity } from "./Activity/Activity";
 import "./SettingsMenu/settings-menu.css";
+import type { Vault, Loan } from "../../types/types";
 
 const accountItems = [
   { id: "profile", label: "Profile" },
@@ -18,7 +19,13 @@ const bankItems = [
   { id: "activity", label: "Activity" }
 ];
 
-export const Settings: React.FC = () => {
+interface SettingsProps {
+  vaults?: Vault[];
+  loans?: Loan[];
+  onVaultUpdate?: (updatedVault: Vault) => void;
+}
+
+export const Settings: React.FC<SettingsProps> = ({ vaults = [], loans = [], onVaultUpdate }) => {
   const [selected, setSelected] = useState("profile");
 
   const renderContent = () => {
@@ -42,7 +49,7 @@ export const Settings: React.FC = () => {
       case "loans":
         return <Loans />;
       case "vaults":
-        return <Vaults />;
+        return <Vaults vaults={vaults} loans={loans} onVaultUpdate={onVaultUpdate} />;
       case "activity":
         return <Activity />;
       default:

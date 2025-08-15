@@ -659,8 +659,6 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
     }
   };
 
-
-
   return (
     <div className="vault-details-container" style={{ 
       marginRight: selectedActivity ? '400px' : '0px',
@@ -719,6 +717,13 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
           if (onVaultUpdate) {
             onVaultUpdate({ ...vault, ...updatedData });
           }
+        }}
+        onVaultUpdate={(updatedVault) => {
+          if (onVaultUpdate) {
+            onVaultUpdate(updatedVault);
+          }
+          // Fermer les détails du vault et retourner à la liste
+          onBack();
         }}
       />
 

@@ -14,9 +14,10 @@ interface EditVaultProps {
   vault: Vault;
   onSave?: (data: Partial<Vault>) => void;
   onSetupVault?: (vault: Vault) => void;
+  onVaultUpdate?: (vault: Vault) => void;
 }
 
-export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSave, onSetupVault }) => {
+export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSave, onSetupVault, onVaultUpdate }) => {
   const { showActivity, hideActivity } = useActivity();
   const { user } = useAuth();
   const [name, setName] = useState('');
@@ -27,6 +28,7 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
   const [savingsRate, setSavingsRate] = useState<number | string>('5.0');
   const [incomeDSCR, setIncomeDSCR] = useState<number | string>('0.00');
   const [growthDSCR, setGrowthDSCR] = useState<number | string>('0.00');
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
 
   useEffect(() => {
     if (vault) {
@@ -269,6 +271,51 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
     }
   };
 
+  const handleArchiveVault = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!user || !token) {
+        return;
+      }
+
+      // Afficher le snackbar
+      showActivity('Archiving vault...');
+      
+      // Fermer le modal de confirmation
+      setShowArchiveConfirm(false);
+      
+      // Fermer le modal d'édition
+      onClose();
+
+      // Appel API pour archiver le vault
+      const vaultData = {
+        archived: true,
+        modified_date: new Date().toISOString(),
+      };
+
+      console.log('Archiving vault with data:', vaultData);
+      const updatedVault = await updateVault(token, user.current_pb!, vault.id, vaultData);
+      console.log('Vault archived:', updatedVault);
+
+      // Mettre à jour les données locales
+      if (onVaultUpdate) {
+        onVaultUpdate({ ...vault, ...vaultData });
+      }
+
+      // Cacher le snackbar après l'appel API
+      setTimeout(() => {
+        hideActivity();
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error archiving vault:', error);
+      // En cas d'erreur, cacher le snackbar
+      setTimeout(() => {
+        hideActivity();
+      }, 2000);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose}>
       <div className="edit-vault__container">
@@ -418,30 +465,73 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
             </div>
           </div>
           
-          {/* Close Vault section */}
-          <div className="edit-vault__section">
-            <div className="edit-vault__section-row">
-              <div className="edit-vault__section-content">
-                <div className="edit-vault__section-title">Close Vault</div>
-                <div className="edit-vault__section-message">Remove from view but keep historical data.</div>
-              </div>
-              <Button
-                icon="iconless"
-                iconComponent={undefined}
-                interaction="default"
-                onClick={() => {}}
-                onMouseEnter={() => {}}
-                onMouseLeave={() => {}}
-                type="secondary"
-                className="edit-vault__button--close"
-                name="close"
-                form=""
-                ariaLabel="Close"
-              >
-                Close
-              </Button>
+                    {/* Archive Vault section - Only show for non-gateway vaults */}
+          {!vault.is_gateway && (
+            <div className="edit-vault__section">
+              {!showArchiveConfirm ? (
+                <div className="edit-vault__section-row">
+                  <div className="edit-vault__section-content">
+                    <div className="edit-vault__section-title">Archive vault</div>
+                    <div className="edit-vault__section-message">Remove from view but keep historical data.</div>
+                  </div>
+                  <Button
+                    icon="iconless"
+                    iconComponent={undefined}
+                    interaction="default"
+                    onClick={() => setShowArchiveConfirm(true)}
+                    onMouseEnter={() => {}}
+                    onMouseLeave={() => {}}
+                    type="secondary"
+                    className="edit-vault__button--archive"
+                    name="archive"
+                    form=""
+                    ariaLabel="Archive"
+                  >
+                    Archive
+                  </Button>
+                </div>
+              ) : (
+                <div className="edit-vault__archive-confirm-inline">
+                  <div className="edit-vault__archive-confirm-inline-content">
+                    <h3 className="edit-vault__archive-confirm-inline-title">Archive vault?</h3>
+                    <p className="edit-vault__archive-confirm-inline-message">You can unarchive under Settings.</p>
+                    <div className="edit-vault__archive-confirm-inline-buttons">
+                      <Button
+                        icon="iconless"
+                        iconComponent={undefined}
+                        interaction="default"
+                        onClick={() => setShowArchiveConfirm(false)}
+                        onMouseEnter={() => {}}
+                        onMouseLeave={() => {}}
+                        type="secondary"
+                        className="edit-vault__archive-confirm-inline-button--cancel"
+                        name="cancel"
+                        form=""
+                        ariaLabel="No, keep"
+                      >
+                        No, keep
+                      </Button>
+                      <Button
+                        icon="iconless"
+                        iconComponent={undefined}
+                        interaction="default"
+                        onClick={handleArchiveVault}
+                        onMouseEnter={() => {}}
+                        onMouseLeave={() => {}}
+                        type="primary"
+                        className="edit-vault__archive-confirm-inline-button--archive"
+                        name="archive"
+                        form=""
+                        ariaLabel="Archive"
+                      >
+                        Archive
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
         
         {/* Footer sticky */}
@@ -478,6 +568,8 @@ export const EditVault: React.FC<EditVaultProps> = ({ open, onClose, vault, onSa
           </Button>
         </div>
       </div>
+      
+
     </Modal>
   );
 }; 

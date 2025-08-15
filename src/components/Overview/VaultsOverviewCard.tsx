@@ -69,15 +69,17 @@ export const VaultsOverviewCard: React.FC<VaultsOverviewCardProps> = ({
     );
   }
 
-  // Trier les vaults par date (plus récent en premier)
-  const sortedVaults = [...vaults].sort((a, b) => {
-    // Utiliser modified_date en priorité, sinon created_date
-    const dateA = new Date(a.modified_date || a.created_date || '1970-01-01');
-    const dateB = new Date(b.modified_date || b.created_date || '1970-01-01');
-    
-    // Tri décroissant (plus récent en premier)
-    return dateB.getTime() - dateA.getTime();
-  });
+  // Trier les vaults par date (plus récent en premier) et exclure les vaults archivés
+  const sortedVaults = vaults
+    .filter(vault => !vault.archived) // Exclure les vaults archivés
+    .sort((a, b) => {
+      // Utiliser modified_date en priorité, sinon created_date
+      const dateA = new Date(a.modified_date || a.created_date || '1970-01-01');
+      const dateB = new Date(b.modified_date || b.created_date || '1970-01-01');
+      
+      // Tri décroissant (plus récent en premier)
+      return dateB.getTime() - dateA.getTime();
+    });
 
   return (
     <div className="vaults-overview-container">

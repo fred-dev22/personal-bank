@@ -28,10 +28,15 @@ export const StepFunding: React.FC<{
     return 0;
   }, [monthlyPayment, loanData.initial_balance]);
 
-  // Filtrer les vaults qui ont un montant suffisant pour financer le prêt
+  // Filtrer les vaults qui ont un montant suffisant pour financer le prêt et qui ne sont pas archivés
   const availableVaults = useMemo(() => {
     const loanAmount = Number(loanData.initial_balance) || 0;
     return vaults.filter(vault => {
+      // Exclure les vaults archivés
+      if (vault.archived) {
+        return false;
+      }
+      // Vérifier que le vault a un montant suffisant
       const vaultAmount = Number(vault.available_for_lending_amount || vault.balance || 0);
       return vaultAmount >= loanAmount;
     });

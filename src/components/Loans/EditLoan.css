@@ -549,4 +549,30 @@
 .change-terms,
 .delete-loan {
   margin: 0;
+}
+
+/* Delete Loan Confirmation Inline Styles */
+.delete-loan__confirm-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.delete-loan__confirm-message {
+  color: #856404;
+  font-family: var(--body-text-body-2-regular-font-family, sans-serif);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.delete-loan__confirm-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
 } 

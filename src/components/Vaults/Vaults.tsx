@@ -74,9 +74,9 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
     });
   };
 
-  // Séparation des vaults par type et tri par date
-  const gateways = sortVaultsByDate(vaults.filter(v => v.is_gateway));
-  const otherVaults = sortVaultsByDate(vaults.filter(v => !v.is_gateway));
+  // Séparation des vaults par type et tri par date (exclure les vaults archivés)
+  const gateways = sortVaultsByDate(vaults.filter(v => v.is_gateway && !v.archived));
+  const otherVaults = sortVaultsByDate(vaults.filter(v => !v.is_gateway && !v.archived));
 
   if (selectedVaultId) {
     const vault = vaults.find(v => v.id === selectedVaultId);

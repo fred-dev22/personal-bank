@@ -116,4 +116,31 @@ export const fetchLoanById = async (noteId: string, token: string): Promise<Loan
     console.error('Error fetching loan by id:', error);
     throw error;
   }
+};
+
+export const deleteLoan = async (token: string, noteId: string): Promise<void> => {
+  try {
+    console.log('🔄 Deleting loan:', { noteId, url: `${API_BASE_URL}/notes/${noteId}` });
+    
+    const response = await fetch(`${API_BASE_URL}/notes/${noteId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    console.log('📡 API Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ API Error:', errorText);
+      throw new Error(`Failed to delete loan: ${response.status} ${response.statusText}`);
+    }
+    
+    console.log('✅ Loan deleted successfully');
+  } catch (error) {
+    console.error('❌ Error deleting loan:', error);
+    throw error;
+  }
 }; 

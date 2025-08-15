@@ -122,14 +122,15 @@ export const updateVault = async (token: string, bankId: string, vaultId: string
   // Add modified_date to vault data
   const dataWithModifiedDate = addModifiedDate(data);
   
-  console.log('🔄 Updating vault with projection:', {
+  console.log('🔄 Updating vault:', {
     url: `${API_BASE_URL}/banks/${bankId}/vaults/${vaultId}`,
     vaultId,
     bankId,
     data: dataWithModifiedDate
   });
   
-  const response = await fetch(`${API_BASE_URL}/vaults/${vaultId}`, {
+  try {
+      const response = await fetch(`${API_BASE_URL}/vaults/${vaultId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -137,38 +138,44 @@ export const updateVault = async (token: string, bankId: string, vaultId: string
     },
     body: JSON.stringify(dataWithModifiedDate),
   });
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('❌ Failed to update vault:', response.status, errorText);
-    throw new Error(`Failed to update vault: ${response.status} ${errorText}`);
-  }
-  
-  const updatedVault = await response.json();
-  console.log('✅ Vault updated successfully:', updatedVault);
-  
-  // Si c'est un Super Vault et qu'on modifie des données importantes, recalculer la projection
-  if (updatedVault.type === 'super vault' && shouldRecalculateProjection(data)) {
-    try {
-      const projection = await fetchVaultProjection(token, updatedVault);
-      updatedVault.payment_projection = projection;
-      
-      // Mettre à jour une seconde fois avec la nouvelle projection
-      await fetch(`${API_BASE_URL}/banks/${bankId}/vaults/${vaultId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ payment_projection: projection, modified_date: addModifiedDate({}).modified_date }),
-      });
-    } catch (error) {
-      console.error('Error updating projection for Super Vault:', error);
-      // Continue même si la projection échoue
+    
+    console.log('📡 API Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Failed to update vault:', response.status, errorText);
+      throw new Error(`Failed to update vault: ${response.status} ${errorText}`);
     }
+    
+    const updatedVault = await response.json();
+    console.log('✅ Vault updated successfully:', updatedVault);
+    
+    // Si c'est un Super Vault et qu'on modifie des données importantes, recalculer la projection
+    if (updatedVault.type === 'super vault' && shouldRecalculateProjection(data)) {
+      try {
+        const projection = await fetchVaultProjection(token, updatedVault);
+        updatedVault.payment_projection = projection;
+        
+        // Mettre à jour une seconde fois avec la nouvelle projection
+        await fetch(`${API_BASE_URL}/banks/${bankId}/vaults/${vaultId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ payment_projection: projection, modified_date: addModifiedDate({}).modified_date }),
+        });
+      } catch (error) {
+        console.error('Error updating projection for Super Vault:', error);
+        // Continue même si la projection échoue
+      }
+    }
+    
+    return updatedVault;
+  } catch (error) {
+    console.error('❌ Error in updateVault function:', error);
+    throw error;
   }
-  
-  return updatedVault;
 };
 
 // Fonction helper pour déterminer si on doit recalculer la projection

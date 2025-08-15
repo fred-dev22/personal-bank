@@ -97,6 +97,8 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
     }
   };
 
+
+
   // Fermer le calendrier au clic extérieur
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -219,30 +221,73 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
             </Button>
           </div>
         </div>
-        <div className="edit-loan__delete-loan">
-          <div className="delete-loan__row">
-            <div className="delete-loan__col">
-              <span className="delete-loan__title">Delete Loan</span>
-              <div className="delete-loan__message">The loan is canceled. Funds are returned to the bank. All loan data is eliminated.</div>
+        {/* Delete Loan section - Hidden for security reasons */}
+        {/* <div className="edit-loan__delete-loan">
+          {!showDeleteConfirm ? (
+            <div className="delete-loan__row">
+              <div className="delete-loan__col">
+                <span className="delete-loan__title">Delete Loan</span>
+                <div className="delete-loan__message">The loan is canceled. Funds are returned to the bank. All loan data is eliminated.</div>
+              </div>
+              <Button
+                icon="iconless"
+                interaction="default"
+                justified="right"
+                onClick={() => setShowDeleteConfirm(true)}
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                type="secondary"
+                style={{ width: 115 }}
+                iconComponent={undefined}
+                name="delete"
+                form=""
+                ariaLabel="Delete"
+              >
+                Delete
+              </Button>
             </div>
-            <Button
-              icon="iconless"
-              interaction="default"
-              justified="right"
-              onClick={() => {}}
-              onMouseEnter={() => {}}
-              onMouseLeave={() => {}}
-              type="secondary"
-              style={{ width: 115 }}
-              iconComponent={undefined}
-              name="delete"
-              form=""
-              ariaLabel="Delete"
-            >
-              Delete
-            </Button>
-          </div>
-        </div>
+          ) : (
+            <div className="delete-loan__confirm-inline">
+              <div className="delete-loan__confirm-message">
+                Are you sure you want to delete this loan? This action cannot be undone.
+              </div>
+              <div className="delete-loan__confirm-buttons">
+                <Button
+                  icon="iconless"
+                  interaction="default"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  onMouseEnter={() => {}}
+                  onMouseLeave={() => {}}
+                  type="secondary"
+                  name="cancel"
+                  form=""
+                  ariaLabel="Cancel"
+                  style={{ marginRight: 8 }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  icon="iconless"
+                  interaction="default"
+                  onClick={handleDeleteLoan}
+                  onMouseEnter={() => {}}
+                  onMouseLeave={() => {}}
+                  type="primary"
+                  name="confirm"
+                  form=""
+                  ariaLabel="Confirm Delete"
+                  style={{ 
+                    backgroundColor: '#dc3545', 
+                    border: '1px solid #dc3545',
+                    color: '#fff'
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          )}
+        </div> */}
       </div>
       {/* Footer sticky */}
       <div className="edit-loan__footer">

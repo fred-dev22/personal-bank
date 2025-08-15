@@ -203,4 +203,17 @@
   cursor: pointer;
   padding: 0;
   outline: none;
+}
+
+/* Section des vaults archivés - prend toute la largeur */
+.archived-vaults-section {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 800px;
+}
+
+/* Ajuster le padding pour plus d'espace */
+.archived-vaults-section .settings-caption {
+  width: 100%;
+  overflow-x: auto;
 } 
