@@ -9,6 +9,7 @@ import { addBorrower } from '../../../controllers/borrowerController';
 import { createLoan } from '../../../controllers/loanController';
 import { updateBankField } from '../../../controllers/bankController';
 import { createPayment } from '../../../controllers/paymentController';
+import { calculateMonthlyPayment } from '../../../utils/loanUtils';
 import { StepPurpose } from './StepPurpose';
 import { StepTerms } from './StepTerms';
 import { StepContext } from './StepContext';
@@ -294,6 +295,13 @@ export const LoanWizard: React.FC<{
         }
         
         // Préparer les données pour l'API
+        // Calculer le montant mensuel
+        const monthlyPaymentAmount = calculateMonthlyPayment(
+          loanData.initial_balance || 0,
+          loanData.initial_number_of_payments || 0,
+          loanData.initial_annual_rate || 0
+        );
+
         const loanPayload = {
           loan_request_azure_id: `loan_${Date.now()}`, // Générer un ID temporaire
           nickname: loanData.nickname || '',
@@ -303,6 +311,7 @@ export const LoanWizard: React.FC<{
           status: loanStatus,
           loan_type: 'amortized',
           initial_payment_amount: loanData.initial_payment_amount || 0,
+          monthly_payment_amount: monthlyPaymentAmount, // Ajouter le montant mensuel calculé
           initial_balance: loanData.initial_balance || 0,
           initial_number_of_payments: loanData.initial_number_of_payments || 0,
           initial_frequency: 'monthly',

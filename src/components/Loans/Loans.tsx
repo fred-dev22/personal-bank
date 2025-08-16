@@ -28,6 +28,7 @@ interface LoansProps {
   selectedLoanId?: string | null;
   onShowLoanDetails?: (loanId: string) => void;
   onAddLoan?: () => void;
+  onRecastLoan?: (loan: Loan) => void;
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -42,6 +43,7 @@ export const Loans: React.FC<LoansProps> = ({
   selectedLoanId = null,
   onShowLoanDetails,
   onAddLoan,
+  onRecastLoan,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
@@ -216,12 +218,21 @@ export const Loans: React.FC<LoansProps> = ({
       console.error('Borrower not found for loan:', selectedLoan);
       return null;
     }
-    return <LoanDetails loan={selectedLoan} borrower={borrower} onBack={() => setSelectedLoan(null)} onShowBorrowerDetails={() => {
-      setSelectedBorrower(borrower);
-      if (onShowBorrowerDetails) onShowBorrowerDetails(borrower.id);
-    }} onShowVaultDetails={(vaultId: string) => {
-      if (onShowVaultDetails) onShowVaultDetails(vaultId);
-    }} activities={activities} loans={loans} />;
+    return <LoanDetails 
+      loan={selectedLoan} 
+      borrower={borrower} 
+      onBack={() => setSelectedLoan(null)} 
+      onShowBorrowerDetails={() => {
+        setSelectedBorrower(borrower);
+        if (onShowBorrowerDetails) onShowBorrowerDetails(borrower.id);
+      }} 
+      onShowVaultDetails={(vaultId: string) => {
+        if (onShowVaultDetails) onShowVaultDetails(vaultId);
+      }} 
+      activities={activities} 
+      loans={loans}
+      onRecastLoan={onRecastLoan}
+    />;
   }
 
   return (

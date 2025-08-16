@@ -10,14 +10,16 @@ import documentIcon from '../../assets/document.svg';
 import mailIcon from '../../assets/mail.svg';
 import uploadIcon from '../../assets/upload.svg';
 import type { Loan, Borrower, Activity } from '../../types/types';
-import { IncomeDscrCard } from '../Cards/IncomeDscrCard/IncomeDscrCard';
+import { DSCRCard } from '../Vaults/Vault Widgets/DSCRCard';
 import { CashFlowCard } from '../Cards/CashFlowCard/CashFlowCard';
 import { TermsCard } from '../Cards/TermsCard/TermsCard';
 import { EditLoan } from './EditLoan';
 import { Modal } from '../Modal/Modal';
+import { AddEditActivity } from '../Activities/AddEditActivity';
 import { fetchLoanById } from '../../controllers/loanController';
 import { EmptyState } from '@jbaluch/components';
 import { useActivity } from '../../contexts/ActivityContext';
+import { calculateMonthlyPayment } from '../../utils/loanUtils';
 
 interface LoanDetailsProps {
   loan: Loan;
@@ -28,6 +30,7 @@ interface LoanDetailsProps {
   activities: Activity[];
   loans: Loan[];
   activeTabId?: string;
+  onRecastLoan?: (loan: Loan) => void;
 }
 
 function getInitials(name: string) {
@@ -67,13 +70,19 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId }) => {
+export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan }) => {
   const [activeTab, setActiveTab] = useState(activeTabId || 'summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[] | null>(null);
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
   const { showActivity, hideActivity } = useActivity();
+
+  // Fonction pour gérer le clic sur Confirm Funding
+  const handleConfirmFunding = () => {
+    setIsActivityModalOpen(true);
+  };
 
   // Filtrage des activités liées à ce loan à partir de la liste globale de loans
   const currentLoan = loans.find(l => l.id === loan.id);
@@ -133,6 +142,18 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
     const num = typeof val === 'string' ? parseFloat(val.replace(/[^\d.\-]/g, '')) : val;
     if (isNaN(num)) return '$0.00';
     return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  // Utiliser le montant mensuel stocké ou le calculer si nécessaire
+  const getMonthlyPayment = () => {
+    if (loan.monthly_payment_amount) {
+      return loan.monthly_payment_amount;
+    }
+    return calculateMonthlyPayment(
+      loan.initial_balance,
+      loan.initial_number_of_payments,
+      loan.initial_annual_rate
+    );
   };
 
   // Helper pour le header du schedule
@@ -254,34 +275,83 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
       <div className="loan-tab-content">
         {activeTab === 'summary' && (
           <div className="content">
+            {/* Carte de confirmation de funding pour les loans en statut "Funding" */}
+            {loan.status === 'Funding' && (
+              <div className="funding-confirmation-card">
+                <div className="funding-confirmation-content">
+                  <div className="funding-confirmation-left">
+                    <div className="funding-confirmation-icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M16.6667 5L7.5 14.1667L3.33333 10" stroke="#00B5AE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div className="funding-confirmation-text">
+                      Verify that you transferred funds to the borrower.
+                    </div>
+                  </div>
+                  <Button
+                    icon="iconless"
+                    iconComponent={undefined}
+                    onMouseEnter={() => {}}
+                    onMouseLeave={() => {}}
+                    name="confirm-funding"
+                    form=""
+                    ariaLabel="Confirm Funding"
+                    type="primary"
+                    style={{ 
+                      backgroundColor: '#00B5AE', 
+                      borderColor: '#00B5AE',
+                      color: 'white',
+                      fontWeight: 600,
+                      padding: '12px 24px',
+                      borderRadius: '20px',
+                      fontSize: '14px',
+                      minWidth: '160px',
+                      maxWidth: '200px',
+                      height: '44px',
+                      boxShadow: '0 2px 4px rgba(0, 181, 174, 0.2)'
+                    }}
+                    onClick={handleConfirmFunding}
+                  >
+                    Confirm Funding
+                  </Button>
+                </div>
+              </div>
+            )}
             <div className="row">
-              <IncomeDscrCard
-                status={
-                  loan.dscr_limit === undefined || loan.dscr_limit === null
-                    ? 'no-DSCR'
-                    : loan.dscr_limit < 1
-                    ? 'bad'
-                    : loan.dscr_limit < 1.25
-                    ? 'mediocre'
-                    : 'good'
-                }
+              <DSCRCard
+                title="Income DSCR"
+                value={loan.dscr_limit || 0}
+                zone1Label="loss"
+                zone2Label="low profit"
+                zone3Label="high profit"
+                zone2Value={1.00}
+                zone3Value={1.50}
+                zone1Color="#E5E7EB"
+                zone2Color="#E5E7EB"
+                zone3Color="#00B5AE"
+                minValue={0}
+                maxValue={3}
+                percentage={false}
+                decimalPlaces={true}
+                hideValue={loan.dscr_limit === undefined || loan.dscr_limit === null}
               />
               <CashFlowCard
-                amount={loan.initial_payment_amount}
+                amount={getMonthlyPayment()}
                 paid={`${loan.payments?.length || 0} of ${loan.initial_number_of_payments}`}
                 nextDue={formatDateMD(loan.start_date)}
-                rate={loan.initial_annual_rate}
+                rate={loan.initial_annual_rate * 100}
                 balance={loan.current_balance}
               />
             </div>
             <div className="row">
-              <TermsCard
-                amount={loan.initial_balance}
-                rate={loan.initial_annual_rate}
-                type={loan.loan_type}
-                startDate={formatDateMD(loan.start_date)}
-                payoffDate={formatDateMD(loan.funded_date)}
-              />
+                             <TermsCard
+                 amount={loan.initial_balance}
+                 rate={loan.initial_annual_rate * 100}
+                 type={loan.loan_type}
+                 startDate={loan.start_date}
+                 numberOfMonths={loan.initial_number_of_payments}
+               />
             </div>
           </div>
         )}
@@ -447,11 +517,27 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             gracePeriod: '10 days',
             dscr_limit: loan.dscr_limit || 1.50,
             paymentDue: 'Last day of the month',
+            initial_balance: loan.initial_balance,
+            current_balance: loan.current_balance,
+            initial_annual_rate: loan.initial_annual_rate,
+            initial_number_of_payments: loan.initial_number_of_payments,
+            monthly_payment_amount: loan.monthly_payment_amount || getMonthlyPayment(),
           }}
           env={import.meta.env.VITE_ENV || 'dev'}
           onSave={() => {}}
+          onRecastLoan={onRecastLoan}
         />
       </Modal>
+      <AddEditActivity
+        open={isActivityModalOpen}
+        mode="add"
+        initialData={{}}
+        onClose={() => setIsActivityModalOpen(false)}
+        onSubmit={(data) => {
+          console.log('Activity submitted:', data);
+          setIsActivityModalOpen(false);
+        }}
+      />
     </div>
   );
 };

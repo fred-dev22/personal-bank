@@ -89,7 +89,7 @@ export const StepConfirm: React.FC<{
                 </div>
                 <div>
                   <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>
-                    {loanData.initial_annual_rate?.toFixed(0) || '100'}%
+                    {loanData.initial_annual_rate?.toFixed(2) || '12.00'}%
                   </div>
                   <div style={{ fontSize: '14px', color: '#666' }}>Amortized: Due-Date</div>
                 </div>

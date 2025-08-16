@@ -16,6 +16,7 @@ import { fetchAllUserActivities } from '../controllers/activityController';
 import { Settings } from '../components/Settings/Settings';
 import { VaultWizard } from '../components/wizards/vault-wizard';
 import { LoanWizard } from '../components/wizards/loan-wizard';
+import { RecastLoanWizard } from '../components/wizards/recast-loan-wizard/RecastLoanWizard';
 import { Snackbar } from '@jbaluch/components';
 import borrowerIcon from '../assets/borrower.svg';
 import loanIcon from '../assets/loan.svg';
@@ -40,7 +41,9 @@ const PersonalBankContent: React.FC = () => {
   const [showVaultWizard, setShowVaultWizard] = useState(false);
   const [showGatewayWizard, setShowGatewayWizard] = useState(false);
   const [showLoanWizard, setShowLoanWizard] = useState(false);
+  const [showRecastWizard, setShowRecastWizard] = useState(false);
   const [vaultToEdit, setVaultToEdit] = useState<Vault | undefined>(undefined);
+  const [loanToRecast, setLoanToRecast] = useState<Loan | undefined>(undefined);
 
   // Fonction pour déterminer l'icône selon le type d'activité
   const getActivityIcon = (message: string) => {
@@ -204,6 +207,11 @@ const PersonalBankContent: React.FC = () => {
     setShowVaultWizard(true);
   };
 
+  const handleShowRecastWizard = (loan: Loan) => {
+    setLoanToRecast(loan);
+    setShowRecastWizard(true);
+  };
+
   const handleShowGatewayWizard = () => setShowGatewayWizard(true);
 
   const handleGatewayCreated = (vault: Vault) => {
@@ -295,6 +303,25 @@ const PersonalBankContent: React.FC = () => {
       />
     );
   }
+  if (showRecastWizard && loanToRecast) {
+    return (
+      <RecastLoanWizard
+        loanToRecast={loanToRecast}
+        onClose={() => setShowRecastWizard(false)}
+        onRecastSuccess={() => {
+          setLoanToRecast(undefined);
+          setShowRecastWizard(false);
+          // Rediriger vers les détails du prêt recasté
+          if (loanToRecast?.id) {
+            setSelectedLoanId(loanToRecast.id);
+            setCurrentPage('loans');
+            // Scroll vers le haut de la page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
+      />
+    );
+  }
   return (
     <div className={`personal-bank-container ${sidebarCollapsed ? 'collapsed-margin' : 'with-margin'}`}>
       <NavigationBar
@@ -328,6 +355,7 @@ const PersonalBankContent: React.FC = () => {
             }}
             onShowLoanDetails={handleShowLoanDetails}
             onAddLoan={() => setShowLoanWizard(true)}
+            onRecastLoan={handleShowRecastWizard}
           />
         )}
         {currentPage === 'vaults' && <Vaults vaults={vaults} loans={loans} borrowers={borrowers} activities={activities} selectedVaultId={selectedVaultId} onBackToList={() => setSelectedVaultId(null)} onSelectVault={(vaultId) => {

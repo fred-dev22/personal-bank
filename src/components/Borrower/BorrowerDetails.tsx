@@ -363,7 +363,7 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                       alignment: 'center',
                       getCellProps: (row: Loan) => ({
                         text: row.initial_annual_rate !== undefined
-                          ? `${row.initial_annual_rate.toFixed(2)}%`
+                          ? `${(row.initial_annual_rate * 100).toFixed(2)}%`
                           : '',
                       }),
                     },
@@ -775,7 +775,7 @@ export const BorrowerDetails: React.FC<BorrowerDetailsProps> = ({ borrower, loan
                     alignment: 'center',
                     getCellProps: (row: Loan) => ({
                       text: row.initial_annual_rate !== undefined
-                        ? `${row.initial_annual_rate.toFixed(2)}%`
+                        ? `${(row.initial_annual_rate * 100).toFixed(2)}%`
                         : '',
                     }),
                   },
