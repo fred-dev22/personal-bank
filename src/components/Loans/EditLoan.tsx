@@ -17,6 +17,7 @@ interface EditLoanProps {
   initialData?: Partial<Loan> & UIFormFields;
   env: string;
   onSave?: (data: Partial<Loan>) => void;
+  onRecastLoan?: (loan: Loan) => void;
 }
 
 interface FormData {
@@ -28,7 +29,7 @@ interface FormData {
   paymentDue: string;
 }
 
-export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, onSave, env }) => {
+export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, onSave, env, onRecastLoan }) => {
   const { showActivity, hideActivity } = useActivity();
   const [form, setForm] = useState<FormData>({
     nickname: initialData.nickname || '',
@@ -207,7 +208,7 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
               icon="iconless"
               interaction="default"
               justified="right"
-              onClick={() => {}}
+              onClick={() => onRecastLoan && onRecastLoan(initialData as Loan)}
               onMouseEnter={() => {}}
               onMouseLeave={() => {}}
               type="secondary"

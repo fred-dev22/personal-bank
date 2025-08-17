@@ -1,12 +1,14 @@
 .terms-card {
   align-items: flex-start;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   gap: 12px;
   position: relative;
-  width: 45%;
-  max-width: none;
+  width: 370px;
   vertical-align: top;
+  height: 400px; /* Hauteur augmentée à 400px */
+  min-height: 400px;
+  max-height: 400px;
 }
 
 .terms-card .card {
@@ -20,7 +22,8 @@
   padding: 32px;
   position: relative;
   width: 100%;
-  min-width: 250px;
+  height: 100%; /* Utiliser toute la hauteur disponible */
+  overflow: hidden; /* Empêcher le débordement */
 }
 
 .terms-card .frame {
@@ -144,6 +147,16 @@
   justify-content: flex-end;
   position: relative;
   width: 120px;
+  min-width: 120px;
+  flex-wrap: wrap;
+  padding: 4px 8px;
+}
+
+/* Style spécial pour la payoff date qui peut être plus longue */
+.terms-card .row-5 .label-wrapper {
+  width: 140px;
+  min-width: 140px;
+  text-align: center;
 }
 
 .terms-card .label-3 {

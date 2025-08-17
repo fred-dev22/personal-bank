@@ -268,6 +268,7 @@ export interface Loan {
     initial_frequency: string;
     initial_annual_rate: number;
     initial_payment_amount: number;
+    monthly_payment_amount?: number; // Montant mensuel calculé
     comments: string;
     dscr_limit: number;
     userId: string;

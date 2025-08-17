@@ -644,7 +644,7 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
                   }, 
                   width: '100%' 
                 },
-                { key: 'initial_annual_rate', label: 'Loan constant',alignment: 'center', cellComponent: TextCell, getCellProps: (row: Loan) => ({ text: row ? `${row.initial_annual_rate}%` : '0%' }), width: '100%'},
+                { key: 'initial_annual_rate', label: 'Loan constant',alignment: 'center', cellComponent: TextCell, getCellProps: (row: Loan) => ({ text: row ? `${(row.initial_annual_rate * 100).toFixed(2)}%` : '0.00%' }), width: '100%'},
                 { key: 'current_balance', label: 'Unpaid balance',alignment: 'right', cellComponent: TextCell, getCellProps: () => ({ text: 'Not available yet' }), width: '100%' },
               ]}
               data={vaultLoans}

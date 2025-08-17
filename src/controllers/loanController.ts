@@ -36,6 +36,7 @@ export const createLoan = async (
     status: string;
     loan_type: string;
     initial_payment_amount: number;
+    monthly_payment_amount?: number; // Ajouter le champ monthly_payment_amount
     initial_balance: number;
     initial_number_of_payments: number;
     initial_frequency: string;

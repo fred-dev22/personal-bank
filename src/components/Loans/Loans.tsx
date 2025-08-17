@@ -28,7 +28,7 @@ interface LoansProps {
   selectedLoanId?: string | null;
   onShowLoanDetails?: (loanId: string) => void;
   onAddLoan?: () => void;
-  vaults?: Vault[];
+  onRecastLoan?: (loan: Loan) => void;
 }
 
 type FilterValue = string | { min: string; max: string };
@@ -43,7 +43,7 @@ export const Loans: React.FC<LoansProps> = ({
   selectedLoanId = null,
   onShowLoanDetails,
   onAddLoan,
-  vaults = [],
+  onRecastLoan,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('Funded');
   const [searching, setSearching] = useState(false);
@@ -231,16 +231,7 @@ export const Loans: React.FC<LoansProps> = ({
       }} 
       activities={activities} 
       loans={loans}
-      onAddActivity={(data) => {
-        console.log('Loan activity added:', data);
-        // TODO: Implement loan activity creation logic
-      }}
-      vaults={vaults}
-      accounts={[
-        { value: 'line_of_credit', label: 'Line of Credit' },
-        { value: 'checking', label: 'Checking Account' },
-        { value: 'savings', label: 'Savings Account' },
-      ]}
+      onRecastLoan={onRecastLoan}
     />;
   }
 

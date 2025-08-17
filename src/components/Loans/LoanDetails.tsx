@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Table, TextCell, TagCell } from '@jbaluch/components';
+import { Button, Tabs, Table, TextCell, TagCell } from '@jbaluch/components';
 import './LoanDetails.css';
 import vaultIcon from '../../assets/vault.svg';
 import borrowerIcon from '../../assets/borrower.svg';
@@ -9,18 +9,17 @@ import scheduleIcon from '../../assets/schedule.svg';
 import documentIcon from '../../assets/document.svg';
 import mailIcon from '../../assets/mail.svg';
 import uploadIcon from '../../assets/upload.svg';
-import type { Loan, Borrower, Activity, Vault } from '../../types/types';
-import { IncomeDscrCard } from '../Cards/IncomeDscrCard/IncomeDscrCard';
+import type { Loan, Borrower, Activity } from '../../types/types';
+import { DSCRCard } from '../Vaults/Vault Widgets/DSCRCard';
 import { CashFlowCard } from '../Cards/CashFlowCard/CashFlowCard';
 import { TermsCard } from '../Cards/TermsCard/TermsCard';
 import { EditLoan } from './EditLoan';
 import { Modal } from '../Modal/Modal';
+import { AddEditActivity } from '../Activities/AddEditActivity';
 import { fetchLoanById } from '../../controllers/loanController';
 import { EmptyState } from '@jbaluch/components';
 import { useActivity } from '../../contexts/ActivityContext';
-import { TabNavigation } from '../ui/TabNavigation';
-import { AddEditActivity } from '../Activities/AddEditActivity';
-import { createSimpleLoanConfig } from '../Activities/activityConfigs';
+import { calculateMonthlyPayment } from '../../utils/loanUtils';
 
 interface LoanDetailsProps {
   loan: Loan;
@@ -31,9 +30,7 @@ interface LoanDetailsProps {
   activities: Activity[];
   loans: Loan[];
   activeTabId?: string;
-  onAddActivity?: (data: any) => void;
-  vaults?: Vault[];
-  accounts?: Array<{ value: string; label: string }>;
+  onRecastLoan?: (loan: Loan) => void;
 }
 
 function getInitials(name: string) {
@@ -73,15 +70,19 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onAddActivity, vaults = [], accounts = [] }) => {
+export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan }) => {
   const [activeTab, setActiveTab] = useState(activeTabId || 'summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [showAddActivityModal, setShowAddActivityModal] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[] | null>(null);
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
   const { showActivity, hideActivity } = useActivity();
+
+  // Fonction pour gérer le clic sur Confirm Funding
+  const handleConfirmFunding = () => {
+    setIsActivityModalOpen(true);
+  };
 
   // Filtrage des activités liées à ce loan à partir de la liste globale de loans
   const currentLoan = loans.find(l => l.id === loan.id);
@@ -93,24 +94,12 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
 
   // Mapping pour la table
   const activityRows = loanActivities.map(a => ({
-    id: a.id, // Add the id property for click handling
     name: a.name,
     category: a.tag || '',
     date: a.date ? new Date(a.date).toLocaleString('en-US', { month: 'short', day: 'numeric' }) : '',
     amount: a.amount,
     type: a.type,
   }));
-
-  // Create activity configuration for this loan
-  const activityConfig = createSimpleLoanConfig(loan, accounts);
-
-  // Handle activity submission
-  const handleAddActivity = (data: any) => {
-    if (onAddActivity) {
-      onAddActivity(data);
-    }
-    setShowAddActivityModal(false);
-  };
 
   React.useEffect(() => {
     if (
@@ -155,6 +144,18 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
     return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
+  // Utiliser le montant mensuel stocké ou le calculer si nécessaire
+  const getMonthlyPayment = () => {
+    if (loan.monthly_payment_amount) {
+      return loan.monthly_payment_amount;
+    }
+    return calculateMonthlyPayment(
+      loan.initial_balance,
+      loan.initial_number_of_payments,
+      loan.initial_annual_rate
+    );
+  };
+
   // Helper pour le header du schedule
   const payoffDate = (scheduleRows && scheduleRows.length > 0)
     ? new Date(scheduleRows[scheduleRows.length - 1].due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
@@ -180,11 +181,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
   }, [activeTabId]);
 
   return (
-    <div className="loan-details" style={{ 
-      background: 'transparent',
-      marginRight: selectedActivity ? '400px' : '0px',
-      transition: 'margin-right 0.3s ease'
-    }}>
+    <div className="loan-details" style={{ background: 'transparent' }}>
       {/* Header */}
       <div className="loan-header">
         <button className="loan-back-btn" onClick={onBack} aria-label="Back">
@@ -248,27 +245,27 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         </Button>
       </div>
       {/* Tabs */}
-      <TabNavigation
+      <Tabs
         activeTabId={activeTab}
         onTabChange={setActiveTab}
         tabs={[
           {
-            icon: <SummaryIcon />,
+            iconComponent: SummaryIcon,
             id: 'summary',
             label: 'Summary',
           },
           {
-            icon: <ActivityIcon />,
+            iconComponent: ActivityIcon,
             id: 'activity',
             label: 'Activity',
           },
           {
-            icon: <ScheduleIcon />,
+            iconComponent: ScheduleIcon,
             id: 'schedule',
             label: 'Schedule',
           },
           {
-            icon: <DocumentIcon />,
+            iconComponent: DocumentIcon,
             id: 'documents',
             label: 'Documents',
           },
@@ -278,34 +275,83 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
       <div className="loan-tab-content">
         {activeTab === 'summary' && (
           <div className="content">
+            {/* Carte de confirmation de funding pour les loans en statut "Funding" */}
+            {loan.status === 'Funding' && (
+              <div className="funding-confirmation-card">
+                <div className="funding-confirmation-content">
+                  <div className="funding-confirmation-left">
+                    <div className="funding-confirmation-icon">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M16.6667 5L7.5 14.1667L3.33333 10" stroke="#00B5AE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div className="funding-confirmation-text">
+                      Verify that you transferred funds to the borrower.
+                    </div>
+                  </div>
+                  <Button
+                    icon="iconless"
+                    iconComponent={undefined}
+                    onMouseEnter={() => {}}
+                    onMouseLeave={() => {}}
+                    name="confirm-funding"
+                    form=""
+                    ariaLabel="Confirm Funding"
+                    type="primary"
+                    style={{ 
+                      backgroundColor: '#00B5AE', 
+                      borderColor: '#00B5AE',
+                      color: 'white',
+                      fontWeight: 600,
+                      padding: '12px 24px',
+                      borderRadius: '20px',
+                      fontSize: '14px',
+                      minWidth: '160px',
+                      maxWidth: '200px',
+                      height: '44px',
+                      boxShadow: '0 2px 4px rgba(0, 181, 174, 0.2)'
+                    }}
+                    onClick={handleConfirmFunding}
+                  >
+                    Confirm Funding
+                  </Button>
+                </div>
+              </div>
+            )}
             <div className="row">
-              <IncomeDscrCard
-                status={
-                  loan.dscr_limit === undefined || loan.dscr_limit === null
-                    ? 'no-DSCR'
-                    : loan.dscr_limit < 1
-                    ? 'bad'
-                    : loan.dscr_limit < 1.25
-                    ? 'mediocre'
-                    : 'good'
-                }
+              <DSCRCard
+                title="Income DSCR"
+                value={loan.dscr_limit || 0}
+                zone1Label="loss"
+                zone2Label="low profit"
+                zone3Label="high profit"
+                zone2Value={1.00}
+                zone3Value={1.50}
+                zone1Color="#E5E7EB"
+                zone2Color="#E5E7EB"
+                zone3Color="#00B5AE"
+                minValue={0}
+                maxValue={3}
+                percentage={false}
+                decimalPlaces={true}
+                hideValue={loan.dscr_limit === undefined || loan.dscr_limit === null}
               />
               <CashFlowCard
-                amount={loan.initial_payment_amount}
+                amount={getMonthlyPayment()}
                 paid={`${loan.payments?.length || 0} of ${loan.initial_number_of_payments}`}
                 nextDue={formatDateMD(loan.start_date)}
-                rate={loan.initial_annual_rate}
+                rate={loan.initial_annual_rate * 100}
                 balance={loan.current_balance}
               />
             </div>
             <div className="row">
-              <TermsCard
-                amount={loan.initial_balance}
-                rate={loan.initial_annual_rate}
-                type={loan.loan_type}
-                startDate={formatDateMD(loan.start_date)}
-                payoffDate={formatDateMD(loan.funded_date)}
-              />
+                             <TermsCard
+                 amount={loan.initial_balance}
+                 rate={loan.initial_annual_rate * 100}
+                 type={loan.loan_type}
+                 startDate={loan.start_date}
+                 numberOfMonths={loan.initial_number_of_payments}
+               />
             </div>
           </div>
         )}
@@ -313,7 +359,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           <section className="all-activities-table">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div style={{ fontWeight: 600, fontSize: 16 }}>
-                {loanActivities.reduce((sum, a) => sum + (a.amount || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${loanActivities.reduce((sum, a) => sum + (a.amount || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 <span style={{ color: '#6b6b70', fontWeight: 400, fontSize: 14, marginLeft: 8 }}>payoff amount</span>
               </div>
               <Button
@@ -326,7 +372,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
                 ariaLabel="Add"
                 type="primary"
                 style={{ width: 120, height: 40, fontWeight: 600 }}
-                onClick={() => setShowAddActivityModal(true)}
+                onClick={() => {}}
               >
                 Add
               </Button>
@@ -340,14 +386,6 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
               ]}
               data={activityRows}
               className="activities-table-fullwidth"
-              clickableRows
-              onRowClick={(row: any) => {
-                // Find the actual activity data from the activities array
-                const activity = activities.find(a => a.id === row.id);
-                if (activity) {
-                  setSelectedActivity(activity);
-                }
-              }}
             />
           </section>
         )}
@@ -479,37 +517,25 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
             gracePeriod: '10 days',
             dscr_limit: loan.dscr_limit || 1.50,
             paymentDue: 'Last day of the month',
+            initial_balance: loan.initial_balance,
+            current_balance: loan.current_balance,
+            initial_annual_rate: loan.initial_annual_rate,
+            initial_number_of_payments: loan.initial_number_of_payments,
+            monthly_payment_amount: loan.monthly_payment_amount || getMonthlyPayment(),
           }}
           env={import.meta.env.VITE_ENV || 'dev'}
           onSave={() => {}}
+          onRecastLoan={onRecastLoan}
         />
       </Modal>
-
       <AddEditActivity
-        open={showAddActivityModal}
+        open={isActivityModalOpen}
         mode="add"
-        config={activityConfig}
-        onClose={() => setShowAddActivityModal(false)}
-        onSubmit={handleAddActivity}
-      />
-
-      <AddEditActivity
-        open={!!selectedActivity}
-        mode="edit"
-        config={activityConfig}
-        initialData={selectedActivity ? {
-          ...selectedActivity,
-          borrowerId: loan.borrower_id || loan.borrowerId,
-          borrowerName: borrower.fullName || borrower.firstName || 'My borrower',
-          loanId: loan.id,
-          loanName: loan.nickname || 'Loan name',
-          vaultId: loan.vault_id || loan.vaultId,
-          vaultName: vaults.find(v => v.id === (loan.vault_id || loan.vaultId))?.nickname || 'Gateway',
-          accountName: accounts.find(a => a.value === loan.accountId)?.label || 'Savings'
-        } : {}}
-        onClose={() => setSelectedActivity(null)}
-        onSubmit={() => {
-          setSelectedActivity(null);
+        initialData={{}}
+        onClose={() => setIsActivityModalOpen(false)}
+        onSubmit={(data) => {
+          console.log('Activity submitted:', data);
+          setIsActivityModalOpen(false);
         }}
       />
     </div>
