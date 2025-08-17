@@ -532,6 +532,21 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         open={isActivityModalOpen}
         mode="add"
         initialData={{}}
+        config={{
+          context: 'loan',
+          contextId: loan.id,
+          contextName: loan.nickname || 'Loan',
+          availableCategories: [
+            { value: 'payment', label: 'Payment', emoji: '💰' },
+            { value: 'fee', label: 'Fee', emoji: '📋' },
+            { value: 'other', label: 'Other', emoji: '📝' }
+          ],
+          showVaultField: false,
+          showAccountField: false,
+          showLoanField: false,
+          showApplyToLoan: false,
+          defaultCategory: 'payment'
+        }}
         onClose={() => setIsActivityModalOpen(false)}
         onSubmit={(data) => {
           console.log('Activity submitted:', data);

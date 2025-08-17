@@ -5,7 +5,7 @@ import type { SegmentedControlItem } from '../ui';
 import "./style.css";
 // @ts-expect-error: Non-typed external CSS import from @jbaluch/components/styles
 import '@jbaluch/components/styles';
-import type { Loan, Borrower as BorrowerType, Activity, Vault } from '../../types/types';
+import type { Loan, Borrower as BorrowerType, Activity } from '../../types/types';
 import searchIcon from '/search.svg';
 import filterIcon from '/filter_alt.svg';
 import LoanDetails from './LoanDetails';
