@@ -40,31 +40,51 @@ export const StepHold: React.FC<{
               <span style={{ color: '#595959', fontWeight: 600 }}>Hold</span>
             </div>
             {isSuperVault ? (
-              <div style={{ display: 'flex', gap: 8 }}>
-                <div style={{ width: '20%' }}>
-                  <select
-                    value={vaultData.hold_type || 'amount'}
-                    onChange={(e) => setVaultData(prev => ({ ...prev, hold_type: e.target.value as HoldReserveType }))}
-                    style={{
-                      width: '100%',
-                      height: '40px',
-                      padding: '8px 12px',
-                      border: '1px solid #ddd',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      backgroundColor: 'white'
-                    }}
-                  >
-                    <option value="amount">$</option>
-                    <option value="percentage">%</option>
-                  </select>
+              <div style={{ 
+                display: 'flex', 
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                overflow: 'hidden',
+                height: '40px'
+              }}>
+                <div 
+                  onClick={() => {
+                    const newType = vaultData.hold_type === 'percentage' ? 'amount' : 'percentage';
+                    setVaultData(prev => ({ ...prev, hold_type: newType as HoldReserveType }));
+                  }}
+                  style={{ 
+                    width: '47px',
+                    backgroundColor: '#DFDFE6',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRight: '1px solid #ddd',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#000',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    userSelect: 'none',
+                    gap: '4px'
+                  }}
+                >
+                  <span>{vaultData.hold_type === 'percentage' ? '%' : '$'}</span>
+                  <span style={{ 
+                    fontSize: '10px',
+                    lineHeight: '1'
+                  }}>▼</span>
                 </div>
-                <div style={{ width: '80%' }}>
+                <div style={{ flex: 1 }}>
                   <Input
-                    value={vaultData.hold ?? ''}
+                    value={String(vaultData.hold ?? '')}
                     onChange={(value: string) => setVaultData(prev => ({ ...prev, hold: value === '' ? undefined : Number(value) }))}
-                    placeholder="5.00"
-                    style={{ height: '40px' }}
+                    placeholder={vaultData.hold_type === 'percentage' ? "5.00" : "500.00"}
+                    style={{ 
+                      height: '40px',
+                      border: 'none',
+                      borderRadius: '0',
+                      paddingLeft: '12px'
+                    }}
                     required
                     type={vaultData.hold_type === 'percentage' ? "percentage" : "currency"}
                     error={validationErrors.hold}

@@ -433,7 +433,6 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
         }}>
           {/* Setup */}
           <div style={{
-            borderBottom: '1px solid #eeeef2',
             paddingBottom: 12,
             marginBottom: 12,
           }}>
@@ -443,23 +442,41 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
               alignItems: 'center',
               marginBottom: 8,
             }}>
-              <div style={{ fontWeight: 600, fontSize: 16 }}>Setup:</div>
+              <div style={{ 
+                fontWeight: 700, 
+                fontSize: 16,
+                color: '#595959'
+              }}>Setup:</div>
             </div>
-            <div style={{ color: '#000', marginBottom: 4 }}>
+            <div style={{ 
+              color: '#000000', 
+              marginBottom: 4,
+              fontWeight: 400,
+              fontSize: 14
+            }}>
               • Open a {accountTypeLabel} account at your local bank.
             </div>
-            <div style={{ color: '#000' }}>
+            <div style={{ 
+              color: '#000000',
+              fontWeight: 400,
+              fontSize: 14
+            }}>
               • Dedicate this account to the bank. This will make it easy to review the ledger and reconcile activity in the bank.
             </div>
           </div>
           {/* Reconcile */}
           <div>
             <div style={{
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: 16,
               marginBottom: 8,
+              color: '#595959'
             }}>Reconcile</div>
-            <div style={{ color: '#000' }}>
+            <div style={{ 
+              color: '#000000',
+              fontWeight: 400,
+              fontSize: 14
+            }}>
               • Schedule time every month to reconcile this vault's activity with your bank statement.
             </div>
           </div>

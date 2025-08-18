@@ -8,7 +8,7 @@
   height: 400px; /* Hauteur augmentée à 400px */
   min-height: 400px;
   max-height: 400px;
-  overflow: hidden; /* Empêcher le débordement */
+  overflow: visible; /* Allow tooltips to overflow */
   display: flex;
   flex-direction: column;
   width: 100%;

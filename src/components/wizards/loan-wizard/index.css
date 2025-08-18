@@ -66,8 +66,8 @@
 .loan-wizard-form-group input[type="date"],
 .loan-wizard-form-group textarea,
 .loan-wizard-form-group select {
-  width: 100%;
-  padding: 12px;
+  /* width: 100%; */
+  padding: 10px 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;

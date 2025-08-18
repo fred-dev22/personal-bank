@@ -1,6 +1,7 @@
 import React from 'react';
 import './DSCRCard.css';
 import { DottedUnderline } from '../../ui/DottedUnderline';
+import { HelpTooltip } from '../../ui/HelpTooltip';
 import checkIcon from '../../../assets/Wavy_Check.svg';
 
 interface DSCRCardProps {
@@ -99,7 +100,13 @@ export const DSCRCard: React.FC<DSCRCardProps> = ({
           <div className="dscr-large-value">{formatValue(headerValue)}</div>
         </div>
         <div className="dscr-title">
-          <DottedUnderline>{title}</DottedUnderline>
+          <HelpTooltip 
+            term="Income DSCR"
+            definition="The Income Debt-Service-Coverage-Ratio shows whether you're profiting from loans. A value greater than 1.0 means that you're making money. In total, this vault's loans are generating 43% more than it costs to lend. This is less than your limit of 1.50, or 50% more."
+            position="top"
+          >
+            <DottedUnderline>{title}</DottedUnderline>
+          </HelpTooltip>
         </div>
       </div>
       <div className="dscr-card-content">

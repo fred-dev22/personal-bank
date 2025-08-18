@@ -58,33 +58,53 @@ export const StepDebt: React.FC<{
               <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, textAlign: 'left' }}>
                 Credit limit <span style={{ color: 'red' }}>*</span>
               </label>
-                             <div style={{ display: 'flex', gap: 8 }}>
-                 <div style={{ width: '20%' }}>
-                   <select
-                                         value={vaultData.creditLimitType || 'percentage'}
-                    onChange={(e) => setVaultData(prev => ({ ...prev, creditLimitType: e.target.value as CreditLimitType }))}
-                    style={{
-                      width: '100%',
-                      height: '40px',
-                      padding: '8px 12px',
-                      border: '1px solid #ddd',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      backgroundColor: 'white'
-                    }}
-                  >
-                    <option value="percentage">%</option>
-                    <option value="amount">$</option>
-                  </select>
+              <div style={{ 
+                display: 'flex', 
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                overflow: 'hidden',
+                height: '40px'
+              }}>
+                <div 
+                  onClick={() => {
+                    const newType = vaultData.creditLimitType === 'percentage' ? 'amount' : 'percentage';
+                    setVaultData(prev => ({ ...prev, creditLimitType: newType as CreditLimitType }));
+                  }}
+                  style={{ 
+                    width: '47px',
+                    backgroundColor: '#DFDFE6',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRight: '1px solid #ddd',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#000',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    userSelect: 'none',
+                    gap: '4px'
+                  }}
+                >
+                  <span>{vaultData.creditLimitType === 'percentage' ? '%' : '$'}</span>
+                  <span style={{ 
+                    fontSize: '10px',
+                    lineHeight: '1'
+                  }}>▼</span>
                 </div>
-                                 <div style={{ width: '80%' }}>
-                   <Input
+                <div style={{ flex: 1 }}>
+                  <Input
                     placeholder="Enter credit limit"
-                    value={vaultData.debtLtv || '90.00'}
+                    value={String(vaultData.debtLtv ?? '')}
                     onChange={(value: string) => setVaultData(prev => ({ ...prev, debtLtv: value }))}
                     error={validationErrors.debtLtv}
-                                         type={vaultData.creditLimitType === 'amount' ? 'currency' : 'percentage'}
-                    style={{ height: '40px' }}
+                    type={vaultData.creditLimitType === 'amount' ? 'currency' : 'percentage'}
+                    style={{ 
+                      height: '40px',
+                      border: 'none',
+                      borderRadius: '0',
+                      paddingLeft: '12px'
+                    }}
                   />
                 </div>
               </div>

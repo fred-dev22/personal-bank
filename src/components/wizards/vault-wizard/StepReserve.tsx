@@ -52,31 +52,51 @@ export const StepReserve: React.FC<{
               <span style={{ color: '#595959', fontWeight: 600 }}>Reserve</span>
             </div>
             {isSuperVault ? (
-              <div style={{ display: 'flex', gap: 8 }}>
-                <div style={{ width: '20%' }}>
-                  <select
-                    value={vaultData.reserve_type || 'amount'}
-                    onChange={(e) => setVaultData(prev => ({ ...prev, reserve_type: e.target.value as HoldReserveType }))}
-                    style={{
-                      width: '100%',
-                      height: '40px',
-                      padding: '8px 12px',
-                      border: '1px solid #ddd',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      backgroundColor: 'white'
-                    }}
-                  >
-                    <option value="amount">$</option>
-                    <option value="percentage">%</option>
-                  </select>
+              <div style={{ 
+                display: 'flex', 
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                overflow: 'hidden',
+                height: '40px'
+              }}>
+                <div 
+                  onClick={() => {
+                    const newType = vaultData.reserve_type === 'percentage' ? 'amount' : 'percentage';
+                    setVaultData(prev => ({ ...prev, reserve_type: newType as HoldReserveType }));
+                  }}
+                  style={{ 
+                    width: '47px',
+                    backgroundColor: '#DFDFE6',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRight: '1px solid #ddd',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#000',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    userSelect: 'none',
+                    gap: '4px'
+                  }}
+                >
+                  <span>{vaultData.reserve_type === 'percentage' ? '%' : '$'}</span>
+                  <span style={{ 
+                    fontSize: '10px',
+                    lineHeight: '1'
+                  }}>▼</span>
                 </div>
-                <div style={{ width: '80%' }}>
+                <div style={{ flex: 1 }}>
                   <Input
                     value={String(vaultData.reserve ?? '')}
                     onChange={(value: string) => setVaultData(prev => ({ ...prev, reserve: value === '' ? undefined : Number(value) }))}
-                    placeholder="10.00"
-                    style={{ height: '40px' }}
+                    placeholder={vaultData.reserve_type === 'percentage' ? "10.00" : "1,000.00"}
+                    style={{ 
+                      height: '40px',
+                      border: 'none',
+                      borderRadius: '0',
+                      paddingLeft: '12px'
+                    }}
                     required
                     type={vaultData.reserve_type === 'percentage' ? "percentage" : "currency"}
                     error={validationErrors.reserve}
