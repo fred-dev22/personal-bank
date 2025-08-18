@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Tabs, Table, TextCell, TagCell } from '@jbaluch/components';
+import { Button, Table, TextCell, TagCell } from '@jbaluch/components';
 import './LoanDetails.css';
 import vaultIcon from '../../assets/vault.svg';
 import borrowerIcon from '../../assets/borrower.svg';
@@ -9,13 +9,15 @@ import scheduleIcon from '../../assets/schedule.svg';
 import documentIcon from '../../assets/document.svg';
 import mailIcon from '../../assets/mail.svg';
 import uploadIcon from '../../assets/upload.svg';
-import type { Loan, Borrower, Activity } from '../../types/types';
+import type { Loan, Borrower, Activity, Vault } from '../../types/types';
 import { DSCRCard } from '../Vaults/Vault Widgets/DSCRCard';
 import { CashFlowCard } from '../Cards/CashFlowCard/CashFlowCard';
 import { TermsCard } from '../Cards/TermsCard/TermsCard';
 import { EditLoan } from './EditLoan';
 import { Modal } from '../Modal/Modal';
 import { AddEditActivity } from '../Activities/AddEditActivity';
+import { createSimpleLoanConfig } from '../Activities/activityConfigs';
+import { TabNavigation } from '../ui/TabNavigation';
 import { fetchLoanById } from '../../controllers/loanController';
 import { EmptyState } from '@jbaluch/components';
 import { useActivity } from '../../contexts/ActivityContext';
@@ -31,6 +33,9 @@ interface LoanDetailsProps {
   loans: Loan[];
   activeTabId?: string;
   onRecastLoan?: (loan: Loan) => void;
+  onAddActivity?: (data: any) => void;
+  vaults?: Vault[];
+  accounts?: Array<{ value: string; label: string }>;
 }
 
 function getInitials(name: string) {
@@ -70,10 +75,12 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan }) => {
+export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan, onAddActivity, vaults = [], accounts = [] }) => {
   const [activeTab, setActiveTab] = useState(activeTabId || 'summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [showAddActivityModal, setShowAddActivityModal] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[] | null>(null);
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
@@ -94,12 +101,24 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
 
   // Mapping pour la table
   const activityRows = loanActivities.map(a => ({
+    id: a.id,
     name: a.name,
     category: a.tag || '',
     date: a.date ? new Date(a.date).toLocaleString('en-US', { month: 'short', day: 'numeric' }) : '',
     amount: a.amount,
     type: a.type,
   }));
+
+  // Create activity configuration for this loan
+  const activityConfig = createSimpleLoanConfig(loan, accounts);
+
+  // Handle activity submission
+  const handleAddActivity = (data: any) => {
+    if (onAddActivity) {
+      onAddActivity(data);
+    }
+    setShowAddActivityModal(false);
+  };
 
   React.useEffect(() => {
     if (
@@ -245,30 +264,14 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         </Button>
       </div>
       {/* Tabs */}
-      <Tabs
+      <TabNavigation
         activeTabId={activeTab}
         onTabChange={setActiveTab}
         tabs={[
-          {
-            iconComponent: SummaryIcon,
-            id: 'summary',
-            label: 'Summary',
-          },
-          {
-            iconComponent: ActivityIcon,
-            id: 'activity',
-            label: 'Activity',
-          },
-          {
-            iconComponent: ScheduleIcon,
-            id: 'schedule',
-            label: 'Schedule',
-          },
-          {
-            iconComponent: DocumentIcon,
-            id: 'documents',
-            label: 'Documents',
-          },
+          { id: 'summary', label: 'Summary', icon: <SummaryIcon /> },
+          { id: 'activity', label: 'Activity', icon: <ActivityIcon /> },
+          { id: 'schedule', label: 'Schedule', icon: <ScheduleIcon /> },
+          { id: 'documents', label: 'Documents', icon: <DocumentIcon /> },
         ]}
       />
       {/* Content (placeholder) */}
@@ -372,7 +375,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
                 ariaLabel="Add"
                 type="primary"
                 style={{ width: 120, height: 40, fontWeight: 600 }}
-                onClick={() => {}}
+                onClick={() => setShowAddActivityModal(true)}
               >
                 Add
               </Button>
@@ -386,6 +389,13 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
               ]}
               data={activityRows}
               className="activities-table-fullwidth"
+              clickableRows
+              onRowClick={(row: any) => {
+                const activity = activities.find(a => a.id === row.id);
+                if (activity) {
+                  setSelectedActivity(activity);
+                }
+              }}
             />
           </section>
         )}
@@ -507,6 +517,33 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           </div>
         )}
       </div>
+      {/* Add/Edit Activity Modals */}
+      <AddEditActivity
+        open={showAddActivityModal}
+        mode="add"
+        config={activityConfig}
+        onClose={() => setShowAddActivityModal(false)}
+        onSubmit={handleAddActivity}
+      />
+
+      <AddEditActivity
+        open={!!selectedActivity}
+        mode="edit"
+        config={activityConfig}
+        initialData={selectedActivity ? {
+          ...selectedActivity,
+          borrowerId: loan.borrower_id || loan.borrowerId,
+          borrowerName: borrower.fullName || (borrower as any).firstName || 'Borrower',
+          loanId: loan.id,
+          loanName: loan.nickname || 'Loan',
+          vaultId: (loan as any).vault_id || (loan as any).vaultId,
+          vaultName: vaults.find(v => v.id === ((loan as any).vault_id || (loan as any).vaultId))?.nickname || 'Gateway'
+        } : {}}
+        onClose={() => setSelectedActivity(null)}
+        onSubmit={() => {
+          setSelectedActivity(null);
+        }}
+      />
       <Modal open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <EditLoan
           onClose={() => setIsEditModalOpen(false)}

@@ -117,11 +117,11 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
   align-items: stretch;
-  background-color: #00000005;
+  background-color: #00000005; /* restore subtle panel background */
   border-radius: 8px;
-  padding: 24px;
+  padding: 24px 48px 32px 48px; /* increased left/right spacing */
   width: 100%;
 }
 
@@ -129,15 +129,12 @@
   display: flex;
   flex-direction: row;
   gap: 24px;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
-  align-items: center;
+  align-items: stretch;
 }
 
-.row:last-child {
-  justify-content: center;
-  width: 100%;
-}
+.row:last-child { justify-content: center; width: 100%; }
 
 .row:last-child .terms-card {
   width: 45%;
@@ -147,15 +144,17 @@
   justify-content: center;
 }
 
-/* Ensure the first row cards have proper sizing - Income DSCR card 55%, Payment card 45% */
-.row:first-child .income-DSCR-card {
-  flex: 0 0 55%;
-  width: 55%;
+/* Ensure the first row cards have proper sizing - DSCR card 55%, Payment card 45% */
+.row:first-child .dscr-card {
+  flex: 0 0 60%;
+  width: 60%;
+  max-width: 60%;
 }
 
-.row:first-child .cash-flow-card {
-  flex: 0 0 45%;
-  width: 45%;
+.row:first-child .payment-card {
+  flex: 0 0 40%;
+  width: 40%;
+  max-width: 37%;
 }
 
 .left-col {

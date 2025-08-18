@@ -100,6 +100,8 @@ export const Vaults: React.FC<VaultsProps> = ({ vaults, loans, borrowers, activi
           { value: 'checking', label: 'Checking Account' },
           { value: 'savings', label: 'Savings Account' },
         ]}
+        vaults={vaults}
+        onSelectVault={onSelectVault}
       />;
     }
   }

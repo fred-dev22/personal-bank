@@ -59,6 +59,8 @@ interface VaultDetailsProps {
   onEditVault?: (vault: Vault) => void;
   onAddActivity?: (data: any) => void;
   accounts?: Array<{ value: string; label: string }>;
+  vaults?: Vault[]; // Add vaults prop to show other vaults
+  onSelectVault?: (vaultId: string) => void; // Add callback for vault selection
 }
 
 export const VaultDetails: React.FC<VaultDetailsProps> = ({
@@ -72,12 +74,55 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
   onVaultUpdate,
   onEditVault,
   onAddActivity,
-  accounts = []
+  accounts = [],
+  vaults,
+  onSelectVault
 }) => {
   const [activeTab, setActiveTab] = useState("summary");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showAddActivityModal, setShowAddActivityModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+
+  // Filter other vaults (exclude current vault and archived vaults)
+  const otherVaults = vaults?.filter(v => v.id !== vault.id && !v.archived) || [];
+
+  // Helper functions for vault table
+  const getIssues = (vault: Vault) => {
+    const growth = Number(vault.growth_issue_count || 0);
+    const income = Number(vault.income_issue_count || 0);
+    const ltv = vault.is_ltv_issue_count === 'yes' ? 1 : 0;
+    const arbitrary = vault.arbitrary_text ? Number(vault.arbitrary_text) : 0;
+    return growth + income + ltv + arbitrary;
+  };
+
+  const getEquityTrend = (vault: Vault) => {
+    if (vault.type === 'super vault') {
+      if (vault.payment_projection?.summary?.equityIncreasing) return 'Increasing';
+      return 'Decreasing';
+    }
+    if (vault.type === 'cash vault') return 'n/a';
+    return 'n/a';
+  };
+
+  const getAvailable = (vault: Vault) => {
+    if (typeof vault.available_for_lending_amount === 'number') {
+      return `$${vault.available_for_lending_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    return vault.available_for_lending_amount || '';
+  };
+
+  const getTotalSpread = (vault: Vault) => {
+    if (vault.type === 'super vault') {
+      if (vault.spread !== undefined && vault.spread !== null && vault.spread !== '') {
+        return `${Number(vault.spread).toFixed(2)}%`;
+      }
+      return 'TBD';
+    }
+    if (vault.liquidity_source && typeof vault.liquidity_source.appreciation === 'number') {
+      return `${vault.liquidity_source.appreciation.toFixed(2)}%`;
+    }
+    return 'n/a';
+  };
 
   const handleSetupVault = (vault: Vault) => {
     if (onEditVault) {
@@ -200,14 +245,77 @@ export const VaultDetails: React.FC<VaultDetailsProps> = ({
     // Gateway : VaultFinancials only (Transfers section hidden)
     if (vault.is_gateway) {
       return (
-        <VaultFinancials
-          balance={realBalance}
-          held={vault.hold ?? 0}
-          reserve={vault.reserve ?? 0}
-          pending={0}
-          available={availableToLend}
-          balanceLabel="Balance" // Label par défaut pour Gateway
-        />
+        <div>
+          <VaultFinancials
+            balance={realBalance}
+            held={vault.hold ?? 0}
+            reserve={vault.reserve ?? 0}
+            pending={0}
+            available={availableToLend}
+            balanceLabel="Balance" // Label par défaut pour Gateway
+          />
+          
+          {/* Vaults Section */}
+          {otherVaults.length > 0 && (
+            <section className="vaults-block" style={{ marginTop: '32px' }}>
+              <div className="table-title">Vaults</div>
+              <Table
+                columns={[
+                  {
+                    key: 'nickname',
+                    label: 'Name',
+                    cellComponent: TextCell,
+                    width: '100%',
+                    alignment: 'left',
+                    getCellProps: (row: Vault) => ({ text: row.is_gateway ? 'Gateway' : row.nickname }),
+                  },
+                  {
+                    key: 'issues',
+                    label: 'Issues',
+                    cellComponent: MetricCell,
+                    width: '100%',
+                    alignment: 'center',
+                    getCellProps: (row: Vault) => {
+                      const issues = getIssues(row);
+                      return {
+                        value: issues,
+                        status: issues > 0 ? 'bad' : 'good',
+                        style: issues > 0 ? { background: '#5b3122', color: '#FF7F50' } : undefined
+                      };
+                    },
+                  },
+                  {
+                    key: 'total_spread',
+                    label: 'Total Spread',
+                    cellComponent: TextCell,
+                    width: '100%',
+                    alignment: 'center',
+                    getCellProps: (row: Vault) => ({ text: getTotalSpread(row) }),
+                  },
+                  {
+                    key: 'equity_trend',
+                    label: 'Equity Trend',
+                    cellComponent: TagCell,
+                    width: '100%',
+                    alignment: 'center',
+                    getCellProps: (row: Vault) => ({ label: getEquityTrend(row), size: 'small' }),
+                  },
+                  {
+                    key: 'available',
+                    label: 'Available',
+                    cellComponent: TextCell,
+                    width: '100%',
+                    alignment: 'right',
+                    getCellProps: (row: Vault) => ({ text: getAvailable(row) }),
+                  },
+                ]}
+                data={otherVaults}
+                clickableRows
+                onRowClick={(row: Vault) => onSelectVault && onSelectVault(row.id)}
+              />
+            </section>
+          )}
+        </div>
       );
     }
 

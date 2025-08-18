@@ -22,8 +22,8 @@
   padding: 32px;
   position: relative;
   width: 100%;
-  height: 100%; /* Utiliser toute la hauteur disponible */
-  overflow: hidden; /* Empêcher le débordement */
+  height: 100%;
+  overflow: visible; /* Allow tooltips to overflow the card */
 }
 
 .terms-card .frame {

@@ -2,7 +2,7 @@
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 20px;
+  padding: 50px; /* requested spacing */
   margin-bottom: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 400px; /* Hauteur augmentée à 400px */
@@ -11,21 +11,39 @@
   overflow: hidden; /* Empêcher le débordement */
   display: flex;
   flex-direction: column;
-  width: 500px; /* Largeur augmentée à 500px */
-  margin: 0 auto 16px auto; /* Centrer la carte */
+  width: 100%;
+  margin: 0 0 16px 0;
+  box-sizing: border-box; /* keep padding inside width */
 }
 
 .dscr-card-header {
   margin-bottom: 16px;
-  text-align: center; /* Centrer le header */
 }
 
-.dscr-card-header h3 {
-  font-size: 16px;
+.dscr-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dscr-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.dscr-large-value {
+  font-size: 22px;
   font-weight: 600;
-  color: #000;
-  margin: 0;
-  text-align: center;
+  color: #0d1728;
+}
+
+.dscr-title {
+  margin-top: 4px;
+  display: flex;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .dscr-card-content {
@@ -33,14 +51,15 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* push message to bottom */
 }
 
 /* Graphique DSCR natif */
 .dscr-graph {
-  width: 100%;
+  width: 85%;
   height: 120px;
   position: relative;
-  margin-bottom: 16px;
+  margin: 0 auto 16px auto; /* center shorter graph */
 }
 
 .dscr-values {
@@ -154,6 +173,7 @@
 
 .dscr-border-value-1 {
   left: 0%;
+  display: none; /* Hide 0.00 at far left (not in Figma) */
 }
 
 .dscr-border-value-2 {
@@ -174,7 +194,7 @@
 }
 
 .dscr-message p {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #000;
   margin: 0;
@@ -186,7 +206,8 @@
 }
 
 .dscr-description p {
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 400;
   color: #666;
   margin: 0;
   line-height: 1.5;

@@ -1,5 +1,7 @@
 import React from 'react';
 import './DSCRCard.css';
+import { DottedUnderline } from '../../ui/DottedUnderline';
+import checkIcon from '../../../assets/Wavy_Check.svg';
 
 interface DSCRCardProps {
   title: string;
@@ -86,10 +88,19 @@ export const DSCRCard: React.FC<DSCRCardProps> = ({
     return val.toFixed(decimalPlaces ? 2 : 0) + (percentage ? '%' : '');
   };
 
+  // Choose a header value: show the actual value when available, otherwise fall back to the zone3 marker (e.g., 1.50)
+  const headerValue: number = hideValue || value === undefined ? zone3Value : value;
+
   return (
     <div className="dscr-card">
       <div className="dscr-card-header">
-        <h3>{title}</h3>
+        <div className="dscr-header-top">
+          <img src={checkIcon} alt="" className="dscr-icon" />
+          <div className="dscr-large-value">{formatValue(headerValue)}</div>
+        </div>
+        <div className="dscr-title">
+          <DottedUnderline>{title}</DottedUnderline>
+        </div>
       </div>
       <div className="dscr-card-content">
         <div className="dscr-graph">

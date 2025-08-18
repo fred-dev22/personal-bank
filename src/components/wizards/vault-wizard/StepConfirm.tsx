@@ -210,7 +210,7 @@ export const StepConfirm: React.FC<{ vaultData: Vault; gatewayMode?: boolean }> 
                   <div style={{ color: '#595959' }}>-${holdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #eeeef2', padding: '12px 16px' }}>
-                  <div style={{ width: 10, height: 10, background: '#ff7f50', borderRadius: 5, marginRight: 8 }} />
+                  <div style={{ width: 10, height: 10, background: '#ff7f50', borderRadius: 5, marginRight: 8 }} /> 
                   <div style={{ color: '#595959', flex: 1 }}>
                     <HelpTooltip 
                       term="Reserve" 
