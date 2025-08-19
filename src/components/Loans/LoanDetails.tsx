@@ -354,6 +354,8 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
                  type={loan.loan_type}
                  startDate={loan.start_date}
                  numberOfMonths={loan.initial_number_of_payments}
+                 isRecast={loan.is_recast}
+                 recastDate={loan.recast_date}
                />
             </div>
           </div>
@@ -548,16 +550,12 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         <EditLoan
           onClose={() => setIsEditModalOpen(false)}
           initialData={{
-            note_id: loan.note_id,
+            ...loan,
             nickname: loan.nickname || '',
             lateFee: '$5.00',
             gracePeriod: '10 days',
             dscr_limit: loan.dscr_limit || 1.50,
             paymentDue: 'Last day of the month',
-            initial_balance: loan.initial_balance,
-            current_balance: loan.current_balance,
-            initial_annual_rate: loan.initial_annual_rate,
-            initial_number_of_payments: loan.initial_number_of_payments,
             monthly_payment_amount: loan.monthly_payment_amount || getMonthlyPayment(),
           }}
           env={import.meta.env.VITE_ENV || 'dev'}

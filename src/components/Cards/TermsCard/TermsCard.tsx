@@ -9,9 +9,11 @@ interface TermsCardProps {
   type: string;
   startDate: string;
   numberOfMonths: number; // Ajout du nombre de mois
+  isRecast?: boolean; // Indique si le loan est recasté
+  recastDate?: string; // Date du recast
 }
 
-export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startDate, numberOfMonths }) => {
+export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startDate, numberOfMonths, isRecast, recastDate }) => {
   
   // Fonction pour calculer la payoff date en ajoutant les mois au start date
   const calculatePayoffDate = (startDate: string, numberOfMonths: number) => {
@@ -142,6 +144,25 @@ export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startD
                 </div>
               </div>
             </div>
+            {isRecast && (
+              <div className="row-6">
+                <div className="data-table-row">
+                  <div className="label-2">Status</div>
+                </div>
+                <div className="frame-wrapper">
+                  <div className="label-wrapper">
+                    <div className="label-3 recast-status">
+                      <span className="recast-badge">Recast</span>
+                      {recastDate && (
+                        <span className="recast-date">
+                          {new Date(recastDate).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

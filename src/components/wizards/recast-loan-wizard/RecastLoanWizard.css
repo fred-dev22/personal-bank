@@ -2,10 +2,12 @@
   width: 100%;
   height: 100vh;
   padding: 32px;
-  box-sizing: border-box;
   padding-bottom: 120px;
   background: #F7F7F9;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .recast-loan-wizard__header {
@@ -18,9 +20,18 @@
 }
 
 .recast-loan-wizard__title {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 32px;
+  font-weight: 700;
   color: #0d1728;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.recast-loan-wizard__subtitle {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 16px;
+  text-align: left;
 }
 
 .recast-loan-wizard__close {
@@ -39,9 +50,31 @@
 }
 
 .recast-loan-wizard__content {
-  flex: 1;
   padding: 0;
-  overflow-y: auto;
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.recast-loan-wizard__header-content {
+  width: 100%;
+  max-width: 1000px;
+  text-align: left;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.recast-loan-wizard__main-content {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1000px;
 }
 
 .recast-loan-wizard__section {
@@ -110,21 +143,33 @@
 }
 
 .recast-loan-wizard__summary-card {
-  display: flex;
-  gap: 48px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 24px;
+  background: white;
   border: 1px solid #e9ecef;
-  margin-bottom: 24px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 280px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.summary-card__left,
-.summary-card__right {
-  flex: 1;
+.recast-loan-wizard__summary-item {
+  margin-bottom: 20px;
+}
+
+.recast-loan-wizard__summary-item:last-child {
+  margin-bottom: 0;
+}
+
+.recast-loan-wizard__summary-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0d1728;
+  margin-bottom: 4px;
+}
+
+.recast-loan-wizard__summary-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
 }
 
 .summary-item {
@@ -210,6 +255,183 @@
 }
 
 .recast-loan-wizard-footer button {
-  max-height: 36px;
+  height: 44px;
+  max-height: 44px;
   font-size: 16px;
+  padding: 12px 24px;
+}
+
+.recast-loan-wizard-footer button:first-child {
+  font-size: 18px;
+  min-width: 180px;
+}
+
+/* Finish Screen Styles */
+.recast-finish__header {
+  text-align: center;
+  margin-bottom: 32px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.recast-finish__title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0d1728;
+  margin-bottom: 24px;
+}
+
+.recast-finish__tabs {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid #e9ecef;
+  position: relative;
+}
+
+.recast-finish__tab {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.recast-finish__tab:hover {
+  color: #00B5AE;
+  background-color: rgba(0, 181, 174, 0.05);
+}
+
+.recast-finish__tab--active {
+  color: #00B5AE;
+  border-bottom-color: #00B5AE;
+}
+
+.recast-finish__content {
+  max-width: 600px;
+  width: 100%;
+}
+
+.recast-finish__summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.recast-finish__info-item {
+  margin-bottom: 24px;
+}
+
+.recast-finish__info-item:last-child {
+  margin-bottom: 0;
+}
+
+.recast-finish__borrower,
+.recast-finish__value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0d1728;
+  margin-bottom: 4px;
+}
+
+.recast-finish__label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.recast-finish__downloads {
+  margin-bottom: 32px;
+}
+
+.recast-finish__downloads h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0d1728;
+  margin: 0 0 16px 0;
+}
+
+.recast-finish__download-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.recast-finish__download-item:hover {
+  background-color: #e9ecef;
+}
+
+.recast-finish__download-icon {
+  font-size: 18px;
+}
+
+.recast-finish__download-text {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: #0d1728;
+}
+
+.recast-finish__instructions {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.recast-finish__instruction-section {
+  margin-bottom: 32px;
+}
+
+.recast-finish__instruction-section:last-child {
+  margin-bottom: 0;
+}
+
+.recast-finish__instruction-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.recast-finish__instruction-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0d1728;
+  margin: 0;
+}
+
+.recast-finish__instruction-icon {
+  font-size: 20px;
+}
+
+.recast-finish__instructions ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.recast-finish__instructions li {
+  font-size: 16px;
+  color: #0d1728;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.recast-finish__instructions li:last-child {
+  margin-bottom: 0;
 }

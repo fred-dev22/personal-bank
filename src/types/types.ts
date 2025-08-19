@@ -286,6 +286,8 @@ export interface Loan {
     sub_state?: string;
     actual_payments_scheduled?: unknown[];
     is_funded?: boolean;
+    is_recast?: boolean; // Indique si le loan a été recasté
+    recast_date?: string; // Date du recast
     created_date?: string;
     modified_date?: string;
     pendingPayments?: Array<{

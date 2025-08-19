@@ -1,6 +1,7 @@
 import React from 'react';
-import { Input } from '@jbaluch/components';
+import { Input, PopupButton } from '@jbaluch/components';
 import { calculateMonthlyPayment } from '../../../utils/loanUtils';
+import { formatCurrency as formatCurrencyGlobal } from '../../../utils/currencyUtils';
 import './ManualEntry.css';
 
 interface ManualEntryProps {
@@ -24,82 +25,92 @@ export const ManualEntry: React.FC<ManualEntryProps> = ({
 
   return (
     <div className="manual-entry">
-      <div className="manual-entry__section">
-        <h2>Change the terms manually</h2>
-        <p>The new payment will be calculated based on these inputs.</p>
+      <div className="manual-entry__header">
+        <h1 className="recast-loan-wizard__title">Change the terms manually</h1>
+        <p className="recast-loan-wizard__subtitle">The new payment will be calculated based on these inputs.</p>
       </div>
 
       <div className="manual-entry__main">
         <div className="manual-entry__form">
-          <div className="form-group">
-            <label className="form-label">Unpaid Balance</label>
+          <div className="loan-wizard-form-group">
             <Input
-              value={`$${balance.toFixed(2)}`}
+              label="Unpaid Balance"
+              value={formatCurrencyGlobal(balance)}
               readOnly
-              style={{ backgroundColor: '#f8f9fa' }}
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              New Rate <span className="required">*</span>
-            </label>
+          <div className="loan-wizard-form-group">
             <Input
-              value={rate.toFixed(2)}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const value = parseFloat(e.target.value);
-                if (!isNaN(value) && value >= 0 && value <= 100) {
-                  onRateChange(value);
+              label="New Rate"
+              placeholder="Enter rate"
+              required
+              type="percentage"
+              value={rate.toString()}
+              onChange={(value: string) => {
+                const numValue = parseFloat(value);
+                if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+                  onRateChange(numValue);
                 }
               }}
-              suffix="%"
-              type="number"
-              step="0.01"
-              min="0"
-              max="100"
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              Total term in months <span className="required">*</span>
-            </label>
+          <div className="loan-wizard-form-group">
             <Input
+              label="Total term in months"
+              placeholder="Enter term"
+              required
               value={period.toString()}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const value = parseInt(e.target.value);
-                if (!isNaN(value) && value > 0) {
-                  onPeriodChange(value);
+              onChange={(value: string) => {
+                const numValue = parseInt(value);
+                if (!isNaN(numValue) && numValue > 0) {
+                  onPeriodChange(numValue);
                 }
               }}
-              type="number"
-              min="1"
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Type</label>
-            <div className="select-wrapper">
-              <select className="form-select" defaultValue="amortized">
-                <option value="amortized">Amortized: Due-Date</option>
-                <option value="interest-only">Interest Only</option>
-                <option value="balloon">Balloon Payment</option>
-              </select>
-              <span className="select-arrow">▼</span>
-            </div>
+          <div className="loan-wizard-form-group">
+            <PopupButton
+              defaultValue="Amortized: Due-Date"
+              items={[
+                {
+                  id: 'Amortized: Due-Date',
+                  label: 'Amortized: Due-Date'
+                },
+                {
+                  id: 'Interest-only',
+                  label: 'Interest-only'
+                },
+                {
+                  id: 'Revolving',
+                  label: 'Revolving'
+                }
+              ]}
+              label="Type"
+              menuStyle="text"
+              onSelect={() => {
+                // Type selection logic if needed
+              }}
+              width="100%"
+              menuMaxHeight="200px"
+            />
           </div>
         </div>
 
-        <div className="manual-entry__summary">
-          <div className="payment-summary">
-            <div className="payment-summary__new">
-              <div className="payment-summary__amount">${newPayment.toFixed(2)}</div>
-              <div className="payment-summary__label">New Monthly Payment</div>
+        <div className="recast-loan-wizard__summary-card">
+          <div className="recast-loan-wizard__summary-item">
+            <div className="recast-loan-wizard__summary-value">
+              ${newPayment.toFixed(2)}
             </div>
-            <div className="payment-summary__old">
-              <div className="payment-summary__amount">${oldPayment.toFixed(2)}</div>
-              <div className="payment-summary__label">Old Monthly Payment</div>
+            <div className="recast-loan-wizard__summary-label">New Monthly Payment</div>
+          </div>
+          <div className="recast-loan-wizard__summary-item">
+            <div className="recast-loan-wizard__summary-value">
+              ${oldPayment.toFixed(2)}
             </div>
+            <div className="recast-loan-wizard__summary-label">Old Monthly Payment</div>
           </div>
         </div>
       </div>

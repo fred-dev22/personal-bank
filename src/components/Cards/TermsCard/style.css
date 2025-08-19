@@ -171,4 +171,41 @@
   position: relative;
   white-space: nowrap;
   width: fit-content;
+}
+
+/* Styles pour le recast */
+.recast-status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.recast-badge {
+  background-color: #00B5AE;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+  width: fit-content;
+}
+
+.recast-date {
+  font-size: 9px;
+  color: #666;
+  font-weight: 400;
+}
+
+/* Style pour row-6 (recast row) */
+.terms-card .row-6 {
+  align-items: flex-end;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  position: relative;
+  width: 100%;
+  border-bottom: none;
 } 

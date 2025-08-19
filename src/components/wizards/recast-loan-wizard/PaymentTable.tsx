@@ -30,8 +30,10 @@ export const PaymentTable: React.FC<PaymentTableProps> = ({
     <div className="payment-table">
       <div className="payment-table__header">
         <div className="payment-table__period-label">
-          <span>Period (months)</span>
-          <span className="payment-table__arrow">↓</span>
+          <div>
+            <div>Period (months) ↓</div>
+            <div>Rate →</div>
+          </div>
         </div>
         {rates.map(rate => (
           <div key={rate} className="payment-table__rate-header">

@@ -307,10 +307,20 @@ const PersonalBankContent: React.FC = () => {
     return (
       <RecastLoanWizard
         loanToRecast={loanToRecast}
-        onClose={() => setShowRecastWizard(false)}
+        borrowers={borrowers}
+        vaults={vaults}
+        onClose={() => {
+          setShowRecastWizard(false);
+          // Afficher le Snackbar quand on ferme le wizard
+          showActivity('Recast cancelled');
+        }}
         onRecastSuccess={() => {
           setLoanToRecast(undefined);
           setShowRecastWizard(false);
+          
+          // Rafraîchir les loans pour avoir les données mises à jour
+          getLoans(user, setLoans);
+          
           // Rediriger vers les détails du prêt recasté
           if (loanToRecast?.id) {
             setSelectedLoanId(loanToRecast.id);

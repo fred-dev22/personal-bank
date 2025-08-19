@@ -3,19 +3,19 @@
   border: 1px solid #e9ecef;
   border-radius: 8px;
   overflow: hidden;
-  flex: 1;
+  width: 100%;
 }
 
 .payment-table__header {
   display: grid;
-  grid-template-columns: 120px repeat(6, 1fr);
+  grid-template-columns: 150px repeat(6, 1fr);
   background: #f8f9fa;
   border-bottom: 1px solid #e9ecef;
 }
 
 .payment-table__period-label {
   padding: 12px 16px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #666;
   text-transform: uppercase;
@@ -32,11 +32,14 @@
 
 .payment-table__rate-header {
   padding: 12px 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #0d1728;
   text-align: center;
   border-left: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .payment-table__body {
@@ -46,7 +49,7 @@
 
 .payment-table__row {
   display: grid;
-  grid-template-columns: 120px repeat(6, 1fr);
+  grid-template-columns: 150px repeat(6, 1fr);
   border-bottom: 1px solid #f0f0f1;
 }
 
@@ -60,21 +63,28 @@
 
 .payment-table__period-cell {
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #0d1728;
   background: #fafbfc;
   border-right: 1px solid #e9ecef;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .payment-table__cell {
   padding: 12px 8px;
-  font-size: 13px;
+  font-size: 15px;
   color: #0d1728;
   text-align: center;
   cursor: pointer;
   border-left: 1px solid #e9ecef;
   transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .payment-table__cell:hover {

@@ -5,6 +5,13 @@
   align-items: center;
 }
 
+.manual-entry__header {
+  width: 100%;
+  max-width: 720px;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
 .manual-entry__section {
   margin-bottom: 24px;
   text-align: center;
@@ -29,19 +36,20 @@
   display: flex;
   gap: 32px;
   margin-bottom: 32px;
-  max-width: 800px;
+  justify-content: flex-start;
+  align-items: flex-start;
   width: 100%;
-  justify-content: center;
+  max-width: 720px;
 }
 
 .manual-entry__form {
-  flex: 1;
-  max-width: 400px;
+  width: 400px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.form-group {
-  margin-bottom: 20px;
-}
+
 
 .form-label {
   display: block;
@@ -84,4 +92,17 @@
 .manual-entry__summary {
   flex-shrink: 0;
   width: 200px;
+}
+
+/* Styles pour les Input de la librairie */
+.manual-entry__form .form-group input {
+  border: 1px solid #e9ecef !important;
+  border-radius: 6px !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.manual-entry__form .form-group input:focus {
+  border-color: #00B5AE !important;
+  box-shadow: 0 0 0 2px rgba(0, 181, 174, 0.1) !important;
 }

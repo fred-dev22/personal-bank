@@ -119,6 +119,49 @@ export const fetchLoanById = async (noteId: string, token: string): Promise<Loan
   }
 };
 
+
+
+export const recastLoan = async (
+  token: string,
+  loanId: string,
+  recastData: Partial<Loan>
+): Promise<Loan> => {
+  try {
+    console.log('🔄 Recasting loan:', { loanId, recastData });
+    
+    // Add modified_date and recast_date to recast data
+    const dataWithDates = {
+      ...addModifiedDate(recastData),
+      recast_date: new Date().toISOString(),
+      is_recast: true
+    };
+    
+    const response = await fetch(`${API_BASE_URL}/notes/${loanId}/recasts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(dataWithDates)
+    });
+    
+    console.log('📡 Recast API Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Recast API Error:', errorText);
+      throw new Error(`Failed to recast loan: ${response.status} ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    console.log('✅ Loan recast successfully');
+    return result;
+  } catch (error) {
+    console.error('❌ Error recasting loan:', error);
+    throw error;
+  }
+};
+
 export const deleteLoan = async (token: string, noteId: string): Promise<void> => {
   try {
     console.log('🔄 Deleting loan:', { noteId, url: `${API_BASE_URL}/notes/${noteId}` });
