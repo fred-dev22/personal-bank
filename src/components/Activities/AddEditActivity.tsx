@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, DatePicker, TagCell, PopupButton } from "@jbaluch/components";
+import { Button, Input, DatePicker, TagCell, PopupButton, IconButton, CloseButton } from "@jbaluch/components";
 import { Modal } from "../Modal/Modal";
 import type { Activity } from '../../types/types';
 import borrowerIcon from '../../assets/borrower.svg';
 import loanIcon from '../../assets/loan.svg';
 import vaultIcon from '../../assets/vault.svg';
 import walletIcon from '../../assets/wallet.svg';
+import { ACTIVITY_CATEGORIES } from './activityConfigs';
 
 // Generic configuration for different activity contexts
 export interface ActivityConfig {
@@ -47,12 +48,18 @@ interface AddEditActivityProps {
   };
   onClose: () => void;
   onSubmit: (data: Partial<Activity> & { 
-    vault: string; 
-    account: string; 
+    vault?: string; 
+    account?: string; 
     loan?: string;
-    note: string;
+    note?: string;
     applyToLoan?: boolean;
   }) => void;
+  // When true (used by Activities page), edit mode shows only Date and Notes
+  minimalEdit?: boolean;
+  onDelete?: () => void;
+  onNavigateBorrower?: (borrowerId?: string) => void;
+  onNavigateLoan?: (loanId?: string) => void;
+  onNavigateVault?: (vaultId?: string) => void;
 }
 
 export const AddEditActivity: React.FC<AddEditActivityProps> = ({ 
@@ -61,7 +68,12 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
   config,
   initialData = {}, 
   onClose, 
-  onSubmit 
+  onSubmit, 
+  minimalEdit = false,
+  onDelete,
+  onNavigateBorrower,
+  onNavigateLoan,
+  onNavigateVault,
 }) => {
   // Form state
   const [type, setType] = useState<'incoming' | 'outgoing'>(
@@ -104,41 +116,72 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
     }
   }, []); // Only run on mount
 
+  // When opening or when initialData changes (selecting a different row),
+  // sync all fields so the edit panel shows the clicked row's data.
+  useEffect(() => {
+    if (!open) return;
+    setType(initialData.type === 'incoming' ? 'incoming' : 'outgoing');
+    setCategory(initialData.tag || config.defaultCategory || config.availableCategories[0]?.value || '');
+    setAmount(initialData.amount !== undefined && initialData.amount !== null ? String(initialData.amount) : '');
+    setDate(initialData.date ? new Date(initialData.date as any) : new Date());
+    setVault(initialData.vault || config.defaultVault || config.availableVaults?.[0]?.value || '');
+    setAccount(initialData.account || config.defaultAccount || config.availableAccounts?.[0]?.value || '');
+    setLoan(initialData.loan || config.defaultLoan || config.availableLoans?.[0]?.value || '');
+    setNote(initialData.note || '');
+    setApplyToLoan(Boolean(initialData.applyToLoan));
+  }, [open, initialData, config]);
+
   const handleSubmit = () => {
     const submitData: Partial<Activity> & { 
-      vault: string; 
-      account: string; 
+      vault?: string; 
+      account?: string; 
       loan?: string;
-      note: string;
+      note?: string;
       applyToLoan?: boolean;
     } = {
       type,
-      tag: category,
-      amount: Number(amount),
       date,
-      vault,
-      account,
-      note,
     };
 
-    // Only include loan-related fields if they're relevant
-    if (config.showLoanField && loan) {
+    // When not minimal edit, include full set
+    if (!minimalEdit) {
+      submitData.tag = category;
+      submitData.amount = Number(amount);
+      if (vault) submitData.vault = vault;
+      if (account) submitData.account = account;
+    }
+    if (loan && config.showLoanField && !minimalEdit) {
       submitData.loan = loan;
     }
-    if (config.showApplyToLoan) {
+    if (config.showApplyToLoan && !minimalEdit) {
       submitData.applyToLoan = applyToLoan;
     }
+    if (note) submitData.note = note;
 
     onSubmit(submitData);
   };
 
   // Get current category emoji
   const currentCategory = config.availableCategories.find(cat => cat.value === category);
-  const categoryEmoji = currentCategory?.emoji || '🏷️';
+  // Build a global lookup so tags not in local config (e.g., loan_payment) still resolve
+  const globalCategoryLookup: Record<string, { label: string; emoji?: string }> = React.useMemo(() => {
+    const all = [
+      ...ACTIVITY_CATEGORIES.general,
+      ...ACTIVITY_CATEGORIES.loan,
+      ...ACTIVITY_CATEGORIES.vault,
+      ...ACTIVITY_CATEGORIES.payment,
+    ];
+    return all.reduce((acc, c) => {
+      acc[c.value] = { label: c.label, emoji: c.emoji };
+      return acc;
+    }, {} as Record<string, { label: string; emoji?: string }>);
+  }, []);
+  const resolvedCategory = currentCategory || globalCategoryLookup[category] || globalCategoryLookup[initialData.tag || ''];
+  const categoryEmoji = resolvedCategory?.emoji || '🏷️';
   
   // Debug logging
   console.log('Current category state:', category);
-  console.log('Current category object:', currentCategory);
+  console.log('Current category object:', resolvedCategory);
   console.log('Available categories:', config.availableCategories);
 
   // Get context display name
@@ -181,19 +224,32 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
     justifyContent: 'flex-end',
   };
 
+  // Inline SVG icons for top toolbar
+  const SaveIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      <polyline points="17,21 17,13 7,13" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+  const DeleteIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
   const Content = (
     <div style={scrollableContentStyle}>
             <div style={{ width: '100%', maxWidth: '400px' }}>
                 {/* Header with context and amount */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 24, width: '100%' }}>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, fontSize: 18, color: '#000000', marginBottom: 8 }}>
+            <div style={{ fontWeight: 600, fontSize: 22, lineHeight: '30px', color: '#0D1728', marginBottom: 8, fontFamily: 'DM Sans' }}>
               {getContextDisplayName()}
             </div>
             <div style={{ fontSize: 14, color: '#595959' }}>
               <div style={{ display: 'inline-block' }}>
                 <TagCell 
-                  label={currentCategory?.label || category} 
+                  label={resolvedCategory?.label || category} 
                   emoji={categoryEmoji} 
                   size="small" 
                   backgroundColor="#f0f0f1" 
@@ -203,7 +259,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
               </div>
             </div>
           </div>
-          <div style={{ fontWeight: 700, fontSize: 18, color: '#000000' }}>
+          <div style={{ fontWeight: 600, fontSize: 22, lineHeight: '30px', color: '#0D1728', fontFamily: 'DM Sans' }}>
             ${amount || '0.00'}
           </div>
         </div>
@@ -305,7 +361,212 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         </div>
       </div>
 
-      {/* Category dropdown */}
+      {/* Activity Details block: in minimal edit, place right under toggle */}
+      {isEdit && minimalEdit && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr 1fr', 
+            gap: 20,
+            padding: '20px',
+            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+            borderRadius: '0',
+            marginLeft: '-24px',
+            marginRight: '-24px',
+            width: 'calc(100% + 48px)'
+          }}>
+            <button 
+              onClick={() => (onNavigateBorrower ? onNavigateBorrower(initialData.borrowerId) : window.location.href = `/borrowers/${initialData.borrowerId}`)}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                gap: 12,
+                background: 'none',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                textAlign: 'left',
+                width: '100%'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                justifyContent: 'center',
+                marginTop: '2px'
+              }}>
+                <img src={borrowerIcon} alt="Borrower" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontSize: '14px', 
+                  color: '#595959', 
+                  marginBottom: 4, 
+                  fontWeight: '700',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '20px',
+                  letterSpacing: '0%'
+                }}>Borrower</div>
+                <div style={{ 
+                  fontSize: '16px', 
+                  fontWeight: '400', 
+                  color: '#0D1728',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '22px',
+                  letterSpacing: '0%'
+                }}>
+                  {initialData.borrowerName || 'My borrower'}
+                </div>
+              </div>
+            </button>
+            <button 
+              onClick={() => (onNavigateLoan ? onNavigateLoan(initialData.loanId) : window.location.href = `/loans/${initialData.loanId}`)}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                gap: 12,
+                background: 'none',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                textAlign: 'left',
+                width: '100%'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                justifyContent: 'center',
+                marginTop: '2px'
+              }}>
+                <img src={loanIcon} alt="Loan" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontSize: '14px', 
+                  color: '#595959', 
+                  marginBottom: 4, 
+                  fontWeight: '700',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '20px',
+                  letterSpacing: '0%'
+                }}>Loan</div>
+                <div style={{ 
+                  fontSize: '16px', 
+                  fontWeight: '400', 
+                  color: '#0D1728',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '22px',
+                  letterSpacing: '0%'
+                }}>
+                  {initialData.loanName || 'Loan name'}
+                </div>
+              </div>
+            </button>
+            <button 
+              onClick={() => (onNavigateVault ? onNavigateVault(initialData.vaultId) : window.location.href = `/vaults/${initialData.vaultId}`)}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                gap: 12,
+                background: 'none',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                textAlign: 'left',
+                width: '100%'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                justifyContent: 'center',
+                marginTop: '2px'
+              }}>
+                <img src={vaultIcon} alt="Vault" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontSize: '14px', 
+                  color: '#595959', 
+                  marginBottom: 4, 
+                  fontWeight: '700',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '20px',
+                  letterSpacing: '0%'
+                }}>Vault</div>
+                <div style={{ 
+                  fontSize: '16px', 
+                  fontWeight: '400', 
+                  color: '#0D1728',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '22px',
+                  letterSpacing: '0%'
+                }}>
+                  {initialData.vaultName || 'Gateway'}
+                </div>
+              </div>
+            </button>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                justifyContent: 'center',
+                marginTop: '2px'
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 21h18M3 7h18M3 3h18M7 11h10M7 15h10" stroke="#595959" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="#595959" strokeWidth="1.5" fill="none"/>
+                </svg>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontSize: '14px', 
+                  color: '#595959', 
+                  marginBottom: 4, 
+                  fontWeight: '700',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '20px',
+                  letterSpacing: '0%'
+                }}>Account</div>
+                <div style={{ 
+                  fontSize: '16px', 
+                  fontWeight: '400', 
+                  color: '#0D1728',
+                  fontFamily: 'DM Sans',
+                  lineHeight: '22px',
+                  letterSpacing: '0%'
+                }}>
+                  {initialData.accountName || 'Savings'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Category dropdown - hidden in minimal edit */}
+      {!minimalEdit && (
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
@@ -326,8 +587,10 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
           menuMaxHeight="200px"
         />
       </div>
+      )}
 
       {/* Amount and Date */}
+      {!minimalEdit && (
       <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
@@ -359,9 +622,29 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
           />
         </div>
       </div>
+      )}
+
+      {/* Minimal edit: Date only */}
+      {minimalEdit && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
+            <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Date</label>
+          </div>
+          <DatePicker
+            value={date}
+            onChange={setDate}
+            required
+            errorMessage=""
+            minDate={undefined}
+            maxDate={undefined}
+            style={{ width: '100%' }}
+          />
+        </div>
+      )}
 
       {/* Vault and Account fields - only show if configured */}
-      {(config.showVaultField || config.showAccountField) && (
+      {(!minimalEdit) && (config.showVaultField || config.showAccountField) && (
         <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
           {config.showVaultField && config.availableVaults && (
             <div style={{ flex: 1 }}>
@@ -399,7 +682,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
       )}
 
       {/* Loan field - only show if configured */}
-      {config.showLoanField && config.availableLoans && (
+      {!minimalEdit && config.showLoanField && config.availableLoans && (
         <div style={{ marginBottom: 16 }}>
           <PopupButton
             defaultValue="Select a loan"
@@ -444,7 +727,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
       </div>
 
       {/* Activity Details - only show in edit mode */}
-      {isEdit && (
+      {isEdit && !minimalEdit && (
         <div style={{ marginBottom: 16 }}>
           <div style={{ 
             display: 'grid', 
@@ -455,7 +738,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             borderRadius: '12px'
           }}>
             <button 
-              onClick={() => window.location.href = `/borrowers/${initialData.borrowerId}`}
+              onClick={() => (onNavigateBorrower ? onNavigateBorrower(initialData.borrowerId) : window.location.href = `/borrowers/${initialData.borrowerId}`)}
               style={{ 
                 display: 'flex', 
                 alignItems: 'flex-start', 
@@ -494,7 +777,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             </button>
             
             <button 
-              onClick={() => window.location.href = `/loans/${initialData.loanId}`}
+              onClick={() => (onNavigateLoan ? onNavigateLoan(initialData.loanId) : window.location.href = `/loans/${initialData.loanId}`)}
               style={{ 
                 display: 'flex', 
                 alignItems: 'flex-start', 
@@ -533,7 +816,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             </button>
             
             <button 
-              onClick={() => window.location.href = `/vaults/${initialData.vaultId}`}
+              onClick={() => (onNavigateVault ? onNavigateVault(initialData.vaultId) : window.location.href = `/vaults/${initialData.vaultId}`)}
               style={{ 
                 display: 'flex', 
                 alignItems: 'flex-start', 
@@ -670,16 +953,45 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
     <div style={{ 
       position: 'fixed',
       top: '120px', // Start below the header and tabs
-      right: 0,
+       right: '24px', // Add margin from right edge
       width: 400,
       minWidth: 400,
       height: 'calc(100vh - 120px)', // Subtract the header height
       backgroundColor: '#FFFFFF',
-      borderLeft: '1px solid #eeeef2',
+       borderRadius: '10px 10px 0 0', // Round both top corners
       boxShadow: '-2px 0 8px rgba(0, 0, 0, 0.1)',
       zIndex: 1000,
       overflowY: 'auto'
     }}>
+      {/* Top toolbar to match Figma: save, delete, close */}
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '8px 12px',
+        backgroundColor: '#EDEDED',
+        borderBottom: '1px solid #e6e6e9',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <IconButton aria-label="Save" type="secondary" interaction="secondary" icon={SaveIcon} onClick={handleSubmit} />
+          <div style={{ 
+            width: 1, 
+            height: 12, 
+            background: 'rgba(0, 0, 0, 0.25)', 
+            borderRadius: 4,
+            margin: '0 8px'
+          }} />
+          <IconButton aria-label="Delete" type="secondary" interaction="secondary" icon={DeleteIcon} onClick={onDelete} />
+        </div>
+        <div style={{ marginLeft: 'auto' }}>
+          <CloseButton aria-label="Close" type="dark" onClick={onClose} />
+        </div>
+      </div>
       <div style={{
         ...containerStyle,
         height: '100%',

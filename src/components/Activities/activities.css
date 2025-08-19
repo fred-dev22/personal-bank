@@ -68,6 +68,11 @@
   flex: unset;
   width: 100%;
 } 
+.activities-table-fullwidth {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
 .HcAcT {
  padding: 0 !important;
 }
