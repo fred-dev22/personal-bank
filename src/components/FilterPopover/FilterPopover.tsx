@@ -98,7 +98,8 @@ export const FilterPopover: React.FC<FilterPopoverProps> = ({
     <div
       ref={popoverRef}
       className="filter-popover-drawer custom-filter-popover"
-      style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 2100, overflowY: 'visible' }}
+      style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 2100, overflowY: 'visible', overflowX: 'hidden' }}
+      data-popup-scope="filter-popover"
     >
       <div className="filter-applied-label">Applied Filters</div>
       <div className="filter-applied-none">None.</div>

@@ -394,7 +394,23 @@ const PersonalBankContent: React.FC = () => {
           // Scroll vers le haut de la page
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }} onShowLoanDetails={handleShowLoanDetails} onAddVault={handleAddVault} onAddLoan={() => setShowLoanWizard(true)} onVaultUpdate={handleVaultUpdated} onEditVault={handleEditVault} />}
-        {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} />}
+        {currentPage === 'activity' && <Activities activities={activities} loading={activitiesLoading} error={activitiesError} 
+          onShowBorrowerDetails={(borrowerId?: string) => {
+            if (borrowerId) setSelectedBorrowerId(borrowerId);
+            setCurrentPage('borrowers');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onShowLoanDetails={(loanId?: string) => {
+            if (loanId) setSelectedLoanId(loanId);
+            setCurrentPage('loans');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onShowVaultDetails={(vaultId?: string) => {
+            if (vaultId) setSelectedVaultId(vaultId);
+            setCurrentPage('vaults');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />}
                  {currentPage === 'borrowers' && <Borrower borrowers={borrowers} loans={loans} selectedBorrowerId={selectedBorrowerId} onBackToList={() => setSelectedBorrowerId(null)} onShowLoanDetails={(loanId) => {
            setSelectedLoanId(loanId);
            setCurrentPage('loans');

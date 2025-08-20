@@ -5,7 +5,7 @@ import '@jbaluch/components/styles';
 import "./activities.css";
 import { Header } from "./Header";
 import { AddEditActivity } from "./AddEditActivity";
-import { createGeneralActivityConfig } from "./activityConfigs";
+import { createGeneralActivityConfig, ACTIVITY_CATEGORIES } from "./activityConfigs";
 import { FilterPopover } from "../FilterPopover/FilterPopover";
 import type { FilterField } from "../FilterPopover/FilterPopover";
 import type { Activity, Vault, Loan } from '../../types/types';
@@ -21,6 +21,9 @@ interface ActivitiesProps {
   vaults?: Vault[];
   loans?: Loan[];
   accounts?: Array<{ value: string; label: string }>;
+  onShowBorrowerDetails?: (borrowerId?: string) => void;
+  onShowLoanDetails?: (loanId?: string) => void;
+  onShowVaultDetails?: (vaultId?: string) => void;
 }
 
 function groupByMonth(activities: Activity[]) {
@@ -33,7 +36,7 @@ function groupByMonth(activities: Activity[]) {
   }, {} as Record<string, Activity[]>);
 }
 
-export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, error, vaults = [], loans = [], accounts = [] }) => {
+export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, error, vaults = [], loans = [], accounts = [], onShowBorrowerDetails, onShowLoanDetails, onShowVaultDetails }) => {
   // Date du jour au format Thursday, June 13
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -55,6 +58,20 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
 
   // Create activity configuration for the general activities page
   const activityConfig = createGeneralActivityConfig(vaults, loans, accounts);
+
+  // Dev-only demo rows to preview table design when there is no data yet
+  const isDev = typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.MODE !== 'production';
+  const demoActivities: Activity[] = [
+    { id: 'u1', name: 'Name', type: 'loan', date: new Date(`${new Date().getFullYear()}-10-02`), amount: 300, tag: 'loan_payment' },
+    { id: 'j1', name: 'Name', type: 'transfer', date: new Date('2024-06-08'), amount: 3000, tag: 'transfer_fee' },
+    { id: 'j2', name: 'Name', type: 'vault', date: new Date('2024-06-08'), amount: 300, tag: 'vault_contribution' },
+    { id: 'j3', name: 'Name', type: 'loan', date: new Date('2024-06-08'), amount: 300, tag: 'loan_payment' },
+    { id: 'j4', name: 'Name', type: 'loan', date: new Date('2024-06-08'), amount: 300, tag: 'loan_payment' },
+    { id: 'j5', name: 'Name', type: 'loan', date: new Date('2024-06-08'), amount: 300, tag: 'loan_payment' },
+    { id: 'm1', name: 'Name', type: 'vault', date: new Date('2024-05-01'), amount: 300, tag: 'vault_contribution' },
+    { id: 'm2', name: 'Name', type: 'loan', date: new Date('2024-05-01'), amount: 300, tag: 'loan_payment' },
+  ];
+  const sourceActivities = activities.length > 0 ? activities : (isDev ? demoActivities : activities);
 
   // Champs de filtre pour les activités
   const filterFields: FilterField[] = [
@@ -125,7 +142,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
   };
 
   // Filtrage dynamique
-  const filteredActivities = activities.filter(a => {
+  const filteredActivities = sourceActivities.filter(a => {
     const val = searchValue.toLowerCase();
     const searchMatch =
       a.name?.toLowerCase().includes(val) ||
@@ -172,15 +189,63 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
     return dateB.getTime() - dateA.getTime();
   });
 
+  // Build category lookup for pretty labels/emojis
+  const categoryLookup: Record<string, { label: string; emoji?: string }> = React.useMemo(() => {
+    const all = [
+      ...ACTIVITY_CATEGORIES.general,
+      ...ACTIVITY_CATEGORIES.loan,
+      ...ACTIVITY_CATEGORIES.vault,
+      ...ACTIVITY_CATEGORIES.payment,
+    ];
+    return all.reduce((acc, c) => {
+      acc[c.value] = { label: c.label, emoji: c.emoji };
+      return acc;
+    }, {} as Record<string, { label: string; emoji?: string }>);
+  }, []);
+
+  const getCategoryDisplay = (tag?: string, type?: string) => {
+    if (tag && categoryLookup[tag]) return categoryLookup[tag];
+    if (type && categoryLookup[type]) return categoryLookup[type];
+    return { label: tag || type || '', emoji: '🏷️' };
+  };
+
+  // Tag color palette from Figma
+  const TAG_BG_COLORS: Record<string, string> = {
+    income: '#C8EBEA',
+    payment_received: '#C8EBEA',
+    vault_income: '#C8EBEA',
+    contribution: '#C8EBEA', // generic label if ever used
+    vault_contribution: '#C8EBEA',
+
+    expense: '#FFCCCE',
+    transfer_fee: '#FFCCCE',
+    late_fee: '#FFCCCE',
+    vault_fee: '#FFCCCE',
+    withdrawal: '#FFCCCE',
+    vault_withdrawal: '#FFCCCE',
+    payment_sent: '#FFCCCE',
+
+    transfer: '#DDE5F5',
+    vault_transfer: '#DDE5F5',
+    loan_payment: '#DDE5F5',
+    principal_payment: '#DDE5F5',
+    interest_payment: '#DDE5F5',
+  };
+
+  const resolveTagBackground = (tag?: string, type?: string) => {
+    const key = (tag || type || '').toLowerCase();
+    return TAG_BG_COLORS[key] || '#f0f0f1';
+  };
+
   // Colonnes pour Table
-  const getColumns = (label: string) => [
+  const getColumns = (groupLabel: string) => [
     {
       key: 'name',
-      label, // label dynamique selon le groupe
+      label: groupLabel, // group label in header
       cellComponent: TextCell,
       width: '100%',
       alignment: 'left',
-      getCellProps: () => ({ text: 'Name'}),
+      getCellProps: (row: Activity) => ({ text: row.name || '—'}),
     },
     {
       key: 'tag',
@@ -188,14 +253,17 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
       cellComponent: TagCell,
       width: '100%',
       alignment: 'center',
-      getCellProps: (row: Activity) => ({
-        label: row.tag || row.type,
-        emoji: '🏷️',
-        size: 'small',
-        backgroundColor: '#f0f0f1',
-        textColor: '#595959',
-        severity: 'info',
-      }),
+      getCellProps: (row: Activity) => {
+        const { label, emoji } = getCategoryDisplay(row.tag, row.type);
+        return {
+          label,
+          emoji,
+          size: 'small',
+          backgroundColor: resolveTagBackground(row.tag, row.type),
+          textColor: '#595959',
+          severity: 'info',
+        };
+      },
     },
     {
       key: 'date',
@@ -355,7 +423,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
                     key={`upcoming-${searchValue}-${upcoming.length}`}
                     className="activities-table-fullwidth"
                     columns={getColumns('Upcoming')}
-                    data={upcoming.map(a => ({ ...a, name: 'Name' }))}
+                    data={upcoming}
                     defaultSortColumn="date"
                     defaultSortDirection="desc"
                     clickableRows
@@ -370,7 +438,7 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
                     key={`${month}-${searchValue}-${grouped[month].length}`}
                     className="activities-table-fullwidth"
                     columns={getColumns(month)}
-                    data={grouped[month].map(a => ({ ...a, name: 'Name' }))}
+                    data={grouped[month]}
                     defaultSortColumn="date"
                     defaultSortDirection="desc"
                     clickableRows
@@ -388,6 +456,10 @@ export const Activities: React.FC<ActivitiesProps> = ({ activities, loading, err
         mode="edit"
         config={activityConfig}
         initialData={selectedActivity || {}}
+        minimalEdit
+        onNavigateBorrower={(id?: string) => onShowBorrowerDetails && onShowBorrowerDetails(id)}
+        onNavigateLoan={(id?: string) => onShowLoanDetails && onShowLoanDetails(id)}
+        onNavigateVault={(id?: string) => onShowVaultDetails && onShowVaultDetails(id)}
         onClose={() => setSelectedActivity(null)}
         onSubmit={() => {
           setSelectedActivity(null);
