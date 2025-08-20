@@ -22,6 +22,31 @@ import { fetchLoanById } from '../../controllers/loanController';
 import { EmptyState } from '@jbaluch/components';
 import { useActivity } from '../../contexts/ActivityContext';
 import { calculateMonthlyPayment } from '../../utils/loanUtils';
+import { DottedUnderline } from '../ui/DottedUnderline';
+
+// Small visual cell to render the left timeline with status dots
+const ScheduleDueCell: React.FC<{ text: string; status: string; index: number; totalCount: number; isCurrent: boolean }> = ({ text, status, index, totalCount, isCurrent }) => {
+  const isCompleted = status === 'On Time';
+  const connectorColor = isCompleted || isCurrent ? '#00B5AE' : '#CFCFD5';
+  const dotStyle: React.CSSProperties = isCompleted
+    ? { backgroundColor: '#00B5AE' }
+    : isCurrent
+      ? { backgroundColor: '#FFFFFF', border: '2px solid #00B5AE' }
+      : { backgroundColor: '#CFCFD5' };
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ width: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* top connector */}
+        {index > 0 && <div style={{ width: 2, height: 10, backgroundColor: connectorColor }} />}
+        <div style={{ width: 12, height: 12, borderRadius: 6, ...dotStyle }} />
+        {/* bottom connector */}
+        {index < totalCount - 1 && <div style={{ width: 2, height: 10, backgroundColor: connectorColor }} />}
+      </div>
+      <span style={{ fontWeight: 500, color: '#0D1728' }}>{text}</span>
+    </div>
+  );
+};
 
 interface LoanDetailsProps {
   loan: Loan;
@@ -74,6 +99,18 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note.pdf', description: 'Original note', uploadDate: 'April 1, 2023' },
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
+
+// Demo schedule data to match Figma design
+const demoScheduleData: ScheduleRow[] = [
+  { due_date: 'Oct 8', payment: '300.00', fees: '35.00', balance: '2135.00', status: 'On Time' },
+  { due_date: 'Nov 8', payment: '300.00', fees: '40.00', balance: '1870.00', status: 'On Time' },
+  { due_date: 'Dec 8', payment: '300.00', fees: '35.00', balance: '1605.00', status: 'Upcoming' },
+  { due_date: 'Jan 8', payment: '300.00', fees: '35.00', balance: '1340.00', status: 'Upcoming' },
+  { due_date: 'Feb 8', payment: '300.00', fees: '35.00', balance: '1075.00', status: 'Upcoming' },
+  { due_date: 'Mar 8', payment: '300.00', fees: '35.00', balance: '810.00', status: 'Upcoming' },
+];
+
+// Custom cell components removed - functionality moved to getCellProps in Table columns
 
 export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan, onAddActivity, vaults = [], accounts = [] }) => {
   const [activeTab, setActiveTab] = useState(activeTabId || 'summary');
@@ -221,18 +258,20 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
   };
 
   // Helper pour le header du schedule
-  const payoffDate = (scheduleRows && scheduleRows.length > 0)
-    ? new Date(scheduleRows[scheduleRows.length - 1].due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const scheduleDataToUse = scheduleRows && scheduleRows.length > 0 ? scheduleRows : (isDev ? demoScheduleData : []);
+  
+  const payoffDate = scheduleDataToUse.length > 0
+    ? new Date(scheduleDataToUse[scheduleDataToUse.length - 1].due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : '';
 
-  const paidToDate = scheduleRows && scheduleRows.length > 0
-    ? scheduleRows.filter(r => r.status.toLowerCase() === 'paid').reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
+  const paidToDate = scheduleDataToUse.length > 0
+    ? scheduleDataToUse.filter(r => r.status === 'On Time').reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
     : 0;
 
-  const remaining = scheduleRows && scheduleRows.length > 0
+  const remaining = scheduleDataToUse.length > 0
     ? formatMoney(
-        scheduleRows
-          .filter(r => r.status.toLowerCase() !== 'paid')
+        scheduleDataToUse
+          .filter(r => r.status === 'Upcoming')
           .reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
       )
     : formatMoney(0);
@@ -415,10 +454,16 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           </div>
         )}
         {activeTab === 'activity' && (
-          <section className="all-activities-table">
+          <div style={{ 
+            display: 'flex', 
+            gap: '32px',
+            marginRight: selectedActivity ? '400px' : '0px',
+            transition: 'margin-right 0.3s ease'
+          }}>
+            <section className="all-activities-table" style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div style={{ fontWeight: 600, fontSize: 16 }}>
-                ${loanActivities.reduce((sum, a) => sum + (a.amount || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {loanActivities.reduce((sum, a) => sum + (a.amount || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 <span style={{ color: '#6b6b70', fontWeight: 400, fontSize: 14, marginLeft: 8 }}>payoff amount</span>
               </div>
               <Button
@@ -480,37 +525,88 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
               }}
             />
             )}
-          </section>
+            </section>
+          </div>
         )}
         {activeTab === 'schedule' && (
           <div className="schedule-section">
             {scheduleError ? (
               <EmptyState title="Erreur" description={scheduleError} imageName="empty" severity="info" customImage={undefined} />
-            ) : scheduleRows && scheduleRows.length > 0 ? (
+            ) : scheduleDataToUse.length > 0 ? (
               <>
-                <div className="table-header">
-                  <div className="vaults-description">
-                    <div className="subtitle">Payoff date</div>
-                    <div className="title">{payoffDate}</div>
+                <div style={{ 
+                  display: 'flex', 
+                  gap: 48, 
+                  marginBottom: 24,
+                  padding: '20px 0',
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#6B6B70', 
+                      fontWeight: 400,
+                      fontFamily: 'DM Sans',
+                      lineHeight: '16px',
+                      letterSpacing: '2%'
+                    }}>Payoff date</div>
+                    <div style={{ 
+                      fontSize: '16px',
+                      color: '#0D1728', 
+                      fontWeight: 600,
+                      fontFamily: 'DM Sans',
+                      lineHeight: '21px',
+                      letterSpacing: '0%'
+                    }}>{payoffDate}</div>
                   </div>
-                  <div className="vaults-description">
-                    <div className="subtitle">Paid to date</div>
-                    <div className="text-wrapper">{formatMoney(paidToDate)}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#6B6B70', 
+                      fontWeight: 400,
+                      fontFamily: 'DM Sans',
+                      lineHeight: '16px',
+                      letterSpacing: '2%'
+                    }}>Paid to date</div>
+                    <div style={{ 
+                      fontSize: '16px',
+                      color: '#0D1728', 
+                      fontWeight: 600,
+                      fontFamily: 'DM Sans',
+                      lineHeight: '21px',
+                      letterSpacing: '0%'
+                    }}>{formatMoney(paidToDate)}</div>
                   </div>
-                  <div className="vaults-description">
-                    <div className="subtitle">Remaining</div>
-                    <div className="title">{remaining}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#6B6B70', 
+                      fontWeight: 400,
+                      fontFamily: 'DM Sans',
+                      lineHeight: '16px',
+                      letterSpacing: '2%'
+                    }}>Remaining</div>
+                    <div style={{ 
+                      fontSize: '16px',
+                      color: '#0D1728', 
+                      fontWeight: 600,
+                      fontFamily: 'DM Sans',
+                      lineHeight: '21px',
+                      letterSpacing: '0%'
+                    }}>{remaining}</div>
                   </div>
                 </div>
                 <Table
                   columns={[
                     {
                       key: 'due_date',
-                      label: 'Due date',
+                      label: <DottedUnderline>Due date</DottedUnderline> as any,
                       cellComponent: TextCell,
                       width: '100%',
                       alignment: 'left',
-                      getCellProps: (row: ScheduleRow) => ({ text: row.due_date })
+                      getCellProps: (row: ScheduleRow, index: number, totalRows: number) => ({ 
+                        // Render our custom cell via React element string fallback
+                        text: (ScheduleDueCell({ text: row.due_date, status: row.status, index, totalCount: totalRows, isCurrent: index === 2 }) as unknown) as string
+                      })
                     },
                     {
                       key: 'payment',
@@ -518,11 +614,21 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
                       cellComponent: TextCell,
                       width: '100%',
                       alignment: 'center',
-                      getCellProps: (row: ScheduleRow) => ({ text: formatMoney(row.payment) })
+                      getCellProps: (row: ScheduleRow) => {
+                        const isCompleted = row.status === 'On Time';
+                        const paymentAmount = `$${parseFloat(row.payment).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                        return {
+                          text: isCompleted ? `${paymentAmount} / ${paymentAmount}` : paymentAmount,
+                          style: { 
+                            textAlign: 'center',
+                            fontWeight: isCompleted ? 600 : 500
+                          }
+                        };
+                      }
                     },
                     {
                       key: 'fees',
-                      label: 'Fees',
+                      label: <DottedUnderline>Fees</DottedUnderline> as any,
                       width: '100%',
                       cellComponent: TextCell,
                       alignment: 'center',
@@ -538,14 +644,21 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
                     },
                     {
                       key: 'status',
-                      label: 'Status',
+                      label: <DottedUnderline>Status</DottedUnderline> as any,
                       cellComponent: TextCell,
                       width: '100%',
                       alignment: 'right',
-                      getCellProps: (row: ScheduleRow) => ({ text: row.status, style: { fontWeight: row.status === 'On Time' ? 'bold' : 'normal' } })
+                      getCellProps: (row: ScheduleRow) => ({ 
+                        text: row.status,
+                        style: { 
+                          textAlign: 'right',
+                          fontWeight: row.status === 'On Time' ? 600 : 400,
+                          color: row.status === 'On Time' ? '#0D1728' : '#6B6B70'
+                        }
+                      })
                     },
                   ]}
-                  data={scheduleRows || []}
+                  data={scheduleDataToUse}
                   className="schedule-table"
                 />
               </>

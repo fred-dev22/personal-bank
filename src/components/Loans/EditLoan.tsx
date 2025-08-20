@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Button, Input, CloseButton, Calendar } from "@jbaluch/components";
-import calendarIcon from '../../assets/calendar.svg';
+import React, { useState, useEffect } from "react";
+import { Button, Input, CloseButton, DatePicker } from "@jbaluch/components";
 import './EditLoan.css';
 import { updateLoan } from '../../controllers/loanController';
 import { useActivity } from '../../contexts/ActivityContext';
@@ -9,7 +8,7 @@ import type { Loan } from '../../types/types';
 interface UIFormFields {
   lateFee?: string;
   gracePeriod?: string;
-  paymentDue?: string;
+  paymentDue?: string | Date | null;
 }
 
 interface EditLoanProps {
@@ -18,6 +17,7 @@ interface EditLoanProps {
   env: string;
   onSave?: (data: Partial<Loan>) => void;
   onRecastLoan?: (loan: Loan) => void;
+  onDeleteLoan?: (loan: Partial<Loan>) => void;
 }
 
 interface FormData {
@@ -26,20 +26,22 @@ interface FormData {
   // UI-only fields
   lateFee: string;
   gracePeriod: string;
-  paymentDue: string;
+  paymentDue: Date | null;
 }
 
-export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, onSave, env, onRecastLoan }) => {
+export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, onSave, env, onRecastLoan, onDeleteLoan }) => {
   const { showActivity, hideActivity } = useActivity();
   const [form, setForm] = useState<FormData>({
     nickname: initialData.nickname || '',
     dscr_limit: initialData.dscr_limit || 1.50,
     lateFee: initialData.lateFee || '$5.00',
     gracePeriod: initialData.gracePeriod || '10 days',
-    paymentDue: initialData.paymentDue || '',
+    paymentDue: initialData.paymentDue ? (() => {
+      const date = new Date(initialData.paymentDue);
+      return isNaN(date.getTime()) ? new Date() : date;
+    })() : new Date(),
   });
-  const [showCalendar, setShowCalendar] = useState(false);
-  const calendarRef = useRef<HTMLDivElement>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Mettre à jour le formulaire quand initialData change
   useEffect(() => {
@@ -49,12 +51,15 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
         dscr_limit: initialData.dscr_limit || 1.50,
         lateFee: initialData.lateFee || '$5.00',
         gracePeriod: initialData.gracePeriod || '10 days',
-        paymentDue: initialData.paymentDue || '',
+        paymentDue: initialData.paymentDue ? (() => {
+          const date = new Date(initialData.paymentDue);
+          return isNaN(date.getTime()) ? new Date() : date;
+        })() : new Date(),
       });
     }
   }, [initialData]);
 
-  const handleChange = (field: keyof FormData, value: string) => {
+  const handleChange = (field: keyof FormData, value: any) => {
     setForm(f => ({ ...f, [field]: value }));
   };
 
@@ -98,18 +103,16 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
     }
   };
 
-
-
-  // Fermer le calendrier au clic extérieur
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (calendarRef.current && !calendarRef.current.contains(e.target as Node)) {
-        setShowCalendar(false);
-      }
+  const handleDeleteLoan = () => {
+    if (onDeleteLoan) {
+      onDeleteLoan(initialData);
     }
-    if (showCalendar) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showCalendar]);
+    onClose();
+  };
+
+
+
+  // No custom calendar popover; using DatePicker from the component library
 
   return (
     <div className="edit-loan-modal">
@@ -165,37 +168,15 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
           </div>
           <div className="edit-loan__input-group">
             <label className="edit-loan__label">Payment due</label>
-            <div style={{ position: "relative" }}>
-              <div
-                className="edit-loan__fake-input"
-                onClick={() => setShowCalendar(v => !v)}
-                tabIndex={0}
-              >
-                <img src={calendarIcon} alt="calendar" />
-                <span>{form.paymentDue || "Select a date"}</span>
-              </div>
-              {showCalendar && (
-                <div
-                  className="edit-loan__calendar-container"
-                  ref={calendarRef}
-                  style={{ position: "absolute", zIndex: 100, marginTop: 8, left: 0, right: 0 }}
-                >
-                  <Calendar
-                    currentMonth={form.paymentDue ? new Date(form.paymentDue) : new Date()}
-                    onDateSelect={(date: Date) => {
-                      handleChange('paymentDue', date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
-                      setShowCalendar(false);
-                    }}
-                    onMonthChange={() => {}}
-                    onYearChange={() => {}}
-                    selectedDate={form.paymentDue ? new Date(form.paymentDue) : null}
-                    width="367px"
-                    minDate={undefined}
-                    maxDate={undefined}
-                  />
-                </div>
-              )}
-            </div>
+            <DatePicker
+              value={form.paymentDue}
+              onChange={(date: Date) => setForm(f => ({ ...f, paymentDue: date }))}
+              required
+              errorMessage=""
+              minDate={undefined}
+              maxDate={undefined}
+              style={{ width: '100%' }}
+            />
           </div>
         </div>
         <div className="edit-loan__change-terms">
@@ -222,8 +203,8 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
             </Button>
           </div>
         </div>
-        {/* Delete Loan section - Hidden for security reasons */}
-        {/* <div className="edit-loan__delete-loan">
+        {/* Delete Loan section */}
+        <div className="edit-loan__delete-loan">
           {!showDeleteConfirm ? (
             <div className="delete-loan__row">
               <div className="delete-loan__col">
@@ -239,6 +220,7 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
                 onMouseLeave={() => {}}
                 type="secondary"
                 style={{ width: 115 }}
+                className="delete-loan-button"
                 iconComponent={undefined}
                 name="delete"
                 form=""
@@ -288,7 +270,7 @@ export const EditLoan: React.FC<EditLoanProps> = ({ onClose, initialData = {}, o
               </div>
             </div>
           )}
-        </div> */}
+        </div>
       </div>
       {/* Footer sticky */}
       <div className="edit-loan__footer">

@@ -575,4 +575,16 @@
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+}
+
+.delete-loan-button .text-wrapper {
+  color: #B50007 !important;
+}
+
+.delete-loan-button:hover .text-wrapper {
+  color: #B50007 !important;
+}
+
+.delete-loan-button:focus .text-wrapper {
+  color: #B50007 !important;
 } 
