@@ -130,7 +130,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
     setType(config.context === 'loan_funding' ? 'outgoing' : (initialData.type === 'incoming' ? 'incoming' : 'outgoing'));
     setCategory(initialData.tag || config.defaultCategory || config.availableCategories[0]?.value || '');
     setAmount(initialData.amount !== undefined && initialData.amount !== null ? String(initialData.amount) : '');
-    setDate(initialData.date ? new Date(initialData.date as any) : new Date());
+    setDate(initialData.date ? (initialData.date instanceof Date ? initialData.date : new Date(initialData.date)) : new Date());
     setVault(initialData.vault || config.defaultVault || config.availableVaults?.[0]?.value || '');
     setAccount(initialData.account || config.defaultAccount || config.availableAccounts?.[0]?.value || '');
     setLoan(initialData.loan || config.defaultLoan || config.availableLoans?.[0]?.value || '');
