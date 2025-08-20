@@ -129,6 +129,11 @@ export const RecastLoanWizard: React.FC<RecastLoanWizardProps> = ({ onClose, loa
         initial_annual_rate: currentScreen === 'manual' ? manualRate / 100 : selectedRate / 100,
         initial_number_of_payments: currentScreen === 'manual' ? manualPeriod : selectedPeriod,
         monthly_payment_amount: newMonthlyPayment,
+        // Mettre à jour le montant initial avec le solde actuel (car c'est un recast)
+        initial_balance: loanToRecast.current_balance || 0,
+        // Réinitialiser les paiements car c'est un nouveau terme
+        payments: [],
+        // Marquer comme recasté
         is_recast: true
       };
 
@@ -138,11 +143,18 @@ export const RecastLoanWizard: React.FC<RecastLoanWizardProps> = ({ onClose, loa
       const updatedLoan = await recastLoan(token, loanToRecast.id, recastData);
       
       console.log('✅ Recast successful:', updatedLoan);
+      console.log('✅ Updated loan data:', {
+        newRate: updatedLoan.initial_annual_rate,
+        newPeriod: updatedLoan.initial_number_of_payments,
+        newMonthlyPayment: updatedLoan.monthly_payment_amount,
+        isRecast: updatedLoan.is_recast,
+        recastDate: updatedLoan.recast_date
+      });
       
       // Afficher le Snackbar de succès
       showActivity('Loan recast successfully!');
       
-      // Appeler le callback de succès avec le loan mis à jour
+      // Appeler le callback de succès
       if (onRecastSuccess) {
         onRecastSuccess();
       }

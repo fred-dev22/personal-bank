@@ -51,6 +51,7 @@
   display: grid;
   grid-template-columns: 150px repeat(6, 1fr);
   border-bottom: 1px solid #f0f0f1;
+  background: white;
 }
 
 .payment-table__row:hover {
@@ -85,6 +86,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: white;
 }
 
 .payment-table__cell:hover {

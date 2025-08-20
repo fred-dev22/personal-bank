@@ -73,7 +73,7 @@
 }
 
 .terms-card .rectangle {
-  display: none;
+  display: none; 
 }
 
 .terms-card .static-table {
@@ -87,7 +87,7 @@
 
 .terms-card .row,
 .terms-card .row-2,
-.terms-card .row-3,
+.terms-card .row-3,   
 .terms-card .row-4,
 .terms-card .row-5 {
   align-items: flex-end;

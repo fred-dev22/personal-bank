@@ -74,7 +74,7 @@ export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startD
         <div className="frame">
           <div className="frame-2">
             <div className="title-3">Terms</div>
-            <div className="text-wrapper-2">Never recasted</div>
+            {!isRecast && <div className="text-wrapper-2">Never recasted</div>}
           </div>
           <div className="rectangle" />
           <div className="static-table">

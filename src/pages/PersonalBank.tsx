@@ -9,7 +9,7 @@ import { useActivity } from '../contexts/ActivityContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import type { Loan, Vault, Borrower as BorrowerType, User, Activity } from '../types/types';
-import { fetchLoans } from '../controllers/loanController';
+import { fetchLoans, fetchLoanById } from '../controllers/loanController';
 import { fetchVaults } from '../controllers/vaultController';
 import { fetchBorrowers } from '../controllers/borrowerController';
 import { fetchAllUserActivities } from '../controllers/activityController';
@@ -314,16 +314,36 @@ const PersonalBankContent: React.FC = () => {
           // Afficher le Snackbar quand on ferme le wizard
           showActivity('Recast cancelled');
         }}
-        onRecastSuccess={() => {
+        onRecastSuccess={async () => {
+          // Sauvegarder l'ID du loan avant de le mettre à undefined
+          const recastedLoanId = loanToRecast?.id;
+          
           setLoanToRecast(undefined);
           setShowRecastWizard(false);
           
-          // Rafraîchir les loans pour avoir les données mises à jour
-          getLoans(user, setLoans);
+          // Faire un get du loan pour avoir les nouvelles données complètes
+          if (recastedLoanId) {
+            try {
+              const token = localStorage.getItem('authToken');
+              if (token) {
+                const freshLoan = await fetchLoanById(recastedLoanId, token);
+                console.log('✅ Fresh loan data after recast:', freshLoan);
+                
+                // Mettre à jour les données en local avec les données fraîches
+                setLoans(prevLoans => 
+                  prevLoans.map(loan => 
+                    loan.id === recastedLoanId ? freshLoan : loan
+                  )
+                );
+              }
+            } catch (error) {
+              console.error('❌ Error fetching fresh loan data:', error);
+            }
+          }
           
           // Rediriger vers les détails du prêt recasté
-          if (loanToRecast?.id) {
-            setSelectedLoanId(loanToRecast.id);
+          if (recastedLoanId) {
+            setSelectedLoanId(recastedLoanId);
             setCurrentPage('loans');
             // Scroll vers le haut de la page
             window.scrollTo({ top: 0, behavior: 'smooth' });
