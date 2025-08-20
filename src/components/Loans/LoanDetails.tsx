@@ -16,7 +16,7 @@ import { TermsCard } from '../Cards/TermsCard/TermsCard';
 import { EditLoan } from './EditLoan';
 import { Modal } from '../Modal/Modal';
 import { AddEditActivity } from '../Activities/AddEditActivity';
-import { createSimpleLoanConfig } from '../Activities/activityConfigs';
+import { createSimpleLoanConfig, ACTIVITY_CATEGORIES } from '../Activities/activityConfigs';
 import { TabNavigation } from '../ui/TabNavigation';
 import { fetchLoanById } from '../../controllers/loanController';
 import { EmptyState } from '@jbaluch/components';
@@ -86,6 +86,43 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
   const { showActivity, hideActivity } = useActivity();
 
+  // Category lookup for emoji + label and dynamic colors
+  const categoryLookup = React.useMemo(() => {
+    const all = [
+      ...ACTIVITY_CATEGORIES.general,
+      ...ACTIVITY_CATEGORIES.loan,
+      ...ACTIVITY_CATEGORIES.vault,
+      ...ACTIVITY_CATEGORIES.payment,
+    ];
+    return all.reduce((acc, c) => {
+      acc[c.value] = c;
+      return acc;
+    }, {} as Record<string, { value: string; label: string; emoji?: string }>);
+  }, []);
+
+  const TAG_BG_COLORS: Record<string, string> = {
+    income: '#C8EBEA',
+    payment_received: '#C8EBEA',
+    vault_income: '#C8EBEA',
+    contribution: '#C8EBEA',
+    vault_contribution: '#C8EBEA',
+
+    expense: '#FFCCCE',
+    transfer_fee: '#FFCCCE',
+    late_fee: '#FFCCCE',
+    vault_fee: '#FFCCCE',
+    withdrawal: '#FFCCCE',
+    vault_withdrawal: '#FFCCCE',
+    payment_sent: '#FFCCCE',
+
+    transfer: '#DDE5F5',
+    vault_transfer: '#DDE5F5',
+    loan_payment: '#DDE5F5',
+    principal_payment: '#DDE5F5',
+    interest_payment: '#DDE5F5',
+  };
+  const resolveTagBackground = (tag?: string, type?: string) => TAG_BG_COLORS[(tag || type || '').toLowerCase()] || '#f0f0f1';
+
   // Fonction pour gérer le clic sur Confirm Funding
   const handleConfirmFunding = () => {
     setIsActivityModalOpen(true);
@@ -99,8 +136,16 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
   console.log('activities ids:', activities.map(a => a.id));
   const loanActivities = activities.filter(a => loanActivityIds.includes(a.id));
 
-  // Mapping pour la table
-  const activityRows = loanActivities.map(a => ({
+  // Dev-only demo rows when no data exists, to preview design
+  const isDev = typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.MODE !== 'production';
+  const demoActivities: Activity[] = [
+    { id: 'd1', name: 'Paypal', type: 'loan', date: new Date('2024-11-08') as any, amount: 2.55, tag: 'transfer_fee' },
+    { id: 'd2', name: 'Interest 9', type: 'loan', date: new Date('2024-11-08') as any, amount: 5.00, tag: 'interest_fee' as any },
+    { id: 'd3', name: 'Payment 9', type: 'loan', date: new Date('2024-11-08') as any, amount: 300.00, tag: 'loan_payment' },
+  ];
+  const sourceActivities = loanActivities.length > 0 ? loanActivities : (isDev ? demoActivities : loanActivities);
+
+  const activityRows = sourceActivities.map(a => ({
     id: a.id,
     name: a.name,
     category: a.tag || '',
@@ -198,6 +243,15 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
       setActiveTab(activeTabId);
     }
   }, [activeTabId]);
+
+  // Debug: Log loan status and activities
+  React.useEffect(() => {
+    if (activeTab === 'activity') {
+      console.log('Loan status:', loan.status);
+      console.log('Loan activities count:', loanActivities.length);
+      console.log('Source activities count:', sourceActivities.length);
+    }
+  }, [activeTab, loan.status, loanActivities.length, sourceActivities.length]);
 
   return (
     <div className="loan-details" style={{ background: 'transparent' }}>
@@ -382,10 +436,34 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
                 Add
               </Button>
             </div>
+            {/* Show EmptyState when loan is not funded */}
+            {(loan.status === 'Funding' || loan.status === 'Not Funded' || sourceActivities.length === 0) ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                <EmptyState
+                  imageName="NoLoans"
+                  title="Not yet funded"
+                  description="This loan needs funded first."
+                  customImage={undefined}
+                  children={undefined}
+                  className=""
+                  position=""
+                />
+              </div>
+            ) : (
             <Table
               columns={[
-                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: typeof activityRows[0]) => ({ text: row.name }) },
-                { key: 'category', label: 'Category', width: '100%', cellComponent: TagCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.category }) },
+                { key: 'name', label: 'Name', width: '100%', cellComponent: TextCell, alignment: 'left', getCellProps: (row: typeof activityRows[0]) => ({ text: row.name || '—' }) },
+                { key: 'category', label: 'Category', width: '100%', cellComponent: TagCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => {
+                  const cat = categoryLookup[row.category];
+                  return {
+                    label: cat?.label || row.category,
+                    emoji: cat?.emoji || '🏷️',
+                    size: 'small',
+                    backgroundColor: resolveTagBackground(row.category, row.type),
+                    textColor: '#595959',
+                    severity: 'info',
+                  };
+                } },
                 { key: 'date', label: 'Date', width: '100%', cellComponent: TextCell, alignment: 'center', getCellProps: (row: typeof activityRows[0]) => ({ text: row.date }) },
                 { key: 'amount', label: 'Amount', width: '100%', cellComponent: TextCell, alignment: 'right', getCellProps: (row: typeof activityRows[0]) => ({ text: row.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }) }) },
               ]}
@@ -393,12 +471,15 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
               className="activities-table-fullwidth"
               clickableRows
               onRowClick={(row: any) => {
-                const activity = activities.find(a => a.id === row.id);
-                if (activity) {
-                  setSelectedActivity(activity);
+                let activity = activities.find(a => a.id === row.id);
+                if (!activity) {
+                  const demo = sourceActivities.find(a => a.id === row.id);
+                  if (demo) activity = demo;
                 }
+                if (activity) setSelectedActivity(activity);
               }}
             />
+            )}
           </section>
         )}
         {activeTab === 'schedule' && (
@@ -541,6 +622,11 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           vaultId: (loan as any).vault_id || (loan as any).vaultId,
           vaultName: vaults.find(v => v.id === ((loan as any).vault_id || (loan as any).vaultId))?.nickname || 'Gateway'
         } : {}}
+        onNavigateBorrower={() => onShowBorrowerDetails()}
+        onNavigateLoan={() => { /* already on loan page */ }}
+        onNavigateVault={(id?: string) => { if (id && onShowVaultDetails) onShowVaultDetails(id); }}
+        minimalEdit
+        minimalEditShowAmount
         onClose={() => setSelectedActivity(null)}
         onSubmit={() => {
           setSelectedActivity(null);
