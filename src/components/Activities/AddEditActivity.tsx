@@ -5,7 +5,6 @@ import type { Activity } from '../../types/types';
 import borrowerIcon from '../../assets/borrower.svg';
 import loanIcon from '../../assets/loan.svg';
 import vaultIcon from '../../assets/vault.svg';
-import walletIcon from '../../assets/wallet.svg';
 import { ACTIVITY_CATEGORIES } from './activityConfigs';
 
 // Generic configuration for different activity contexts
@@ -60,6 +59,8 @@ interface AddEditActivityProps {
   onNavigateBorrower?: (borrowerId?: string) => void;
   onNavigateLoan?: (loanId?: string) => void;
   onNavigateVault?: (vaultId?: string) => void;
+  // When minimalEdit is enabled, allow showing Amount field alongside Date
+  minimalEditShowAmount?: boolean;
 }
 
 export const AddEditActivity: React.FC<AddEditActivityProps> = ({ 
@@ -74,6 +75,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
   onNavigateBorrower,
   onNavigateLoan,
   onNavigateVault,
+  minimalEditShowAmount = false,
 }) => {
   // Form state
   const [type, setType] = useState<'incoming' | 'outgoing'>(
@@ -149,6 +151,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
       submitData.amount = Number(amount);
       if (vault) submitData.vault = vault;
       if (account) submitData.account = account;
+    } else if (minimalEditShowAmount) {
+      submitData.amount = Number(amount);
     }
     if (loan && config.showLoanField && !minimalEdit) {
       submitData.loan = loan;
@@ -178,7 +182,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
   }, []);
   const resolvedCategory = currentCategory || globalCategoryLookup[category] || globalCategoryLookup[initialData.tag || ''];
   const categoryEmoji = resolvedCategory?.emoji || '🏷️';
-  
+
   // Debug logging
   console.log('Current category state:', category);
   console.log('Current category object:', resolvedCategory);
@@ -368,7 +372,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             display: 'grid', 
             gridTemplateColumns: '1fr 1fr', 
             gap: 20,
-            padding: '20px',
+            padding: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.02)',
             borderRadius: '0',
             marginLeft: '-24px',
@@ -425,6 +429,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
                 </div>
               </div>
             </button>
+            
             <button 
               onClick={() => (onNavigateLoan ? onNavigateLoan(initialData.loanId) : window.location.href = `/loans/${initialData.loanId}`)}
               style={{ 
@@ -475,6 +480,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
                 </div>
               </div>
             </button>
+            
             <button 
               onClick={() => (onNavigateVault ? onNavigateVault(initialData.vaultId) : window.location.href = `/vaults/${initialData.vaultId}`)}
               style={{ 
@@ -525,7 +531,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
                 </div>
               </div>
             </button>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px' }}>
               <div style={{ 
                 width: '32px', 
                 height: '32px', 
@@ -567,79 +573,97 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
 
       {/* Category dropdown - hidden in minimal edit */}
       {!minimalEdit && (
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-          <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
-          <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Category</label>
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
+            <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Category</label>
+          </div>
+          <PopupButton
+            defaultValue={resolvedCategory ? `${resolvedCategory.emoji || ''} ${resolvedCategory.label}`.trim() : "Select category"}
+            items={config.availableCategories.map(opt => ({ 
+              id: opt.value, 
+              label: opt.emoji ? `${opt.emoji} ${opt.label}` : opt.label 
+            }))}
+            menuStyle="text"
+            onSelect={(selectedId: string) => {
+              console.log('Category selected:', selectedId);
+              setCategory(selectedId);
+            }}
+            width="100%"
+            menuMaxHeight="200px"
+          />
         </div>
-        <PopupButton
-          defaultValue={currentCategory ? `${currentCategory.emoji} ${currentCategory.label}` : "Select category"}
-          items={config.availableCategories.map(opt => ({ 
-            id: opt.value, 
-            label: opt.emoji ? `${opt.emoji} ${opt.label}` : opt.label 
-          }))}
-          menuStyle="text"
-          onSelect={(selectedId: string) => {
-            console.log('Category selected:', selectedId);
-            setCategory(selectedId);
-          }}
-          width="100%"
-          menuMaxHeight="200px"
-        />
-      </div>
       )}
 
       {/* Amount and Date */}
       {!minimalEdit && (
-      <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
-            <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Amount</label>
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
+              <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Amount</label>
+            </div>
+            <Input
+              value={amount}
+              onChange={setAmount}
+              type="currency"
+              required
+              placeholder="0"
+              style={{ width: '100%' }}
+            />
           </div>
-          <Input
-            value={amount}
-            onChange={setAmount}
-            type="currency"
-            required
-            placeholder="0"
-            style={{ width: '100%' }}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
-            <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Date</label>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
+              <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Date</label>
+            </div>
+            <DatePicker
+              value={date}
+              onChange={setDate}
+              required
+              errorMessage=""
+              minDate={undefined}
+              maxDate={undefined}
+              style={{ width: '100%' }}
+            />
           </div>
-          <DatePicker
-            value={date}
-            onChange={setDate}
-            required
-            errorMessage=""
-            minDate={undefined}
-            maxDate={undefined}
-            style={{ width: '100%' }}
-          />
         </div>
-      </div>
       )}
 
-      {/* Minimal edit: Date only */}
+      {/* Minimal edit: Amount (optional) + Date */}
       {minimalEdit && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
-            <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Date</label>
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+          {minimalEditShowAmount && (
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
+                <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Amount</label>
+              </div>
+              <Input
+                value={amount}
+                onChange={setAmount}
+                type="currency"
+                required
+                placeholder="0"
+                style={{ width: '100%' }}
+              />
+            </div>
+          )}
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
+              <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Date</label>
+            </div>
+            <DatePicker
+              value={date}
+              onChange={setDate}
+              required
+              errorMessage=""
+              minDate={undefined}
+              maxDate={undefined}
+              style={{ width: '100%' }}
+            />
           </div>
-          <DatePicker
-            value={date}
-            onChange={setDate}
-            required
-            errorMessage=""
-            minDate={undefined}
-            maxDate={undefined}
-            style={{ width: '100%' }}
-          />
         </div>
       )}
 
@@ -726,155 +750,6 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         />
       </div>
 
-      {/* Activity Details - only show in edit mode */}
-      {isEdit && !minimalEdit && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: '1fr 1fr', 
-            gap: 20,
-            padding: '20px',
-            backgroundColor: 'rgba(0, 0, 0, 0.02)',
-            borderRadius: '12px'
-          }}>
-            <button 
-              onClick={() => (onNavigateBorrower ? onNavigateBorrower(initialData.borrowerId) : window.location.href = `/borrowers/${initialData.borrowerId}`)}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'flex-start', 
-                gap: 12,
-                background: 'none',
-                border: 'none',
-                padding: '12px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s ease',
-                textAlign: 'left',
-                width: '100%'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-            >
-              <div style={{ 
-                width: '32px', 
-                height: '32px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center'
-              }}>
-                <img src={borrowerIcon} alt="Borrower" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Borrower</div>
-                <div style={{ 
-                  color: '#000000', 
-                  fontSize: '14px', 
-                  fontWeight: '700'
-                }}>
-                  {initialData.borrowerName || 'My borrower'}
-                </div>
-              </div>
-            </button>
-            
-            <button 
-              onClick={() => (onNavigateLoan ? onNavigateLoan(initialData.loanId) : window.location.href = `/loans/${initialData.loanId}`)}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'flex-start', 
-                gap: 12,
-                background: 'none',
-                border: 'none',
-                padding: '12px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s ease',
-                textAlign: 'left',
-                width: '100%'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-            >
-              <div style={{ 
-                width: '32px', 
-                height: '32px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center'
-              }}>
-                <img src={loanIcon} alt="Loan" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Loan</div>
-                <div style={{ 
-                  color: '#000000', 
-                  fontSize: '14px', 
-                  fontWeight: '700'
-                }}>
-                  {initialData.loanName || 'Loan name'}
-                </div>
-              </div>
-            </button>
-            
-            <button 
-              onClick={() => (onNavigateVault ? onNavigateVault(initialData.vaultId) : window.location.href = `/vaults/${initialData.vaultId}`)}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'flex-start', 
-                gap: 12,
-                background: 'none',
-                border: 'none',
-                padding: '12px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s ease',
-                textAlign: 'left',
-                width: '100%'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-            >
-              <div style={{ 
-                width: '32px', 
-                height: '32px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center'
-              }}>
-                <img src={vaultIcon} alt="Vault" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Vault</div>
-                <div style={{ 
-                  color: '#000000', 
-                  fontSize: '14px', 
-                  fontWeight: '700'
-                }}>
-                  {initialData.vaultName || 'Gateway'}
-                </div>
-              </div>
-            </button>
-            
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-              <div style={{ 
-                width: '32px', 
-                height: '32px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center'
-              }}>
-                <img src={walletIcon} alt="Account" style={{ width: '16px', height: '16px', filter: 'brightness(0) saturate(100%) invert(42%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.8) contrast(1)' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '12px', color: '#6B6B70', marginBottom: 4, fontWeight: '400' }}>Account</div>
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#000000' }}>
-                  {initialData.accountName || 'Savings'}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Apply to loan checkbox - only show if configured */}
       {config.showApplyToLoan && (
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
@@ -953,12 +828,12 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
     <div style={{ 
       position: 'fixed',
       top: '120px', // Start below the header and tabs
-       right: '24px', // Add margin from right edge
+      right: '24px', // Add margin from right edge
       width: 400,
       minWidth: 400,
       height: 'calc(100vh - 120px)', // Subtract the header height
       backgroundColor: '#FFFFFF',
-       borderRadius: '10px 10px 0 0', // Round both top corners
+      borderRadius: '10px 10px 0 0', // Round both top corners
       boxShadow: '-2px 0 8px rgba(0, 0, 0, 0.1)',
       zIndex: 1000,
       overflowY: 'auto'
