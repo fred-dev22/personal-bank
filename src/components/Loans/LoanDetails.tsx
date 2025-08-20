@@ -568,19 +568,22 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         mode="add"
         initialData={{}}
         config={{
-          context: 'loan',
+          context: 'loan_funding',
           contextId: loan.id,
           contextName: loan.nickname || 'Loan',
+          loanAmount: loan.initial_balance,
+          borrowerName: borrower.fullName || (borrower as any).firstName || 'Borrower',
+          vaultName: vaults.find(v => v.id === ((loan as any).vault_id || (loan as any).vaultId))?.nickname || 'Gateway',
+          vaultId: (loan as any).vault_id || (loan as any).vaultId,
+          borrowerId: loan.borrower_id || loan.borrowerId,
           availableCategories: [
-            { value: 'payment', label: 'Payment', emoji: '💰' },
-            { value: 'fee', label: 'Fee', emoji: '📋' },
-            { value: 'other', label: 'Other', emoji: '📝' }
+            { value: 'loan_funding', label: 'Loan funding', emoji: '💸' }
           ],
           showVaultField: false,
           showAccountField: false,
           showLoanField: false,
           showApplyToLoan: false,
-          defaultCategory: 'payment'
+          defaultCategory: 'loan_funding'
         }}
         onClose={() => setIsActivityModalOpen(false)}
         onSubmit={(data) => {

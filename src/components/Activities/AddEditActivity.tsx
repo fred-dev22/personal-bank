@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, DatePicker, TagCell, PopupButton, IconButton, CloseButton } from "@jbaluch/components";
 import { Modal } from "../Modal/Modal";
+import { SelectDate } from "../SelectDate/SelectDate";
 import type { Activity } from '../../types/types';
 import borrowerIcon from '../../assets/borrower.svg';
 import loanIcon from '../../assets/loan.svg';
@@ -10,7 +11,7 @@ import { ACTIVITY_CATEGORIES } from './activityConfigs';
 
 // Generic configuration for different activity contexts
 export interface ActivityConfig {
-  context: 'vault' | 'loan' | 'general';
+  context: 'vault' | 'loan' | 'general' | 'loan_funding';
   contextId?: string; // vault ID, loan ID, etc.
   contextName?: string; // vault name, loan name, etc.
   availableCategories: Array<{ value: string; label: string; emoji?: string }>;
@@ -25,6 +26,12 @@ export interface ActivityConfig {
   defaultVault?: string;
   defaultAccount?: string;
   defaultLoan?: string;
+  // Loan funding specific fields
+  loanAmount?: number;
+  borrowerName?: string;
+  vaultName?: string;
+  vaultId?: string;
+  borrowerId?: string;
 }
 
 interface AddEditActivityProps {
@@ -77,7 +84,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
 }) => {
   // Form state
   const [type, setType] = useState<'incoming' | 'outgoing'>(
-    initialData.type === 'incoming' ? 'incoming' : 'outgoing'
+    config.context === 'loan_funding' ? 'outgoing' : (initialData.type === 'incoming' ? 'incoming' : 'outgoing')
   );
   const [category, setCategory] = useState(
     initialData.tag || config.defaultCategory || config.availableCategories[0]?.value || ''
@@ -120,7 +127,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
   // sync all fields so the edit panel shows the clicked row's data.
   useEffect(() => {
     if (!open) return;
-    setType(initialData.type === 'incoming' ? 'incoming' : 'outgoing');
+    setType(config.context === 'loan_funding' ? 'outgoing' : (initialData.type === 'incoming' ? 'incoming' : 'outgoing'));
     setCategory(initialData.tag || config.defaultCategory || config.availableCategories[0]?.value || '');
     setAmount(initialData.amount !== undefined && initialData.amount !== null ? String(initialData.amount) : '');
     setDate(initialData.date ? new Date(initialData.date as any) : new Date());
@@ -145,12 +152,20 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
 
     // When not minimal edit, include full set
     if (!minimalEdit) {
-      submitData.tag = category;
-      submitData.amount = Number(amount);
-      if (vault) submitData.vault = vault;
-      if (account) submitData.account = account;
+      if (isLoanFunding) {
+        // Loan funding specific data
+        submitData.tag = 'loan_funding';
+        submitData.amount = config.loanAmount || 0;
+        submitData.vault = config.vaultId;
+        submitData.loan = config.contextId;
+      } else {
+        submitData.tag = category;
+        submitData.amount = Number(amount);
+        if (vault) submitData.vault = vault;
+        if (account) submitData.account = account;
+      }
     }
-    if (loan && config.showLoanField && !minimalEdit) {
+    if (loan && config.showLoanField && !minimalEdit && !isLoanFunding) {
       submitData.loan = loan;
     }
     if (config.showApplyToLoan && !minimalEdit) {
@@ -196,6 +211,9 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
     return 'Activity';
   };
 
+  // Check if this is loan funding context
+  const isLoanFunding = config.context === 'loan_funding';
+
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -239,7 +257,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
 
   const Content = (
     <div style={scrollableContentStyle}>
-            <div style={{ width: '100%', maxWidth: '400px' }}>
+            <div style={{ width: '100%', maxWidth: isLoanFunding ? 'none' : '400px' }}>
                 {/* Header with context and amount */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 24, width: '100%' }}>
           <div style={{ flex: 1 }}>
@@ -249,8 +267,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             <div style={{ fontSize: 14, color: '#595959' }}>
               <div style={{ display: 'inline-block' }}>
                 <TagCell 
-                  label={resolvedCategory?.label || category} 
-                  emoji={categoryEmoji} 
+                  label={isLoanFunding ? "Loan funding" : (resolvedCategory?.label || category)} 
+                  emoji={isLoanFunding ? "💸" : categoryEmoji} 
                   size="small" 
                   backgroundColor="#f0f0f1" 
                   textColor="#595959" 
@@ -260,7 +278,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             </div>
           </div>
           <div style={{ fontWeight: 600, fontSize: 22, lineHeight: '30px', color: '#0D1728', fontFamily: 'DM Sans' }}>
-            ${amount || '0.00'}
+            ${isLoanFunding ? (config.loanAmount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00') : (amount || '0.00')}
           </div>
         </div>
 
@@ -279,7 +297,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         }}>
           {/* Incoming Button */}
           <button
-            onClick={() => setType('incoming')}
+            onClick={() => !isLoanFunding && setType('incoming')}
             style={{
               flex: 1,
               display: 'flex',
@@ -292,12 +310,13 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
               color: type === 'incoming' ? '#000000' : '#6B6B70',
               fontSize: '14px',
               fontWeight: type === 'incoming' ? '500' : '400',
-              cursor: 'pointer',
+              cursor: isLoanFunding ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
               boxShadow: type === 'incoming' ? '0 0.5px 0 0 rgba(0, 0, 0, 0.3), 0 0.5px 2.5px 0 rgba(0, 0, 0, 0.3)' : 'none',
               padding: '4px 16px',
               minHeight: '32px',
               textDecoration: type === 'incoming' ? 'none' : 'line-through',
+              opacity: isLoanFunding ? 0.5 : 1,
             }}
           >
             <div style={{
@@ -320,7 +339,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
           
           {/* Outgoing Button */}
           <button
-            onClick={() => setType('outgoing')}
+            onClick={() => !isLoanFunding && setType('outgoing')}
             style={{
               flex: 1,
               display: 'flex',
@@ -329,16 +348,17 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
               gap: '4px',
               borderRadius: '18px',
               border: 'none',
-              backgroundColor: type === 'outgoing' ? '#FFFFFF' : 'transparent',
-              color: type === 'outgoing' ? '#000000' : '#6B6B70',
+              backgroundColor: (type === 'outgoing' || isLoanFunding) ? '#FFFFFF' : 'transparent',
+              color: (type === 'outgoing' || isLoanFunding) ? '#000000' : '#6B6B70',
               fontSize: '14px',
-              fontWeight: type === 'outgoing' ? '500' : '400',
-              cursor: 'pointer',
+              fontWeight: (type === 'outgoing' || isLoanFunding) ? '500' : '400',
+              cursor: isLoanFunding ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
-              boxShadow: type === 'outgoing' ? '0 0.5px 0 0 rgba(0, 0, 0, 0.3), 0 0.5px 2.5px 0 rgba(0, 0, 0, 0.3)' : 'none',
+              boxShadow: (type === 'outgoing' || isLoanFunding) ? '0 0.5px 0 0 rgba(0, 0, 0, 0.3), 0 0.5px 2.5px 0 rgba(0, 0, 0, 0.3)' : 'none',
               padding: '4px 16px',
               minHeight: '32px',
-              textDecoration: type === 'outgoing' ? 'none' : 'line-through',
+              textDecoration: (type === 'outgoing' || isLoanFunding) ? 'none' : 'line-through',
+              opacity: 1,
             }}
           >
             <div style={{
@@ -360,6 +380,119 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Date only for loan funding - placed before Money Flow */}
+      {isLoanFunding && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
+            <label style={{ fontWeight: 500, color: '#000000', fontSize: '14px' }}>Date</label>
+          </div>
+          <SelectDate
+            value={date.toISOString().split('T')[0]}
+            onChange={(value: string) => setDate(new Date(value))}
+            required
+            style={{ width: '100%' }}
+          />
+        </div>
+      )}
+
+      {/* Money Flow section for loan funding */}
+      {isLoanFunding && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ 
+            fontWeight: 500, 
+            color: '#000000', 
+            fontSize: '14px', 
+            marginBottom: 16 
+          }}>
+            Money Flow
+          </div>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            alignItems: 'center'
+          }}>
+            {/* Source (Vault) */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              padding: '16px',
+              backgroundColor: '#E3F2FD',
+              borderRadius: '8px',
+              border: '1px solid #BBDEFB'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#2196F3',
+                  borderRadius: '6px'
+                }}>
+                  <img src={vaultIcon} alt="Vault" style={{ width: '16px', height: '16px', filter: 'brightness(0) invert(1)' }} />
+                </div>
+                <span style={{ fontWeight: 500, color: '#0D1728', fontSize: '14px' }}>
+                  {config.vaultName || 'Gateway'}
+                </span>
+              </div>
+              <span style={{ fontWeight: 600, color: '#0D1728', fontSize: '16px' }}>
+                ${config.loanAmount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+              </span>
+            </div>
+
+            {/* Arrow */}
+            <div style={{
+              width: '24px',
+              height: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 10L12 15L17 10" stroke="#6B6B70" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+
+            {/* Destination (Borrower) */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              padding: '16px',
+              backgroundColor: '#E3F2FD',
+              borderRadius: '8px',
+              border: '1px solid #BBDEFB'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#2196F3',
+                  borderRadius: '6px'
+                }}>
+                  <img src={borrowerIcon} alt="Borrower" style={{ width: '16px', height: '16px', filter: 'brightness(0) invert(1)' }} />
+                </div>
+                <span style={{ fontWeight: 500, color: '#0D1728', fontSize: '14px' }}>
+                  {config.borrowerName || 'Borrower'}
+                </span>
+              </div>
+              <span style={{ fontWeight: 600, color: '#0D1728', fontSize: '16px' }}>
+                ${config.loanAmount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Activity Details block: in minimal edit, place right under toggle */}
       {isEdit && minimalEdit && (
@@ -565,8 +698,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         </div>
       )}
 
-      {/* Category dropdown - hidden in minimal edit */}
-      {!minimalEdit && (
+      {/* Category dropdown - hidden in minimal edit and loan funding */}
+      {!minimalEdit && !isLoanFunding && (
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
@@ -589,8 +722,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
       </div>
       )}
 
-      {/* Amount and Date */}
-      {!minimalEdit && (
+      {/* Amount and Date - hidden in loan funding */}
+      {!minimalEdit && !isLoanFunding && (
       <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
@@ -623,6 +756,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         </div>
       </div>
       )}
+
+
 
       {/* Minimal edit: Date only */}
       {minimalEdit && (
@@ -921,13 +1056,13 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         iconComponent={undefined} 
         onMouseEnter={() => {}} 
         onMouseLeave={() => {}} 
-        name={isEdit ? 'save' : 'add'} 
+        name={isEdit ? 'save' : (isLoanFunding ? 'confirm' : 'add')} 
         form="" 
-        ariaLabel={isEdit ? 'Save' : 'Add'} 
+        ariaLabel={isEdit ? 'Save' : (isLoanFunding ? 'Confirm' : 'Add')} 
         onClick={handleSubmit} 
         style={{ width: '90px' }}
       >
-        {isEdit ? 'Save' : 'Add'}
+        {isEdit ? 'Save' : (isLoanFunding ? 'Confirm' : 'Add')}
       </Button>
     </div>
   );
