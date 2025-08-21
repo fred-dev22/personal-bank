@@ -12,6 +12,13 @@
   inset: 0;
   background: rgba(0,0,0,0.08);
   z-index: 1;
+  opacity: 0;
+  transition: opacity 0.55s ease;
+  pointer-events: none;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
 }
 .modal-panel {
   position: fixed;
@@ -21,14 +28,17 @@
   background: #fff;
   box-shadow: -2px 0 16px rgba(0,0,0,0.08);
   transform: translateX(100%);
-  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  opacity: 0;
+  transition: transform 0.55s ease, opacity 0.55s ease;
   z-index: 2;
   max-width: 100vw;
   overflow-y: auto;
   border-radius: 0 0 0 8px;
+  will-change: transform, opacity;
 }
 .modal-panel.open {
   transform: translateX(0);
+  opacity: 1;
 }
 .modal-close {
   position: absolute;
@@ -50,4 +60,9 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay { transition: none; }
+  .modal-panel { transition: none; }
 } 
