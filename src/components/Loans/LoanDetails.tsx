@@ -108,23 +108,7 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-<<<<<<< HEAD
-// Demo schedule data to match Figma design
-const demoScheduleData: ScheduleRow[] = [
-  { due_date: 'Oct 8', payment: '300.00', fees: '35.00', balance: '2135.00', status: 'On Time' },
-  { due_date: 'Nov 8', payment: '300.00', fees: '40.00', balance: '1870.00', status: 'On Time' },
-  { due_date: 'Dec 8', payment: '300.00', fees: '35.00', balance: '1605.00', status: 'Upcoming' },
-  { due_date: 'Jan 8', payment: '300.00', fees: '35.00', balance: '1340.00', status: 'Upcoming' },
-  { due_date: 'Feb 8', payment: '300.00', fees: '35.00', balance: '1075.00', status: 'Upcoming' },
-  { due_date: 'Mar 8', payment: '300.00', fees: '35.00', balance: '810.00', status: 'Upcoming' },
-];
-
-// Custom cell components removed - functionality moved to getCellProps in Table columns
-
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan, onAddActivity, vaults = [], accounts = [] }) => {
-=======
 export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan, onAddActivity, vaults = [], accounts = [], onLoansUpdate, onVaultsUpdate, onLoanUpdate }) => {
->>>>>>> dev
   const [activeTab, setActiveTab] = useState(activeTabId || 'summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
@@ -277,25 +261,12 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
    };
 
   // Helper pour le header du schedule
-  const scheduleDataToUse = scheduleRows && scheduleRows.length > 0 ? scheduleRows : (isDev ? demoScheduleData : []);
+  const scheduleDataToUse = scheduleRows && scheduleRows.length > 0 ? scheduleRows : [];
   
   const payoffDate = scheduleDataToUse.length > 0
     ? new Date(scheduleDataToUse[scheduleDataToUse.length - 1].due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : '';
 
-<<<<<<< HEAD
-  const paidToDate = scheduleDataToUse.length > 0
-    ? scheduleDataToUse.filter(r => r.status === 'On Time').reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
-    : 0;
-
-  const remaining = scheduleDataToUse.length > 0
-    ? formatMoney(
-        scheduleDataToUse
-          .filter(r => r.status === 'Upcoming')
-          .reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
-      )
-    : formatMoney(0);
-=======
      const paidToDate = scheduleRows && scheduleRows.length > 0
      ? scheduleRows.filter(r => r.status.toLowerCase() === 'paid').reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.-]/g, '')) || 0), 0)
      : 0;
@@ -307,7 +278,6 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
            .reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.-]/g, '')) || 0), 0)
        )
      : formatMoney(0);
->>>>>>> dev
 
   // Permet de changer d'onglet dynamiquement si activeTabId change
   React.useEffect(() => {
