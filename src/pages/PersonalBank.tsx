@@ -321,11 +321,20 @@ const PersonalBankContent: React.FC = () => {
           setLoanToRecast(undefined);
           setShowRecastWizard(false);
           
+          // S'assurer qu'on reste sur la page des détails du loan
+          if (recastedLoanId) {
+            setSelectedLoanId(recastedLoanId);
+          }
+          
+          // Garder le Snackbar "Recast in progress..." visible pendant la récupération
+          showActivity('Recast in progress...');
+          
           // Faire un get du loan pour avoir les nouvelles données complètes
           if (recastedLoanId) {
             try {
               const token = localStorage.getItem('authToken');
               if (token) {
+                console.log('🔄 Fetching fresh loan data for ID:', recastedLoanId);
                 const freshLoan = await fetchLoanById(recastedLoanId, token);
                 console.log('✅ Fresh loan data after recast:', freshLoan);
                 
@@ -335,18 +344,42 @@ const PersonalBankContent: React.FC = () => {
                     loan.id === recastedLoanId ? freshLoan : loan
                   )
                 );
+                
+                // Afficher le succès
+                showActivity('Loan recast successfully!');
+                
+                // Rester sur la page des détails du loan (pas de redirection)
+                // Le visuel se met à jour automatiquement grâce à setLoans
               }
             } catch (error) {
               console.error('❌ Error fetching fresh loan data:', error);
+              
+              // En cas d'erreur, essayer de récupérer tous les loans
+              try {
+                console.log('🔄 Fallback: Fetching all loans...');
+                const token = localStorage.getItem('authToken');
+                if (token) {
+                  const bankId = localStorage.getItem('bankId');
+                  if (bankId) {
+                    const allLoans = await fetchLoans(token, bankId);
+                    console.log('✅ All loans fetched:', allLoans);
+                    setLoans(allLoans);
+                    
+                    // Afficher le succès même avec le fallback
+                    showActivity('Loan recast successfully!');
+                    
+                    // Rester sur la page des détails du loan (pas de redirection)
+                    // Le visuel se met à jour automatiquement grâce à setLoans
+                  }
+                }
+              } catch (fallbackError) {
+                console.error('❌ Fallback also failed:', fallbackError);
+                showActivity('Loan recast completed, but failed to refresh data. Please reload the page.');
+                
+                // Rester sur la page des détails du loan même en cas d'erreur
+                // Le visuel se met à jour automatiquement grâce à setLoans
+              }
             }
-          }
-          
-          // Rediriger vers les détails du prêt recasté
-          if (recastedLoanId) {
-            setSelectedLoanId(recastedLoanId);
-            setCurrentPage('loans');
-            // Scroll vers le haut de la page
-            window.scrollTo({ top: 0, behavior: 'smooth' });
           }
         }}
       />

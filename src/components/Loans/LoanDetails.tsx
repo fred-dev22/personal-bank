@@ -18,7 +18,12 @@ import { Modal } from '../Modal/Modal';
 import { AddEditActivity } from '../Activities/AddEditActivity';
 import { createSimpleLoanConfig, ACTIVITY_CATEGORIES } from '../Activities/activityConfigs';
 import { TabNavigation } from '../ui/TabNavigation';
-import { fetchLoanById } from '../../controllers/loanController';
+import { fetchLoanById, updateLoan } from '../../controllers/loanController';
+import { updateVault } from '../../controllers/vaultController';
+import { createActivity } from '../../controllers/activityController';
+import { updateBorrower } from '../../controllers/borrowerController';
+
+
 import { EmptyState } from '@jbaluch/components';
 import { useActivity } from '../../contexts/ActivityContext';
 import { calculateMonthlyPayment } from '../../utils/loanUtils';
@@ -33,9 +38,12 @@ interface LoanDetailsProps {
   loans: Loan[];
   activeTabId?: string;
   onRecastLoan?: (loan: Loan) => void;
-  onAddActivity?: (data: any) => void;
+  onAddActivity?: (data: Partial<Activity> & { vault?: string; account?: string; loan?: string; note?: string; applyToLoan?: boolean }) => void;
   vaults?: Vault[];
   accounts?: Array<{ value: string; label: string }>;
+  onLoansUpdate?: () => void;
+  onVaultsUpdate?: () => void;
+  onLoanUpdate?: (updatedLoan: Loan) => void;
 }
 
 function getInitials(name: string) {
@@ -75,7 +83,7 @@ const documentsData: DocumentRow[] = [
   { name: 'Promissory Note Signed.pdf', description: "Clovis' signed note", uploadDate: 'April 1, 2023' },
 ];
 
-export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan, onAddActivity, vaults = [], accounts = [] }) => {
+export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack, onShowBorrowerDetails, onShowVaultDetails, activities, loans, activeTabId, onRecastLoan, onAddActivity, vaults = [], accounts = [], onLoansUpdate, onVaultsUpdate, onLoanUpdate }) => {
   const [activeTab, setActiveTab] = useState(activeTabId || 'summary');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
@@ -84,6 +92,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
   const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [scheduleRows, setScheduleRows] = useState<ScheduleRow[] | null>(null);
   const [lastFetchedLoanId, setLastFetchedLoanId] = useState<string | null>(null);
+  const [localLoan, setLocalLoan] = useState<Loan>(loan);
   const { showActivity, hideActivity } = useActivity();
 
   // Category lookup for emoji + label and dynamic colors
@@ -128,8 +137,8 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
     setIsActivityModalOpen(true);
   };
 
-  // Filtrage des activités liées à ce loan à partir de la liste globale de loans
-  const currentLoan = loans.find(l => l.id === loan.id);
+     // Filtrage des activités liées à ce loan à partir de la liste globale de loans
+   const currentLoan = loans.find(l => l.id === localLoan.id);
   const loanActivityIds = currentLoan?.activities || [];
   // Log pour debug
   console.log('loan.activities:', loanActivityIds);
@@ -137,11 +146,11 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
   const loanActivities = activities.filter(a => loanActivityIds.includes(a.id));
 
   // Dev-only demo rows when no data exists, to preview design
-  const isDev = typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.MODE !== 'production';
+  const isDev = typeof import.meta !== 'undefined' && (import.meta as { env?: { MODE?: string } }).env?.MODE !== 'production';
   const demoActivities: Activity[] = [
-    { id: 'd1', name: 'Paypal', type: 'loan', date: new Date('2024-11-08') as any, amount: 2.55, tag: 'transfer_fee' },
-    { id: 'd2', name: 'Interest 9', type: 'loan', date: new Date('2024-11-08') as any, amount: 5.00, tag: 'interest_fee' as any },
-    { id: 'd3', name: 'Payment 9', type: 'loan', date: new Date('2024-11-08') as any, amount: 300.00, tag: 'loan_payment' },
+    { id: 'd1', name: 'Paypal', type: 'loan', date: new Date('2024-11-08'), amount: 2.55, tag: 'transfer_fee' },
+    { id: 'd2', name: 'Interest 9', type: 'loan', date: new Date('2024-11-08'), amount: 5.00, tag: 'interest_fee' },
+    { id: 'd3', name: 'Payment 9', type: 'loan', date: new Date('2024-11-08'), amount: 300.00, tag: 'loan_payment' },
   ];
   const sourceActivities = loanActivities.length > 0 ? loanActivities : (isDev ? demoActivities : loanActivities);
 
@@ -154,11 +163,11 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
     type: a.type,
   }));
 
-  // Create activity configuration for this loan
-  const activityConfig = createSimpleLoanConfig(loan, accounts);
+     // Create activity configuration for this loan
+   const activityConfig = createSimpleLoanConfig(localLoan, accounts);
 
   // Handle activity submission
-  const handleAddActivity = (data: any) => {
+  const handleAddActivity = (data: Partial<Activity> & { vault?: string; account?: string; loan?: string; note?: string; applyToLoan?: boolean }) => {
     if (onAddActivity) {
       onAddActivity(data);
     }
@@ -178,10 +187,16 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         hideActivity();
         return;
       }
-      fetchLoanById(loan.id, token)
+             fetchLoanById(localLoan.id, token)
         .then(data => {
           if (Array.isArray(data.actual_payments_scheduled)) {
-            setScheduleRows(data.actual_payments_scheduled.map((row: any) => ({
+                         setScheduleRows((data.actual_payments_scheduled as Array<{
+               date?: string;
+               amount_due?: number;
+               fees?: number;
+               unpaid_balance?: number;
+               status?: string;
+             }>).map((row) => ({
               due_date: row.date ? new Date(row.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
               payment: row.amount_due !== undefined ? `$${row.amount_due}` : '',
               fees: row.fees !== undefined ? `$${row.fees}` : '',
@@ -191,7 +206,7 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           } else {
             setScheduleRows([]);
           }
-          setLastFetchedLoanId(loan.id);
+                     setLastFetchedLoanId(localLoan.id);
           hideActivity();
         })
         .catch(() => {
@@ -199,43 +214,43 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           hideActivity();
         });
     }
-  }, [activeTab, loan.id]);
+     }, [activeTab, localLoan.id]);
 
   // Helper pour formater les montants avec 2 décimales
-  const formatMoney = (val: string | number) => {
-    const num = typeof val === 'string' ? parseFloat(val.replace(/[^\d.\-]/g, '')) : val;
-    if (isNaN(num)) return '$0.00';
-    return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  };
+     const formatMoney = (val: string | number) => {
+     const num = typeof val === 'string' ? parseFloat(val.replace(/[^\d.-]/g, '')) : val;
+     if (isNaN(num)) return '$0.00';
+     return num.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+   };
 
-  // Utiliser le montant mensuel stocké ou le calculer si nécessaire
-  const getMonthlyPayment = () => {
-    if (loan.monthly_payment_amount) {
-      return loan.monthly_payment_amount;
-    }
-    return calculateMonthlyPayment(
-      loan.initial_balance,
-      loan.initial_number_of_payments,
-      loan.initial_annual_rate
-    );
-  };
+     // Utiliser le montant mensuel stocké ou le calculer si nécessaire
+   const getMonthlyPayment = () => {
+     if (localLoan.monthly_payment_amount) {
+       return localLoan.monthly_payment_amount;
+     }
+     return calculateMonthlyPayment(
+       localLoan.initial_balance,
+       localLoan.initial_number_of_payments,
+       localLoan.initial_annual_rate
+     );
+   };
 
   // Helper pour le header du schedule
   const payoffDate = (scheduleRows && scheduleRows.length > 0)
     ? new Date(scheduleRows[scheduleRows.length - 1].due_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : '';
 
-  const paidToDate = scheduleRows && scheduleRows.length > 0
-    ? scheduleRows.filter(r => r.status.toLowerCase() === 'paid').reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
-    : 0;
+     const paidToDate = scheduleRows && scheduleRows.length > 0
+     ? scheduleRows.filter(r => r.status.toLowerCase() === 'paid').reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.-]/g, '')) || 0), 0)
+     : 0;
 
-  const remaining = scheduleRows && scheduleRows.length > 0
-    ? formatMoney(
-        scheduleRows
-          .filter(r => r.status.toLowerCase() !== 'paid')
-          .reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.\-]/g, '')) || 0), 0)
-      )
-    : formatMoney(0);
+   const remaining = scheduleRows && scheduleRows.length > 0
+     ? formatMoney(
+         scheduleRows
+           .filter(r => r.status.toLowerCase() !== 'paid')
+           .reduce((sum, r) => sum + (parseFloat((r.payment || '').toString().replace(/[^\d.-]/g, '')) || 0), 0)
+       )
+     : formatMoney(0);
 
   // Permet de changer d'onglet dynamiquement si activeTabId change
   React.useEffect(() => {
@@ -244,14 +259,19 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
     }
   }, [activeTabId]);
 
+  // Synchronize localLoan with prop loan
+  React.useEffect(() => {
+    setLocalLoan(loan);
+  }, [loan]);
+
   // Debug: Log loan status and activities
   React.useEffect(() => {
     if (activeTab === 'activity') {
-      console.log('Loan status:', loan.status);
+      console.log('Loan status:', localLoan.status);
       console.log('Loan activities count:', loanActivities.length);
       console.log('Source activities count:', sourceActivities.length);
     }
-  }, [activeTab, loan.status, loanActivities.length, sourceActivities.length]);
+  }, [activeTab, localLoan.status, loanActivities.length, sourceActivities.length]);
 
   return (
     <div className="loan-details" style={{ background: 'transparent' }}>
@@ -263,18 +283,18 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         <div className="loan-avatar loan-avatar-initials">
           {getInitials(borrower.fullName)}
         </div>
-        <span className="loan-name">
-          {loan.nickname || 'Loan'} - {loan.id}
-        </span>
+                 <span className="loan-name">
+           {localLoan.nickname || 'Loan'} - {localLoan.id}
+         </span>
         <div className="loan-header-spacer" />
         <Button
           icon="icon"
           iconComponent={() => <img src={vaultIcon} alt="Vault" style={{ width: 18, height: 18 }} />}
           interaction="default"
           justified="left"
-          onClick={() => {
-            if (onShowVaultDetails && loan.vaultId) onShowVaultDetails(loan.vaultId);
-          }}
+                     onClick={() => {
+             if (onShowVaultDetails && localLoan.vaultId) onShowVaultDetails(localLoan.vaultId);
+           }}
           onMouseEnter={() => {}}
           onMouseLeave={() => {}}
           type="secondary"
@@ -332,8 +352,8 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
       <div className="loan-tab-content">
         {activeTab === 'summary' && (
           <div className="content">
-            {/* Carte de confirmation de funding pour les loans en statut "Funding" */}
-            {loan.status === 'Funding' && (
+                         {/* Carte de confirmation de funding pour les loans en statut "Funding" */}
+             {localLoan.status === 'Funding' && (
               <div className="funding-confirmation-card">
                 <div className="funding-confirmation-content">
                   <div className="funding-confirmation-left">
@@ -376,41 +396,41 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
               </div>
             )}
             <div className="row">
-              <DSCRCard
-                title="Income DSCR"
-                value={loan.dscr_limit || 0}
-                zone1Label="loss"
-                zone2Label="low profit"
-                zone3Label="high profit"
-                zone2Value={1.00}
-                zone3Value={1.50}
-                zone1Color="#E5E7EB"
-                zone2Color="#E5E7EB"
-                zone3Color="#00B5AE"
-                minValue={0}
-                maxValue={3}
-                percentage={false}
-                decimalPlaces={true}
-                hideValue={loan.dscr_limit === undefined || loan.dscr_limit === null}
-              />
-              <CashFlowCard
-                amount={getMonthlyPayment()}
-                paid={`${loan.payments?.length || 0} of ${loan.initial_number_of_payments}`}
-                nextDue={formatDateMD(loan.start_date)}
-                rate={loan.initial_annual_rate * 100}
-                balance={loan.current_balance}
-              />
-            </div>
-            <div className="row">
-                             <TermsCard
-                 amount={loan.initial_balance}
-                 rate={loan.initial_annual_rate * 100}
-                 type={loan.loan_type}
-                 startDate={loan.start_date}
-                 numberOfMonths={loan.initial_number_of_payments}
-                 isRecast={loan.is_recast}
-                 recastDate={loan.recast_date}
+                             <DSCRCard
+                 title="Income DSCR"
+                 value={localLoan.dscr_limit || 0}
+                 zone1Label="loss"
+                 zone2Label="low profit"
+                 zone3Label="high profit"
+                 zone2Value={1.00}
+                 zone3Value={1.50}
+                 zone1Color="#E5E7EB"
+                 zone2Color="#E5E7EB"
+                 zone3Color="#00B5AE"
+                 minValue={0}
+                 maxValue={3}
+                 percentage={false}
+                 decimalPlaces={true}
+                 hideValue={localLoan.dscr_limit === undefined || localLoan.dscr_limit === null}
                />
+               <CashFlowCard
+                 amount={getMonthlyPayment()}
+                 paid={`${localLoan.payments?.length || 0} of ${localLoan.initial_number_of_payments}`}
+                 nextDue={formatDateMD(localLoan.start_date)}
+                 rate={localLoan.initial_annual_rate * 100}
+                 balance={localLoan.current_balance}
+               />
+             </div>
+             <div className="row">
+                              <TermsCard
+                  amount={localLoan.initial_balance}
+                  rate={localLoan.initial_annual_rate * 100}
+                  type={localLoan.loan_type}
+                  startDate={localLoan.start_date}
+                  numberOfMonths={localLoan.initial_number_of_payments}
+                  isRecast={localLoan.is_recast}
+                  recastDate={localLoan.recast_date}
+                />
             </div>
           </div>
         )}
@@ -436,8 +456,8 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
                 Add
               </Button>
             </div>
-            {/* Show EmptyState when loan is not funded */}
-            {(loan.status === 'Funding' || loan.status === 'Not Funded' || sourceActivities.length === 0) ? (
+                         {/* Show EmptyState when loan is not funded */}
+             {(localLoan.status === 'Funding' || localLoan.status === 'Not Funded' || sourceActivities.length === 0) ? (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
                 <EmptyState
                   imageName="NoLoans"
@@ -613,15 +633,15 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         open={!!selectedActivity}
         mode="edit"
         config={activityConfig}
-        initialData={selectedActivity ? {
-          ...selectedActivity,
-          borrowerId: loan.borrower_id || loan.borrowerId,
-          borrowerName: borrower.fullName || (borrower as any).firstName || 'Borrower',
-          loanId: loan.id,
-          loanName: loan.nickname || 'Loan',
-          vaultId: (loan as any).vault_id || (loan as any).vaultId,
-          vaultName: vaults.find(v => v.id === ((loan as any).vault_id || (loan as any).vaultId))?.nickname || 'Gateway'
-        } : {}}
+                 initialData={selectedActivity ? {
+           ...selectedActivity,
+           borrowerId: localLoan.borrower_id || localLoan.borrowerId,
+           borrowerName: borrower.fullName || (borrower as any).firstName || 'Borrower',
+           loanId: localLoan.id,
+           loanName: localLoan.nickname || 'Loan',
+           vaultId: (localLoan as any).vault_id || (localLoan as any).vaultId,
+           vaultName: vaults.find(v => v.id === ((localLoan as any).vault_id || (localLoan as any).vaultId))?.nickname || 'Gateway'
+         } : {}}
         onNavigateBorrower={() => onShowBorrowerDetails()}
         onNavigateLoan={() => { /* already on loan page */ }}
         onNavigateVault={(id?: string) => { if (id && onShowVaultDetails) onShowVaultDetails(id); }}
@@ -635,15 +655,15 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
       <Modal open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
         <EditLoan
           onClose={() => setIsEditModalOpen(false)}
-          initialData={{
-            ...loan,
-            nickname: loan.nickname || '',
-            lateFee: '$5.00',
-            gracePeriod: '10 days',
-            dscr_limit: loan.dscr_limit || 1.50,
-            paymentDue: 'Last day of the month',
-            monthly_payment_amount: loan.monthly_payment_amount || getMonthlyPayment(),
-          }}
+                     initialData={{
+             ...localLoan,
+             nickname: localLoan.nickname || '',
+             lateFee: '$5.00',
+             gracePeriod: '10 days',
+             dscr_limit: localLoan.dscr_limit || 1.50,
+             paymentDue: 'Last day of the month',
+             monthly_payment_amount: localLoan.monthly_payment_amount || getMonthlyPayment(),
+           }}
           env={import.meta.env.VITE_ENV || 'dev'}
           onSave={() => {}}
           onRecastLoan={onRecastLoan}
@@ -653,15 +673,15 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
         open={isActivityModalOpen}
         mode="add"
         initialData={{}}
-        config={{
-          context: 'loan_funding',
-          contextId: loan.id,
-          contextName: loan.nickname || 'Loan',
-          loanAmount: loan.initial_balance,
-          borrowerName: borrower.fullName || (borrower as any).firstName || 'Borrower',
-          vaultName: vaults.find(v => v.id === ((loan as any).vault_id || (loan as any).vaultId))?.nickname || 'Gateway',
-          vaultId: (loan as any).vault_id || (loan as any).vaultId,
-          borrowerId: loan.borrower_id || loan.borrowerId,
+                 config={{
+           context: 'loan_funding',
+           contextId: localLoan.id,
+           contextName: localLoan.nickname || 'Loan',
+           loanAmount: localLoan.initial_balance,
+           borrowerName: borrower.fullName || (borrower as any).firstName || 'Borrower',
+           vaultName: vaults.find(v => v.id === ((localLoan as any).vault_id || (localLoan as any).vaultId))?.nickname || 'Gateway',
+           vaultId: (localLoan as any).vault_id || (localLoan as any).vaultId,
+           borrowerId: localLoan.borrower_id || localLoan.borrowerId,
           availableCategories: [
             { value: 'loan_funding', label: 'Loan funding', emoji: '💸' }
           ],
@@ -672,9 +692,121 @@ export const LoanDetails: React.FC<LoanDetailsProps> = ({ loan, borrower, onBack
           defaultCategory: 'loan_funding'
         }}
         onClose={() => setIsActivityModalOpen(false)}
-        onSubmit={(data) => {
-          console.log('Activity submitted:', data);
-          setIsActivityModalOpen(false);
+        onSubmit={async (data) => {
+          console.log('Loan funding activity submitted:', data);
+          
+          try {
+            const token = localStorage.getItem('authToken');
+            if (!token || !data.amount) {
+              showActivity('Missing required data for funding');
+              return;
+            }
+
+                         // 1. Update loan status from "Funding" to "Funded"
+             await updateLoan(token, localLoan.id, {
+               status: 'Funded',
+               funded_date: data.date instanceof Date ? data.date.toISOString() : data.date
+             });
+            
+            // 2. Update vault balance (debit) - transfer funds OUT of vault
+            const vaultId = data.vault;
+            if (vaultId) {
+              const currentVault = vaults.find(v => v.id === vaultId);
+              if (currentVault) {
+                // Get current balance safely
+                const currentBalance = (currentVault as any).current_balance || (currentVault as any).balance || 0;
+                const newVaultBalance = currentBalance - data.amount;
+                
+                // Update vault with new balance
+                const bankId = localStorage.getItem('bankId');
+                if (bankId) {
+                  await updateVault(token, bankId, vaultId, {
+                    ...currentVault,
+                    current_balance: newVaultBalance
+                  } as any);
+                }
+                console.log(`Vault ${currentVault.nickname} debited by $${data.amount}. New balance: $${newVaultBalance}`);
+              }
+            }
+            
+                         // 3. Update borrower balance (credit) - transfer funds TO borrower
+             const borrowerId = localLoan.borrower_id || localLoan.borrowerId;
+            if (borrowerId) {
+              const bankId = localStorage.getItem('bankId');
+              if (bankId) {
+                // Get current borrower balance safely
+                const currentBorrowerBalance = (borrower as any).current_balance || (borrower as any).balance || 0;
+                const newBorrowerBalance = currentBorrowerBalance + data.amount;
+                
+                await updateBorrower(token, bankId, borrowerId, {
+                  ...borrower,
+                  current_balance: newBorrowerBalance
+                } as any);
+                console.log(`Borrower ${borrower.fullName} credited with $${data.amount}. New balance: $${newBorrowerBalance}`);
+              }
+            }
+            
+            // 4. Create activity record for audit trail
+            const bankIdForActivity = localStorage.getItem('bankId');
+            if (bankIdForActivity && data.date) {
+              await createActivity(token, {
+                name: 'Loan Funding',
+                type: 'outgoing',
+                date: data.date instanceof Date ? data.date : new Date(data.date),
+                amount: data.amount,
+                tag: 'loan_funding',
+                                 vault: vaultId,
+                 loan: localLoan.id,
+                note: data.note || `Loan funding: $${data.amount} transferred from ${vaults.find(v => v.id === vaultId)?.nickname || 'Vault'} to ${borrower.fullName}`
+              });
+              console.log('Activity record created for loan funding');
+            }
+            
+            // 5. Show success message with transfer details
+            showActivity(`Loan funded successfully! $${data.amount} transferred from ${vaults.find(v => v.id === vaultId)?.nickname || 'Vault'} to ${borrower.fullName}`);
+            
+            // 6. Close modal
+            setIsActivityModalOpen(false);
+            
+            // 7. Refresh data to show updated balances and loan status
+            // Trigger refresh of loans and vaults data
+            if (onLoansUpdate) {
+              onLoansUpdate();
+            }
+            if (onVaultsUpdate) {
+              onVaultsUpdate();
+            }
+            
+                         // 8. Fetch the updated loan to refresh the view immediately
+             try {
+               const updatedLoan = await fetchLoanById(localLoan.id, token);
+               console.log('✅ Updated loan after funding:', updatedLoan);
+               
+               // Update the local loan state to reflect the new status
+               // This will trigger a re-render and show the "Funded" status
+               if (updatedLoan) {
+                 // Update local loan state immediately
+                 setLocalLoan(updatedLoan);
+                 
+                 // Call the onLoanUpdate callback to update the loan in parent component
+                 if (onLoanUpdate) {
+                   onLoanUpdate(updatedLoan);
+                 }
+                 
+                 // Also trigger the general loans update
+                 if (onLoansUpdate) {
+                   onLoansUpdate();
+                 }
+               }
+             } catch (fetchError) {
+               console.error('❌ Error fetching updated loan:', fetchError);
+               // Continue anyway, the onLoansUpdate should handle the refresh
+             }
+            
+          } catch (error) {
+            console.error('Error funding loan:', error);
+            showActivity('Failed to fund loan. Please try again.');
+          }
         }}
       />
     </div>

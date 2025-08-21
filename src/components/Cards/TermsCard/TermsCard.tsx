@@ -74,7 +74,11 @@ export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startD
         <div className="frame">
           <div className="frame-2">
             <div className="title-3">Terms</div>
-            {!isRecast && <div className="text-wrapper-2">Never recasted</div>}
+            {isRecast ? (
+              <div className="text-wrapper-2">Recasted {recastDate ? new Date(recastDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</div>
+            ) : (
+              <div className="text-wrapper-2">Never recasted</div>
+            )}
           </div>
           <div className="rectangle" />
           <div className="static-table">
@@ -144,25 +148,7 @@ export const TermsCard: React.FC<TermsCardProps> = ({ amount, rate, type, startD
                 </div>
               </div>
             </div>
-            {isRecast && (
-              <div className="row-6">
-                <div className="data-table-row">
-                  <div className="label-2">Status</div>
-                </div>
-                <div className="frame-wrapper">
-                  <div className="label-wrapper">
-                    <div className="label-3 recast-status">
-                      <span className="recast-badge">Recast</span>
-                      {recastDate && (
-                        <span className="recast-date">
-                          {new Date(recastDate).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
       </div>

@@ -129,32 +129,66 @@ export const recastLoan = async (
   try {
     console.log('🔄 Recasting loan:', { loanId, recastData });
     
-    // Add modified_date and recast_date to recast data
-    const dataWithDates = {
-      ...addModifiedDate(recastData),
-      recast_date: new Date().toISOString(),
-      is_recast: true
+    // Préparer les données pour l'endpoint recast (format exact attendu par l'API)
+    const recastPayload = {
+      date: new Date().toISOString(),
+      loan_type: "amortized",
+      payment_amount: recastData.monthly_payment_amount || 0,
+      balance: recastData.current_balance || 0,
+      number_of_payments: recastData.initial_number_of_payments || 0,
+      frequency: "monthly",
+      annual_rate: recastData.initial_annual_rate || 0,
+      payment_day_of_month: 30
     };
     
-    const response = await fetch(`${API_BASE_URL}/notes/${loanId}/recasts`, {
+    console.log('📡 Sending recast payload:', recastPayload);
+    
+    // Appeler l'endpoint recast
+    const recastResponse = await fetch(`${API_BASE_URL}/notes/${loanId}/recasts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(dataWithDates)
+      body: JSON.stringify(recastPayload)
     });
     
-    console.log('📡 Recast API Response status:', response.status);
+    console.log('📡 Recast API Response status:', recastResponse.status);
     
-    if (!response.ok) {
-      const errorText = await response.text();
+    if (!recastResponse.ok) {
+      const errorText = await recastResponse.text();
       console.error('❌ Recast API Error:', errorText);
-      throw new Error(`Failed to recast loan: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to recast loan: ${recastResponse.status} ${recastResponse.statusText}`);
     }
     
-    const result = await response.json();
-    console.log('✅ Loan recast successfully');
+    // Après le recast réussi, mettre à jour le loan avec les nouveaux termes
+    const updatePayload = {
+      initial_annual_rate: recastData.initial_annual_rate,
+      initial_number_of_payments: recastData.initial_number_of_payments,
+      monthly_payment_amount: recastData.monthly_payment_amount,
+      recast_date: new Date().toISOString(),
+      is_recast: true
+    };
+    
+    console.log('📡 Updating loan with new terms:', updatePayload);
+    
+    const updateResponse = await fetch(`${API_BASE_URL}/notes/${loanId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(addModifiedDate(updatePayload))
+    });
+    
+    if (!updateResponse.ok) {
+      const errorText = await updateResponse.text();
+      console.error('❌ Update API Error:', errorText);
+      throw new Error(`Failed to update loan after recast: ${updateResponse.status} ${updateResponse.statusText}`);
+    }
+    
+    const result = await updateResponse.json();
+    console.log('✅ Loan recast and updated successfully');
     return result;
   } catch (error) {
     console.error('❌ Error recasting loan:', error);
