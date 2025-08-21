@@ -5,7 +5,9 @@ import { Accessibility } from "./Accessibility/Accessibility";
 import { Loans } from "./Loans/Loans";
 import { Vaults } from "./Vaults/Vaults";
 import { Activity } from "./Activity/Activity";
+import { EditProfileModal } from "./EditProfileModal/EditProfileModal";
 import "./SettingsMenu/settings-menu.css";
+import "./Settings.css";
 import type { Vault, Loan } from "../../types/types";
 
 const accountItems = [
@@ -27,6 +29,22 @@ interface SettingsProps {
 
 export const Settings: React.FC<SettingsProps> = ({ vaults = [], loans = [], onVaultUpdate }) => {
   const [selected, setSelected] = useState("profile");
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+
+  const handleEditProfile = () => {
+    setIsEditProfileModalOpen(true);
+  };
+
+  const handleCloseEditProfileModal = () => {
+    setIsEditProfileModalOpen(false);
+  };
+
+  const handleSaveProfile = (profileData: any) => {
+    console.log('Profile data to save:', profileData);
+    // Here you would typically save the profile data to your backend
+    // For now, we'll just close the modal
+    setIsEditProfileModalOpen(false);
+  };
 
   const renderContent = () => {
     switch (selected) {
@@ -40,6 +58,7 @@ export const Settings: React.FC<SettingsProps> = ({ vaults = [], loans = [], onV
             line="/src/assets/icons/line-2.svg"
             locationOn="/src/assets/icons/location-on-2.svg"
             mailOutline="/src/assets/icons/mail-outline-2.svg"
+            onEditProfile={handleEditProfile}
           />
         );
       case "accessibility":
@@ -59,15 +78,26 @@ export const Settings: React.FC<SettingsProps> = ({ vaults = [], loans = [], onV
 
   return (
     <div className="settings-layout">
-      <SettingsMenu
-        selected={selected}
-        onSelect={setSelected}
-        accountItems={accountItems}
-        bankItems={bankItems}
-      />
       <div className="settings-content">
-        {renderContent()}
+        <div className="settings-page-title">Settings</div>
+        <div className="settings-cards-container">
+          <SettingsMenu
+            selected={selected}
+            onSelect={setSelected}
+            accountItems={accountItems}
+            bankItems={bankItems}
+          />
+          <div className="settings-content-wrapper">
+            {renderContent()}
+          </div>
+        </div>
       </div>
+      
+      <EditProfileModal
+        open={isEditProfileModalOpen}
+        onClose={handleCloseEditProfileModal}
+        onSave={handleSaveProfile}
+      />
     </div>
   );
 }; 

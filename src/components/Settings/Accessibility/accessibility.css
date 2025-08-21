@@ -80,10 +80,11 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 input:checked + .slider {
-  background-color: #bfc4ce;
+  background-color: #00b5ae;
 }
 input:checked + .slider:before {
   transform: translateX(18px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 /* Bouton arrondi avec chevron */

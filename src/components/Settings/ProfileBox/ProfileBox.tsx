@@ -12,6 +12,7 @@ interface Props {
   mailOutline?: string;
   call?: string;
   locationOn?: string;
+  onEditProfile?: () => void;
 }
 
 export const ProfileBox = ({
@@ -22,10 +23,12 @@ export const ProfileBox = ({
   mailOutline = "mail-outline.svg",
   call = "call.svg",
   locationOn = "location-on.svg",
+  onEditProfile,
 }: Props) => {
   const { user } = useAuth();
+  
   return (
-    <div className={`profile-box ${className}`} style={{ width: '100%' }}>
+    <div className={`profile-box ${className}`}>
       <div className={`header ${headerClassName}`}>
         <div className="profile-image">
           <div className="profile-avatar">
@@ -56,7 +59,7 @@ export const ProfileBox = ({
           text="Edit Profile"
           type="secondary"
           iconComponent={null}
-          onClick={() => {}}
+          onClick={onEditProfile}
           onMouseEnter={() => {}}
           onMouseLeave={() => {}}
           disabled={false}
