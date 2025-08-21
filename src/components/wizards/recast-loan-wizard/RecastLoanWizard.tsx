@@ -125,17 +125,14 @@ export const RecastLoanWizard: React.FC<RecastLoanWizardProps> = ({ onClose, loa
     showActivity('Recast in progress...');
     
     try {
-      const recastData: Partial<Loan> = {
-        initial_annual_rate: currentScreen === 'manual' ? manualRate / 100 : selectedRate / 100,
-        initial_number_of_payments: currentScreen === 'manual' ? manualPeriod : selectedPeriod,
-        monthly_payment_amount: newMonthlyPayment,
-        // Mettre à jour le montant initial avec le solde actuel (car c'est un recast)
-        initial_balance: loanToRecast.current_balance || 0,
-        // Réinitialiser les paiements car c'est un nouveau terme
-        payments: [],
-        // Marquer comme recasté
-        is_recast: true
-      };
+             const recastData: Partial<Loan> = {
+         initial_annual_rate: currentScreen === 'manual' ? manualRate / 100 : selectedRate / 100,
+         initial_number_of_payments: currentScreen === 'manual' ? manualPeriod : selectedPeriod,
+         monthly_payment_amount: newMonthlyPayment,
+         // Inclure le current_balance pour l'API recast
+         current_balance: loanToRecast.current_balance || 0,
+         is_recast: true
+       };
 
       console.log('🔄 Starting recast with data:', recastData);
       console.log('🔄 Calling recastLoan with token:', token, 'loan ID:', loanToRecast.id);

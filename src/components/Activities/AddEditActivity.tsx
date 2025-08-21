@@ -152,6 +152,19 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
       date,
     };
 
+    // Special handling for loan funding
+    if (isLoanFunding) {
+      submitData.tag = 'loan_funding';
+      submitData.amount = config.loanAmount || 0;
+      submitData.vault = config.vaultId;
+      submitData.loan = config.contextId;
+      if (note) submitData.note = note;
+      
+      // Call onSubmit with loan funding data
+      onSubmit(submitData);
+      return;
+    }
+
     // When not minimal edit, include full set
     if (!minimalEdit) {
       submitData.tag = category;
@@ -388,7 +401,7 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
             value={date.toISOString().split('T')[0]}
             onChange={(value: string) => setDate(new Date(value))}
             required
-            style={{ width: '100%' }}
+            style={{ width: '100%', minWidth: '300px' }}
           />
         </div>
       )}
@@ -442,17 +455,29 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
               </span>
             </div>
 
-            {/* Arrow */}
+            {/* Vertical line with arrow */}
             <div style={{
               width: '24px',
               height: '24px',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7 10L12 15L17 10" stroke="#6B6B70" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <div style={{
+                width: '2px',
+                height: '12px',
+                backgroundColor: '#6B6B70',
+                borderRadius: '1px'
+              }} />
+              <div style={{
+                width: '0',
+                height: '0',
+                borderLeft: '4px solid transparent',
+                borderRight: '4px solid transparent',
+                borderTop: '6px solid #6B6B70',
+                marginTop: '2px'
+              }} />
             </div>
 
             {/* Destination (Borrower) */}
@@ -696,8 +721,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         </div>
       )}
 
-      {/* Category dropdown - hidden in minimal edit */}
-      {!minimalEdit && (
+      {/* Category dropdown - hidden in minimal edit and loan funding */}
+      {!minimalEdit && !isLoanFunding && (
         <div style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
             <span style={{ color: '#B50007', fontSize: '15px', fontWeight: 600, marginRight: 2 }}>*</span>
@@ -720,8 +745,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         </div>
       )}
 
-      {/* Amount and Date */}
-      {!minimalEdit && (
+      {/* Amount and Date - hidden in loan funding */}
+      {!minimalEdit && !isLoanFunding && (
         <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
@@ -792,8 +817,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         </div>
       )}
 
-      {/* Vault and Account fields - only show if configured */}
-      {(!minimalEdit) && (config.showVaultField || config.showAccountField) && (
+      {/* Vault and Account fields - only show if configured and not loan funding */}
+      {(!minimalEdit) && !isLoanFunding && (config.showVaultField || config.showAccountField) && (
         <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
           {config.showVaultField && config.availableVaults && (
             <div style={{ flex: 1 }}>
@@ -830,8 +855,8 @@ export const AddEditActivity: React.FC<AddEditActivityProps> = ({
         </div>
       )}
 
-      {/* Loan field - only show if configured */}
-      {!minimalEdit && config.showLoanField && config.availableLoans && (
+      {/* Loan field - only show if configured and not loan funding */}
+      {!minimalEdit && !isLoanFunding && config.showLoanField && config.availableLoans && (
         <div style={{ marginBottom: 16 }}>
           <PopupButton
             defaultValue="Select a loan"

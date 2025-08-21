@@ -1,5 +1,6 @@
 import type { Activity, Loan, Vault } from '../types/types';
 import { API_BASE_URL } from '../config/api';
+import { addCreateDates } from '../utils/dateUtils';
 
 // Mapping utilitaire pour adapter l'API au type Activity du front
 function mapApiActivity(apiAct: any): Activity {
@@ -72,4 +73,65 @@ export async function fetchAllUserActivities(
   all.forEach(a => { if (typeof a.date === 'string') a.date = new Date(a.date); });
   all.sort((a, b) => b.date.getTime() - a.date.getTime());
   return all;
+}
+
+export async function createActivity(
+  token: string,
+  activityData: {
+    name: string;
+    type: string;
+    date: Date | string;
+    amount: number;
+    tag: string;
+    vault?: string;
+    account?: string;
+    loan?: string;
+    note?: string;
+    applyToLoan?: boolean;
+  }
+): Promise<Activity> {
+  try {
+    // Prepare activity data with proper formatting
+    const activityPayload = {
+      ...activityData,
+      date: activityData.date instanceof Date ? activityData.date.toISOString() : activityData.date,
+      amount: Number(activityData.amount),
+      ...addCreateDates({})
+    };
+
+    console.log('Creating activity with payload:', activityPayload);
+
+    // Determine the endpoint based on context
+    let endpoint = '';
+    if (activityData.loan) {
+      endpoint = `${API_BASE_URL}/notes/${activityData.loan}/activities`;
+    } else if (activityData.vault) {
+      endpoint = `${API_BASE_URL}/vaults/${activityData.vault}/activities`;
+    } else {
+      throw new Error('Activity must be associated with either a loan or vault');
+    }
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(activityPayload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to create activity:', response.status, errorText);
+      throw new Error(`Failed to create activity: ${response.status} ${errorText}`);
+    }
+
+    const createdActivity = await response.json();
+    console.log('Activity created successfully:', createdActivity);
+    
+    return mapApiActivity(createdActivity);
+  } catch (error) {
+    console.error('Error creating activity:', error);
+    throw error;
+  }
 } 
